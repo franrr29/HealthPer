@@ -1,16 +1,17 @@
+import "dotenv/config"
 import { env } from "./config/env";
-import app from "./app";
+import app from "../app";
 import { conexionDB } from "./config/db";
 import { logger } from "./config/logger";
 
 const PORT = env.PORT;
 
 
-// Testear conexión a base de datos y luego levantar servidor:
+// Testear conexion a base de datos y luego levantar servidor:
 
 async function main() {
   try {
-    const connection = await conectionDB.getConnection();
+    const connection = await conexionDB.getConnection();
 
     logger.info("Conectado a la base de datos con exito");
 
