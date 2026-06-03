@@ -2,10 +2,12 @@
 // Datos de doctores, pacientes y consultas falsos creados con faker
 
 import "dotenv/config"
-import { conexionDB } from "./config/db"
+import { conexionDB } from "../config/db"
 import { faker } from "@faker-js/faker"
-import { logger } from "./config/logger"
+import { logger } from "../config/logger"
 import bcrypt from "bcrypt"
+import { transcripts } from "./transcripts/transcripts"
+
 
 
 async function seed() {
@@ -18,34 +20,15 @@ async function seed() {
     await conexionDB.execute("DELETE FROM doctors")
     await conexionDB.execute("SET FOREIGN_KEY_CHECKS = 1")
 
-    // hash contraseña doctores
+    // hash contraseña doctores:
     const passwordHash = await bcrypt.hash("password123", 12)
 
+
+    //especialidades de los doctores creados:
     const specialties = [
       "Cardiology", "Pediatrics", "Neurology", "General Medicine",
       "Gynecology", "Traumatology", "Dermatology", "Psychiatry",
       "Oncology", "Endocrinology"
-    ]
-
-    const transcripts = [
-      "Patient presents with chest pain radiating to the left arm, onset 2 hours ago. Blood pressure 140/90. EKG ordered.",
-      "Follow-up visit for hypertension management. Patient reports headaches in the morning. Medication adjusted.",
-      "Patient complains of persistent cough for 3 weeks, no fever. Lungs clear on auscultation. Chest X-ray recommended.",
-      "Routine checkup. Patient reports fatigue and weight gain over past 3 months. Thyroid function tests ordered.",
-      "Patient presents with knee pain after running. Swelling noted. RICE protocol recommended, NSAIDs prescribed.",
-      "Annual physical exam. Blood work results reviewed. Cholesterol slightly elevated, dietary changes recommended.",
-      "Patient reports anxiety and difficulty sleeping. Stress management techniques discussed. Follow-up in 2 weeks.",
-      "Child presents with fever 38.5°C and sore throat. Rapid strep test positive. Amoxicillin prescribed.",
-      "Patient presents with severe headache and blurred vision for 2 days. No history of migraines. MRI ordered.",
-      "Diabetic patient reports increased thirst and frequent urination. HbA1c levels reviewed, insulin dose adjusted.",
-      "Patient presents with skin rash on arms and chest, started 3 days ago. Allergic reaction suspected. Antihistamines prescribed.",
-      "Elderly patient with memory loss and confusion reported by family. Cognitive assessment performed. Neurology referral.",
-      "Patient reports lower back pain after lifting heavy objects. No neurological symptoms. Physical therapy ordered.",
-      "Prenatal visit at 28 weeks. Blood pressure normal. Fetal heartbeat strong. Gestational diabetes screening ordered.",
-      "Patient presents with burning sensation during urination. Urinalysis shows bacterial infection. Antibiotics prescribed.",
-      "Teenager with acne vulgaris, moderate severity. Topical retinoid and benzoyl peroxide recommended.",
-      "Patient with history of depression reports worsening symptoms. Medication dosage reviewed. Therapy referral made.",
-      "Follow-up for thyroid nodule. Ultrasound shows no significant change. Continue monitoring every 6 months."
     ]
 
     const summaries = [
@@ -160,33 +143,38 @@ async function seed() {
 
     // Crear 7 consultas por paciente
     for (const patientId of patientIds) {
+      const historia = faker.helpers.arrayElement(transcripts)
       for (let i = 0; i < 7; i++) {
-        await conexionDB.execute(
+         await conexionDB.execute(
           `INSERT INTO consultations (patient_id, doctor_id, transcript, ai_summary, status)
            VALUES (?, ?, ?, ?, ?)`,
-          [
-            patientId,
-            doctorIds[Math.floor(Math.random() * doctorIds.length)],
-            faker.helpers.arrayElement(transcripts),
-            JSON.stringify(faker.helpers.arrayElement(summaries)),
-            faker.helpers.arrayElement(["draft", "reviewed", "signed"])
-          ]
-        )
+           [
+             patientId,
+             doctorIds[Math.floor(Math.random() * doctorIds.length)],
+             historia[i],  
+             JSON.stringify(faker.helpers.arrayElement(summaries)),
+             faker.helpers.arrayElement(["draft", "reviewed", "signed"])
+             ]
+            )
+          }
+        }
+        
+        logger.info("350 consultas creadas");
+        
+        logger.info({
+          doctors: doctorIds.length,
+          patients: patientIds.length
+        }, "Seed completado")
+      
+      } catch (error) {
+        
+        logger.error(error, "Error en seed")
+      
+      } finally {
+        
+        process.exit(0)
+      
       }
     }
-
-    logger.info("350 consultas creadas")
-
-    logger.info({
-      doctors: doctorIds.length,
-      patients: patientIds.length
-    }, "Seed completado")
-
-  } catch (error) {
-    logger.error(error, "Error en seed")
-  } finally {
-    process.exit(0)
-  }
-}
 
 seed()
