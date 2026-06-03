@@ -2,6 +2,7 @@
 
 import { Request, Response } from "express";
 import * as patientService from "../services/patient.service";
+import { schemaPatient } from "../schemas/schema.patient";
 
 //Get para todos los pacientes:
 
@@ -34,7 +35,7 @@ export async function getPatientByID(req: Request, res: Response) {
     
     try {
 
-        const { doctor_id } = req.user;
+        const { id: doctor_id } = req.user;
         const { id } = req.params;
         
         const patientInfo = await patientService.getPatientByID(doctor_id, id)
@@ -58,5 +59,44 @@ export async function getPatientByID(req: Request, res: Response) {
             message: "Error trying to get patient information"
             
         });
+    }
+};
+
+
+//Crear paciente nuevo por parte del doctor si no existe en db:
+
+export async function createPatient(req: Request, res: Response) {
+    
+    try {
+
+        const patientData = schemaPatient.parse(req.body);
+        const { id: doctor_id } = req.user;
+
+        const newPatient = await patientService.createPatient(patientData,doctor_id
+        );
+
+        if (!newPatient) {
+
+            return res.status(400).json({ 
+
+                message: "Failed to create patient" 
+            });
+        }
+
+        return res.status(201).json({
+
+            message: "Patient created successfully",
+
+            patient: newPatient
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            message: "Unable to create patient"
+
+        });
+
     }
 }
