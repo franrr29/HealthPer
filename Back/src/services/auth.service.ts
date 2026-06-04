@@ -31,7 +31,7 @@ async function registerDoc(name: string, email: string, password: string) {
 
 
         const [guardarDoc] = await conexionDB.query(
-            "INSERT INTO doctors (name, email, password VALUES) (?,?,?)",
+            "INSERT INTO doctors (name, email, password_hash) VALUES (?,?,?)",
             [name, email, hashPassword]
         );
 
@@ -52,3 +52,5 @@ async function registerDoc(name: string, email: string, password: string) {
     }
 
 }
+
+export default registerDoc;
