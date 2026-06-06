@@ -7,6 +7,7 @@ import authRouter from "./src/routes/auth.routes";
 import passport from "passport";
 import googleAuthRouter from "./src/routes/auth.google.routes";
 import { errorHandler } from "./src/middleware/errorHandler";
+import patientRouter from "./src/routes/patient.routes";
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(passport.initialize());
 // Rutas
 app.use("/auth", authRouter);
 app.use("/auth", googleAuthRouter);
+app.use("/patients", patientRouter);
 
 // ErrorHandler
 app.use(errorHandler);
