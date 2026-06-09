@@ -1,5 +1,7 @@
 // Recibe datos del controller y ejecuta queries en BD
+//Puse algunas funciones sin TRY /CATCH porque al volver a controller, next relanza el error al errorHandler
 
+import { ResultSetHeader } from "mysql2";
 import { conexionDB } from "../config/db";
 import { Patient } from "../schemas/schema.patient";
 
@@ -86,4 +88,38 @@ export async function createPatient(patientData: Patient, doctor_id: number) {
         
         throw error;
     }
+}
+
+
+//Actualizar X dato del paciente por parte del doctor:
+
+export async function updatePatient(id: string, doctor_id: number, dataValidated: Partial<Patient>) {
+    //extraer campos para patch
+    const fields = Object.keys(dataValidated);
+    //query ordenada dinamica
+    const setQuery = fields.map(field => `${field} = ?`).join(", ");
+    //valores de los fields
+    const values = Object.values(dataValidated);
+
+    const [result] = await conexionDB.query<ResultSetHeader>(
+        `UPDATE patients 
+         SET ${setQuery}
+         WHERE id = ? AND doctor_id = ?`,
+        [...values, id, doctor_id]
+    );
+
+    return result.affectedRows > 0;
+}
+
+
+//Eliminar completamente un paciente por parte del doctor:
+
+export async function deletePatient(id: string, doctor_id: number) {
+    
+    const [result] = await conexionDB.query<ResultSetHeader>(
+        "DELETE FROM patients WHERE id = ? AND doctor_id = ?",
+        [id, doctor_id]
+    );
+
+    return result.affectedRows > 0;
 }
