@@ -10,6 +10,7 @@ import { errorHandler } from "./src/middleware/errorHandler";
 import patientRouter from "./src/routes/patient.routes";
 import consultationRouter from "./src/routes/consultation.routes"
 
+
 const app = express();
 
 // Middlewares globales

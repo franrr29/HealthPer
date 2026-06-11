@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { createConsultation as createConsultationService, getConsultationByIdService } from "../services/consultation.service";
+import { createConsultation as createConsultationService, getConsultationByIdService, allConsultations } from "../services/consultation.service";
 import { schemaConsult, schemaConsultParams } from "../schemas/schema.consultation";
 
 
@@ -52,7 +52,7 @@ export async function getConsultation(req: Request, res: Response, next: NextFun
 
     const consultation = await getConsultationByIdService(consultIDs.id,doctor_id);
 
-    if (!consultation) {
+    if (!consultation || consultation.length === 0) {
 
       return res.status(404).json({
 
@@ -72,5 +72,42 @@ export async function getConsultation(req: Request, res: Response, next: NextFun
 
     next(error);
 
+  }
+}
+
+
+//GET todo el historial del paciente que pertenece al doctor
+
+export async function getAllConsultations(req: Request, res: Response, next: NextFunction) {
+  
+  try {
+
+    const { id: patient_id } = schemaConsultParams.parse(req.params);
+
+    const { id: doctor_id } = req.user;
+
+    const consultations = await allConsultations(patient_id,doctor_id);
+
+    if (!consultations || consultations.length === 0) {
+
+      return res.status(404).json({
+
+        message: "Consultations not found"
+
+      });
+    }
+
+    return res.status(200).json({
+
+      message: "Showing all consultations from the patient",
+
+      consultations
+
+    });
+
+
+  } catch (error) {
+
+    next(error);
   }
 }

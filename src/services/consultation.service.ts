@@ -40,3 +40,20 @@ export async function getConsultationByIdService(consultation_id: number, doctor
     
     
 }
+
+//Traer todo el historial de consultas del paciente del doctor con doble verificacion IDOR:
+
+export async function  allConsultations(patient_id: number, doctor_id: number) {
+    
+    const [rows]: any = await conexionDB.query(
+    `SELECT c.* FROM consultations c
+    JOIN patients p ON c.patient_id = p.id
+    WHERE p.id = ? AND p.doctor_id = ?`,
+    [patient_id, doctor_id]);
+
+    if (rows.length===0){
+        return null
+    }
+    
+    return rows;
+}
