@@ -13,3 +13,17 @@ export const schemaConsultParams = z.object({
 });
 
 //coerce convierte el string del url a num
+
+
+//PATCH ZOD para consultas:
+export const schemaConsultPatch = z.object({
+  transcript: z.string().trim().min(1).optional(),
+  edited_summary: z.string().trim().min(1).optional(),
+
+  status: z.enum(["draft", "reviewed", "signed"]).optional()
+
+}).refine(data => Object.keys(data).length > 0, {
+  message: "At least one field is required"
+});
+
+//refine al final evita que llegue un body vacio sin campos

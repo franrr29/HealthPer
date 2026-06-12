@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { createConsultation as createConsultationService, getConsultationByIdService, allConsultations } from "../services/consultation.service";
-import { schemaConsult, schemaConsultParams } from "../schemas/schema.consultation";
+import { createConsultation as createConsultationService, getConsultationByIdService, allConsultations, patchFields } from "../services/consultation.service";
+import { schemaConsult, schemaConsultParams, schemaConsultPatch } from "../schemas/schema.consultation";
 
 
 // Crea una consulta medica usando el doctor autenticado y valida los datos recibidos
@@ -109,5 +109,42 @@ export async function getAllConsultations(req: Request, res: Response, next: Nex
   } catch (error) {
 
     next(error);
+  }
+};
+
+
+//PATCH para modificar X campos por parte del medico:
+
+export async function patchConsultation(req: Request, res: Response, next: NextFunction) {
+  
+  try {
+
+    const { id: consultation_id } = schemaConsultParams.parse(req.params);
+    const { id: doctor_id } = req.user;
+    const fields = schemaConsultPatch.parse(req.body);
+
+    if (Object.keys(fields).length === 0){
+
+       return res.status(400).json({ message: "At least one field is required for update" });
+    }
+    
+    const patchedFields= await patchFields (consultation_id, doctor_id, fields);
+
+    if (!patchedFields){
+
+       return res.status(404).json({ message: "Unable to patch patient data"})
+    }
+
+    res.status(200).json({
+
+      message: "Patient information updated succesfully",
+    
+    });
+
+
+  } catch (error){
+
+    next (error)
+
   }
 }
