@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { createConsultation as createConsultationService, getConsultationByIdService, allConsultations, patchFields } from "../services/consultation.service";
 import { schemaConsult, schemaConsultParams, schemaConsultPatch } from "../schemas/schema.consultation";
+import { transcribeAudio } from "../services/whisper.service";
 
 
 // Crea una consulta medica usando el doctor autenticado y valida los datos recibidos
@@ -145,6 +146,59 @@ export async function patchConsultation(req: Request, res: Response, next: NextF
   } catch (error){
 
     next (error)
+
+  }
+}
+
+
+//Enviar el buffer con el audio a whisper.service y traer la transcripcion del audio
+
+export async function transcribeConsultation(req: Request, res: Response, next: NextFunction) {
+  
+  try {
+
+    const { id: doctor_id } = req.user;
+    const { id: consultation_id } = schemaConsultParams.parse(req.params);
+
+    const audioBuffer = req.file?.buffer;
+
+
+    if (!audioBuffer) {
+
+      return res.status(400).json({
+
+        message: "Audio file is required"
+
+      });
+    }
+
+
+    const sendAudio = await transcribeAudio(audioBuffer);
+
+
+    if (!sendAudio) {
+
+      return res.status(500).json({
+
+        message: "Audio transcription failed"
+
+      });
+    }
+
+    await patchFields (consultation_id, doctor_id, { transcript: sendAudio})
+
+
+    return res.status(200).json({
+
+      message: "Audio transcribed successfully",
+
+      transcription: sendAudio
+
+    });
+
+  } catch (error) {
+
+    next(error);
 
   }
 }

@@ -14,6 +14,7 @@ export const serverSchema = z.object({
   DB_NAME: z.string(),
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
+  
 
   // Seguridad
   JWT_SECRET: z.string().min(5),
