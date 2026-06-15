@@ -75,3 +75,33 @@ export async function patchFields(consultation_id: number,doctor_id: number,fiel
 
     return { updated: true };
 }
+
+
+// Funcion para generar resumen de consulta utilizando el LLM y guardar el resumen en la base de datos:
+export async function summarizeConsultation(consultation_id: number, doctor_id: number) {
+
+    const consultation = await getConsultationByIdService(consultation_id, doctor_id);
+
+    if (!consultation) {
+        
+        return null;
+    }
+
+    if (!consultation.transcript) {
+
+        throw Error("Transcript is required for summarization");
+    }
+
+    const summary = await generateConsultationSummary(consultation.transcript);
+
+    const [saveSummaryResult]: any = await conexionDB.query( "UPDATE consultations SET ai_summary = ?, status = 'finalized' WHERE id = ? AND doctor_id = ?",
+
+    [summary.summary, consultation_id, doctor_id]);
+
+    if (saveSummaryResult.affectedRows === 0) {
+
+        throw  Error("Failed to save summary");
+    }
+
+    return summary;
+}
