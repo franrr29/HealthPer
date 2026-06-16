@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { schemaConsultPatch } from "../schemas/schema.consultation";
 import { conexionDB } from "../config/db";
+import { generateConsultationSummary } from "./llm.service";
+import { json } from "stream/consumers";
 
 // Crea una consulta mdica validando que el paciente pertenezca al doctor
 export async function createConsultation(patient_id: number, doctor_id: number, transcript ?: string) {
@@ -83,7 +85,7 @@ export async function summarizeConsultation(consultation_id: number, doctor_id: 
     const consultation = await getConsultationByIdService(consultation_id, doctor_id);
 
     if (!consultation) {
-        
+
         return null;
     }
 
@@ -94,13 +96,15 @@ export async function summarizeConsultation(consultation_id: number, doctor_id: 
 
     const summary = await generateConsultationSummary(consultation.transcript);
 
-    const [saveSummaryResult]: any = await conexionDB.query( "UPDATE consultations SET ai_summary = ?, status = 'finalized' WHERE id = ? AND doctor_id = ?",
+    const summaryString = JSON.stringify(summary);
 
-    [summary.summary, consultation_id, doctor_id]);
+   const [saveSummaryResult]: any = await conexionDB.query(
+
+    "UPDATE consultations SET ai_summary = ?, status = 'signed' WHERE id = ? AND doctor_id = ?",
+    [summaryString, consultation_id, doctor_id]);
 
     if (saveSummaryResult.affectedRows === 0) {
-
-        throw  Error("Failed to save summary");
+        return null;
     }
 
     return summary;

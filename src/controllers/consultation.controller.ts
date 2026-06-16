@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { createConsultation as createConsultationService, getConsultationByIdService, allConsultations, patchFields } from "../services/consultation.service";
+import { createConsultation as createConsultationService, getConsultationByIdService, allConsultations, patchFields, summarizeConsultation } from "../services/consultation.service";
 import { schemaConsult, schemaConsultParams, schemaConsultPatch } from "../schemas/schema.consultation";
 import { transcribeAudio } from "../services/whisper.service";
 
@@ -201,4 +201,38 @@ export async function transcribeConsultation(req: Request, res: Response, next: 
     next(error);
 
   }
+}
+
+
+//Funcion para generar resumen de consulta que envia a summarizeConsultation en consultation.service:
+export async function summarizeConsultationController (req: Request, res: Response, next: NextFunction) {
+
+  try {
+
+    const { id: doctor_id } = req.user;
+    const { id: consultation_id } = schemaConsultParams.parse(req.params);
+
+    const sendInfo= await summarizeConsultation(consultation_id, doctor_id);
+
+    if (!sendInfo) {
+
+      return res.status(404).json({
+
+        message: "Consultation not found or transcript missing"
+
+      });
+    } 
+
+    return res.status(200).json({
+
+      message: "Consultation summarized successfully", 
+      data: sendInfo 
+
+  })
+
+
+  } catch (error) {
+
+    next(error);    
+} 
 }

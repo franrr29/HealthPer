@@ -92,6 +92,7 @@ export async function patchPatient(req:Request, res:Response, next: NextFunction
         const { id }=req.params;
         const dataValidated= schemaPatient.partial().parse (req.body)
 
+
         // Evito ejecutar patch sin campos validos para actualizar usando object.keys:
         if (Object.keys(dataValidated).length === 0) {
             
