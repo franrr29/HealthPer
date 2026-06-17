@@ -109,3 +109,20 @@ export async function summarizeConsultation(consultation_id: number, doctor_id: 
 
     return summary;
 }
+
+
+//Funcion que recibe el texto editado por el medico y lo guarda en edited_summary de la consulta:
+
+export async function editConsultationSummary(consultation_id: number, doctor_id: number, edited_summary: string) {
+    
+  const consultation: any = await getConsultationByIdService(consultation_id, doctor_id);
+
+  if (!consultation) return null;
+
+  await conexionDB.query(
+    `UPDATE consultations SET edited_summary = ? WHERE id = ? AND doctor_id = ?`,
+    [edited_summary, consultation_id, doctor_id]
+  );
+
+  return { consultation_id, edited_summary };
+}

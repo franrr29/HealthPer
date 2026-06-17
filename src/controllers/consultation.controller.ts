@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { createConsultation as createConsultationService, getConsultationByIdService, allConsultations, patchFields, summarizeConsultation } from "../services/consultation.service";
+import { createConsultation as createConsultationService, getConsultationByIdService, allConsultations, patchFields, summarizeConsultation, editConsultationSummary } from "../services/consultation.service";
 import { schemaConsult, schemaConsultParams, schemaConsultPatch } from "../schemas/schema.consultation";
 import { transcribeAudio } from "../services/whisper.service";
+
 
 
 // Crea una consulta medica usando el doctor autenticado y valida los datos recibidos
@@ -235,4 +236,31 @@ export async function summarizeConsultationController (req: Request, res: Respon
 
     next(error);    
 } 
+}
+
+
+//Funcion para generar resumen de consulta envia a consultation.service y guardar el resumen en la base de datos:
+
+export async function editSummaryController (req: Request, res: Response, next: NextFunction) {
+
+  try {
+    const { id: doctor_id } = req.user;
+    const { id: consultation_id } = schemaConsultParams.parse(req.params);
+    const { edited_summary } = schemaConsultPatch.parse(req.body);
+
+    if (!edited_summary) {
+      return res.status(400).json({ message: "edited_summary is required" });
+    }
+
+    const result = await editConsultationSummary(consultation_id, doctor_id, edited_summary);
+
+    if (!result) {
+      return res.status(404).json({ message: "Consultation not found" });
+    }
+
+    return res.status(200).json({ message: "Summary edited successfully", data: result });
+
+  } catch (error) {
+    next(error);
+  }
 }
