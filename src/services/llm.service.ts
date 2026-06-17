@@ -50,6 +50,13 @@ export async function generateConsultationSummary(transcript: string) {
     //Validar datos qeu trajo el llm luego de traer su respuesta de response:
 
     const raw = response.choices[0].message.content
+
+    if (!raw) {
+
+    throw new Error("LLM returned empty response");
+
+}
+
     const parsed = JSON.parse(raw)
     return consultationSummarySchema.parse(parsed)
 

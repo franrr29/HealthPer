@@ -1,11 +1,11 @@
-import { Request, Response, NextFunction} from "express";
+import { Request, Response, NextFunction } from "express";
 import registerDoc from "../services/auth.service";
 import loginUser from "../services/auth.login.service";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env";
 //Funcion para capturar datos del front y dirigir a auth.service:
 
-async function registerUser (req: Request, res: Response, next: NextFunction){
+async function registerUser (req: Request, res: Response, next: NextFunction): Promise<void> {
 
     try {
 
@@ -29,9 +29,10 @@ async function registerUser (req: Request, res: Response, next: NextFunction){
 };
 
 
+
 //Funcion para logear usuario ya registrado:
 
-async function logginUser(req: Request, res: Response, next: NextFunction) {
+async function logginUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     
     try {
 
@@ -56,7 +57,7 @@ async function logginUser(req: Request, res: Response, next: NextFunction) {
 
 //Borrar token y dar logout cerra sesion que viene del front:
 
-export function logout (req: Request, res: Response){
+export function logout (req: Request, res: Response): void {
 
     res.status(200).json({
         message: "Logged out successfull"
@@ -67,7 +68,7 @@ export function logout (req: Request, res: Response){
 
 // Generar nuevo access token usando refresh token
 
-export function refreshToken(req: Request, res: Response) {
+export function refreshToken(req: Request, res: Response): void {
     
     // Obtener refresh token enviado por el frontend
 

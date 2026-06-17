@@ -2,17 +2,17 @@
 
 import jwt from "jsonwebtoken";
 import { env } from "../config/env";
-import { Request, Response, NextFunction } from "express";
+import { RequestHandler } from "express";
 
 
-export function authMiddle (req: Request, res: Response, next: NextFunction){
+export const authMiddle: RequestHandler = (req, res, next) => {
    
     //Token enviado por el user:
     const authHeader= req.headers.authorization
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         
-        res.status(401).json({ message: "Token requerido" });
+        res.status(401).json({ message: "Token required" });
         return;
     }
     
@@ -29,11 +29,13 @@ export function authMiddle (req: Request, res: Response, next: NextFunction){
         req.user = payload;
         
         next();
+
     } catch {
 
         res.status(401).json ({
-            mensaje: "Invalid or expired token"
-        })
+            message: "Invalid or expired token"
+        });
+
     }
 
 

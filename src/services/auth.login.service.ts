@@ -5,13 +5,14 @@ import bcrypt from "bcrypt";
 import { conexionDB } from "../config/db";
 import { logger } from "../config/logger";
 import { env } from "../config/env";
+import { RowDataPacket } from "mysql2/promise";
 
 
 async function loginUser(email: string, password: string) {
 
     try {
 
-        const [rows] = await conexionDB.query(
+        const [rows] = await conexionDB.query<RowDataPacket[]>(
             "SELECT * FROM doctors WHERE email= ?",
             [email]
         );

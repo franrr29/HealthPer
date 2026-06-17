@@ -12,6 +12,14 @@ export async function createConsultation(req: Request,res: Response,next: NextFu
 
   try {
 
+    if (!req.user) {
+
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+
+    }
+
+
     const { id: doctor_id } = req.user;
 
     const consultInfo = schemaConsult.parse(req.body);
@@ -48,6 +56,15 @@ export async function getConsultation(req: Request, res: Response, next: NextFun
   
   try {
 
+
+    if (!req.user) {
+
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+
+    }
+
+
     const consultIDs = schemaConsultParams.parse(req.params);
 
     const { id: doctor_id } = req.user;
@@ -83,6 +100,15 @@ export async function getConsultation(req: Request, res: Response, next: NextFun
 export async function getAllConsultations(req: Request, res: Response, next: NextFunction) {
   
   try {
+
+
+    if (!req.user) {
+
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+
+    }
+
 
     const { id: patient_id } = schemaConsultParams.parse(req.params);
 
@@ -121,6 +147,15 @@ export async function patchConsultation(req: Request, res: Response, next: NextF
   
   try {
 
+
+    if (!req.user) {
+
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+
+    }
+
+
     const { id: consultation_id } = schemaConsultParams.parse(req.params);
     const { id: doctor_id } = req.user;
     const fields = schemaConsultPatch.parse(req.body);
@@ -157,6 +192,15 @@ export async function patchConsultation(req: Request, res: Response, next: NextF
 export async function transcribeConsultation(req: Request, res: Response, next: NextFunction) {
   
   try {
+
+
+    if (!req.user) {
+
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+
+    }
+
 
     const { id: doctor_id } = req.user;
     const { id: consultation_id } = schemaConsultParams.parse(req.params);
@@ -210,6 +254,15 @@ export async function summarizeConsultationController (req: Request, res: Respon
 
   try {
 
+
+    if (!req.user) {
+
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+
+    }
+
+
     const { id: doctor_id } = req.user;
     const { id: consultation_id } = schemaConsultParams.parse(req.params);
 
@@ -244,6 +297,16 @@ export async function summarizeConsultationController (req: Request, res: Respon
 export async function editSummaryController (req: Request, res: Response, next: NextFunction) {
 
   try {
+
+
+    if (!req.user) {
+
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+
+    }
+
+
     const { id: doctor_id } = req.user;
     const { id: consultation_id } = schemaConsultParams.parse(req.params);
     const { edited_summary } = schemaConsultPatch.parse(req.body);

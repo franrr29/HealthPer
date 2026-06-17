@@ -3,7 +3,7 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { env } from "./env";
-import { pool } from "./db";
+import { conexionDB } from "./db";
 
 
 //Usar el servicio de passport
@@ -21,9 +21,13 @@ passport.use(
         const email = profile.emails?.[0].value;
         const name = profile.displayName;
 
+        if (!email) {
+          return done(new Error("Google account does not have an email associated"));
+        }
+
         // Buscar si el usuario ya existe
 
-        const [rows]: any = await pool.execute(
+        const [rows]: any = await conexionDB.execute(
           "SELECT * FROM doctors WHERE email = ?",
           [email]
         );
@@ -34,12 +38,12 @@ passport.use(
 
         // Si no existe el usuario creo uno:
 
-        const [result]: any = await pool.execute(
+        const [result]: any = await conexionDB.execute(
           "INSERT INTO doctors (name, email, password_hash) VALUES (?, ?, ?)",
           [name, email, "oauth_google"]
         );
 
-        const [newUser]: any = await pool.execute(
+        const [newUser]: any = await conexionDB.execute(
           "SELECT * FROM doctors WHERE id = ?",
           [result.insertId]
         );

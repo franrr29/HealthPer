@@ -13,18 +13,36 @@ import consultationRouter from "./src/routes/consultation.routes"
 
 const app = express();
 
+
 // Middlewares globales
+
 app.use(express.json());
 app.use(cors());
 app.use(passport.initialize());
 
+
+// Health check
+
+app.get("/health", (req, res) => {
+
+    res.status(200).json({
+        status: "ok"
+    });
+
+});
+
+
 // Rutas
+
 app.use("/auth", authRouter);
 app.use("/auth", googleAuthRouter);
 app.use("/patients", patientRouter);
-app.use ("/",consultationRouter);
+app.use("/", consultationRouter);
+
 
 // ErrorHandler
+
 app.use(errorHandler);
+
 
 export default app;

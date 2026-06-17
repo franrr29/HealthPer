@@ -1,8 +1,9 @@
 //Ruta para google passport:
 
-import { Request,Response, Router} from "express";;
+import { Router, RequestHandler} from "express";;
 import passport from "passport";
 import { handleGoogleCallback } from "../controllers/auth.google.controller";
+
 
 const router= Router();
 
@@ -19,6 +20,6 @@ router.get(
 router.get(
     "/google/callback", passport.authenticate("google",
      { session: false }), 
-     handleGoogleCallback);
+     handleGoogleCallback as RequestHandler);
 
 export default router;

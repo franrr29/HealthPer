@@ -1,14 +1,19 @@
+// Extiende User de express/passport para incluir los datos del JWT después de validar el token
 
-// Extiende request de express para incluir a user después de que auth.middleware valida el token
+declare global {
 
-import "express";
+  namespace Express {
 
-declare module "express" {
-  interface Request {
-    user?: {
+    interface User {
+
       id: number;
       email: string;
       role: string;
-    };
+
+    }
+
   }
+
 }
+
+export {};
