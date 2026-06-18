@@ -12,7 +12,9 @@ export const authMiddle: RequestHandler = (req, res, next) => {
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         
-        res.status(401).json({ message: "Token required" });
+        res.status(401).json({ 
+            success: false,
+            message: "Token required" });
         return;
     }
     

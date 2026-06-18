@@ -6,67 +6,76 @@ import { conexionDB } from "../config/db";
 import { logger } from "../config/logger";
 import { env } from "../config/env";
 import { RowDataPacket } from "mysql2/promise";
+import { AppError } from "../errors/appError";
 
 
 async function loginUser(email: string, password: string) {
 
-    try {
 
-        const [rows] = await conexionDB.query<RowDataPacket[]>(
-            "SELECT * FROM doctors WHERE email= ?",
-            [email]
+    const [rows] = await conexionDB.query<RowDataPacket[]>(
+        "SELECT * FROM doctors WHERE email= ?",
+        [email]
+    );
+
+
+    //verificar mail que existe:
+    if (rows.length === 0) {
+
+        throw new AppError(
+
+            "Invalid credentials",
+            401
         );
-
-
-        //verificar mail que existe:
-        if (rows.length === 0) {
-            throw new Error("Invalid credentials to login")
-        }
-
-
-        const doctor = rows[0];
-
-
-        //comparar contraseñas:
-        const validPassword = await bcrypt.compare(
-            password,
-            doctor.password_hash
-        );
-
-
-        if (!validPassword) {
-            throw new Error("Invalid credentials")
-        }
-
-
-        //Si existe en base de datos firmo con JWT:
-
-        const token = jwt.sign(
-            { id: doctor.id, email: doctor.email },
-            env.JWT_SECRET,
-            { expiresIn: "1d" }
-        );
-
-
-        logger.info(
-            `Doctor logged successfully | Email: ${email}`
-        );
-
-
-        // Eliminar password_hash antes de retornar al cliente:
-        delete doctor.password_hash;
-
-        return {
-            doctor,
-            token
-        }
-
-
-    } catch (error) {
-
-        throw error
 
     }
+
+
+    const doctor = rows[0];
+
+
+    //comparar contraseñas:
+    const validPassword = await bcrypt.compare(
+        password,
+        doctor.password_hash
+    );
+
+
+    if (!validPassword) {
+
+        throw new AppError(
+
+            "Invalid credentials",
+            401
+        );
+
+    }
+
+
+    //Si existe en base de datos firmo con JWT:
+    const token = jwt.sign(
+        { id: doctor.id, email: doctor.email },
+        env.JWT_SECRET,
+        { expiresIn: "1d" }
+    );
+
+
+    logger.info(
+        
+        `Doctor logged successfully | Email: ${email}`
+    );
+
+
+    // Eliminar password_hash antes de retornar al cliente:
+    delete doctor.password_hash;
+
+
+    return {
+        doctor,
+        token
+    };
+
+
 };
+
 
 export default loginUser;
