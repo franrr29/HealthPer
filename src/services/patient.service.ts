@@ -4,6 +4,7 @@
 import { ResultSetHeader } from "mysql2";
 import { conexionDB } from "../config/db";
 import { Patient } from "../schemas/schema.patient";
+import { AppError } from "../errors/appError";
 
 
 // Obtener todos los pacientes del doctor
@@ -17,13 +18,6 @@ export async function getPatients(doctor_id: number) {
             "SELECT * FROM patients WHERE doctor_id = ?",
             [doctor_id]
         );
-
-
-        if (rows.length === 0) {
-            
-            throw new Error("Patients not found");
-        }
-
 
         return rows;
 
@@ -51,7 +45,7 @@ export async function getPatientByID(doctor_id: number, patientID: number) {
 
         if (rows.length === 0) {
 
-            throw new Error("Patient not found");
+            throw new AppError ("Patient not found", 404);
         }
 
 

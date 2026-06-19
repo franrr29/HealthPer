@@ -5,7 +5,7 @@ import { schemaPatient } from "../schemas/schema.patient";
 
 
 //Get para todos los pacientes:
-export const getPatients: RequestHandler = async (req, res): Promise<void> => {
+export const getPatients: RequestHandler = async (req, res, next): Promise<void> => {
 
     try {
 
@@ -32,13 +32,13 @@ export const getPatients: RequestHandler = async (req, res): Promise<void> => {
 
     } catch (error){
         
-        res.status(500).json({ message: "Internal server error" });
+        next (error)
     }
 };
 
 
 //Buscar un paciente por id:
-export const getPatientByID: RequestHandler = async (req, res): Promise<void> => {
+export const getPatientByID: RequestHandler = async (req, res, next): Promise<void> => {
     
     try {
 
@@ -72,17 +72,13 @@ export const getPatientByID: RequestHandler = async (req, res): Promise<void> =>
 
     } catch (error){
 
-        res.status(500).json({
-
-            message: "Error trying to get patient information"
-            
-        });
+        next (error)
     }
 };
 
 
 //Crear paciente nuevo por parte del doctor si no existe en db:
-export const createPatient: RequestHandler = async (req, res): Promise<void> => {
+export const createPatient: RequestHandler = async (req, res, next): Promise<void> => {
     
     try {
 
@@ -120,10 +116,7 @@ export const createPatient: RequestHandler = async (req, res): Promise<void> => 
 
     } catch (error) {
 
-        res.status(500).json({
-
-            message: "Unable to create patient"
-        });
+        next (error)
     }
 }
 
