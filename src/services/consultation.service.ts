@@ -3,6 +3,7 @@ import { schemaConsultPatch } from "../schemas/schema.consultation";
 import { conexionDB } from "../config/db";
 import { generateConsultationSummary } from "./llm.service";
 import { RowDataPacket, ResultSetHeader } from "mysql2";
+import { AppError } from "../errors/appError";
 
 
 // Crea una consulta mdica validando que el paciente pertenezca al doctor
@@ -160,4 +161,46 @@ export async function editConsultationSummary(consultation_id: number, doctor_id
 
 
   return { consultation_id, edited_summary };
+}
+
+
+
+//Funcion que permite al doctor firmar la consulta luego de verificar en service y darle status signed:
+
+export async function signConsultationService(consultation_id: number, doctor_id: number) {
+
+    //busca que exista una consulta resumida
+    const [rows]= await conexionDB.query<RowDataPacket[]>(
+         `SELECT id, ai_summary, status FROM consultations WHERE id = ? AND doctor_id = ?`,
+         [consultation_id, doctor_id]
+    )
+
+    const consulta= rows[0];
+
+    //Si no hay consulta o no tiene reusmen tiro error
+    if (!consulta){
+
+        throw new AppError("Consultation not found", 404);
+    }
+
+
+    //Verificamos que no este firmada la consulta sino, no podemos modificarla:
+
+    if (consulta.status === "signed"){
+
+        throw new AppError("Consultation is already signed", 409);
+    }
+
+
+    //Si la consulta resumida no existe no se puede firmar 
+    if (!consulta.ai_summary){
+
+        throw new AppError("AI summary is required to sign the consultation", 400);
+    }
+
+    //Si paso ambos chequeos, actualizo el status a signed y guardo la fecha de firma
+    await conexionDB.query<ResultSetHeader>(
+        `UPDATE consultations SET status = 'signed', signed_at = NOW() WHERE id = ? AND doctor_id = ?`,
+        [consultation_id, doctor_id]
+    );
 }

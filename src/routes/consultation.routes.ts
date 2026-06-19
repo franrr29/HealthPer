@@ -3,8 +3,9 @@
 import { authMiddle } from "../middleware/auth.middleware";
 import { Router } from "express";
 import { createConsultation, getConsultation, getAllConsultations, patchConsultation,
-         transcribeConsultation, summarizeConsultationController, editSummaryController } from "../controllers/consultation.controller";
+         transcribeConsultation, summarizeConsultationController, editSummaryController, signConsultationController } from "../controllers/consultation.controller";
 import { uploadAudio } from "../config/multer";
+
 
 
 const router=Router ();
@@ -18,7 +19,7 @@ router.patch("/consultations/:id", authMiddle, patchConsultation);
 router.post ("/consultations/:id/transcribe", authMiddle, uploadAudio.single ("audio"), transcribeConsultation);
 router.post ("/consultations/:id/summarize", authMiddle, summarizeConsultationController);
 router.patch('/consultations/:id/summary',authMiddle, editSummaryController);
-
+router.post('/consultations/:id/sign', authMiddle, signConsultationController);
 
 
 export default router;
