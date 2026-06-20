@@ -5,6 +5,7 @@ import { generateConsultationSummary } from "./llm.service";
 import { RowDataPacket, ResultSetHeader } from "mysql2";
 import { AppError } from "../errors/appError";
 import { logger } from "../config/logger"
+import { updatePatientMemoryService } from "./memory.service";
 
 
 // Crea una consulta mdica validando que el paciente pertenezca al doctor
