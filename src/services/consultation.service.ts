@@ -4,6 +4,7 @@ import { conexionDB } from "../config/db";
 import { generateConsultationSummary } from "./llm.service";
 import { RowDataPacket, ResultSetHeader } from "mysql2";
 import { AppError } from "../errors/appError";
+import { logger } from "../config/logger"
 
 
 // Crea una consulta mdica validando que el paciente pertenezca al doctor
@@ -165,42 +166,68 @@ export async function editConsultationSummary(consultation_id: number, doctor_id
 
 
 
+
+
 //Funcion que permite al doctor firmar la consulta luego de verificar en service y darle status signed:
 
 export async function signConsultationService(consultation_id: number, doctor_id: number) {
 
     //busca que exista una consulta resumida
-    const [rows]= await conexionDB.query<RowDataPacket[]>(
-         `SELECT id, ai_summary, status FROM consultations WHERE id = ? AND doctor_id = ?`,
-         [consultation_id, doctor_id]
-    )
+    const [rows] = await conexionDB.query<RowDataPacket[]>(
+        `SELECT id, ai_summary, patient_id, status FROM consultations WHERE id = ? AND doctor_id = ?`,
+        [consultation_id, doctor_id]
+    );
 
-    const consulta= rows[0];
+    const consulta = rows[0];
 
-    //Si no hay consulta o no tiene reusmen tiro error
-    if (!consulta){
-
+    //Si no hay consulta o no tiene resumen tiro error
+    if (!consulta) {
         throw new AppError("Consultation not found", 404);
     }
 
-
     //Verificamos que no este firmada la consulta sino, no podemos modificarla:
-
-    if (consulta.status === "signed"){
-
+    if (consulta.status === "signed") {
         throw new AppError("Consultation is already signed", 409);
     }
 
-
-    //Si la consulta resumida no existe no se puede firmar 
-    if (!consulta.ai_summary){
-
+    //Si la consulta resumida no existe no se puede firmar
+    if (!consulta.ai_summary) {
         throw new AppError("AI summary is required to sign the consultation", 400);
     }
 
-    //Si paso ambos chequeos, actualizo el status a signed y guardo la fecha de firma
+    //Si paso ambos chequeos actualizo el status a signed y guardo la fecha de firma
     await conexionDB.query<ResultSetHeader>(
         `UPDATE consultations SET status = 'signed', signed_at = NOW() WHERE id = ? AND doctor_id = ?`,
         [consultation_id, doctor_id]
     );
+
+    //Releo signed_at real desde mysql para el timestamp,
+    //en vez de generarlo de nuevo en JS evita desfasaje por reloj del servidor node
+
+    const [updatedRows] = await conexionDB.query<RowDataPacket[]>(
+        `SELECT signed_at FROM consultations WHERE id = ?`,
+        [consultation_id]
+    );
+    const signed_at = updatedRows[0].signed_at;
+
+    let memoryUpdated = true;
+
+    try {
+        await updatePatientMemoryService(consulta.patient_id, consulta.ai_summary);
+    } catch (error) {
+        memoryUpdated = false;
+        logger.error(`Failed to update patient memory after signing consultation ${consultation_id}: ${(error as Error).message}`);
+    }
+
+    //Despues del catch porque asi me aseguro que este firmada la consulta y no depender de la actualizacion
+    //de la memoria del paciente para firmar la consulta
+    
+    return {
+        message: memoryUpdated
+            ? "Consultation signed successfully"
+            : "Consultation signed successfully, but patient memory update is pending",
+        consultation_id,
+        status: "signed",
+        signed_at
+    };
 }

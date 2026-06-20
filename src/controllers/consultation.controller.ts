@@ -335,8 +335,17 @@ export async function signConsultationController(req: Request, res: Response, ne
 
   try {
 
+     if (!req.user) {
+
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    
+    }
+
+    
     const { id: doctor_id } = req.user;
     const { id: consultation_id } = schemaConsultParams.parse(req.params);
+
 
     //Sin if porque service ya maneja el error si no hay resumen de la consulta o no existe
 
