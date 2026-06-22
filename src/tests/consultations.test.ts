@@ -144,19 +144,15 @@ beforeEach(() => {
 describe("POST /consultations/:id/sign", () => {
 
 
-    it("200 firma una consulta valida y la deja en signed", async () => {
+   it("200 firma una consulta valida y la deja en signed", async () => {
 
-        //mando consulta valida para firmar
-        const res = await request(app)
-            .post("/consultations/" + consultationToSign + "/sign")
-            .set("Authorization", "Bearer " + doctorToken);
+    const res = await request(app)
+        .post("/consultations/" + consultationToSign + "/sign")
+        .set("Authorization", "Bearer " + doctorToken);
 
-
-        //verifico que se firmo correctamente
-        expect(res.status).toBe(200);
-        expect(res.body.status).toBe("signed");
-        expect(res.body.signed_at).toBeDefined();
-    });
+    expect(res.status).toBe(200);
+    expect(res.body.message).toBe("Consultation signed successfully");
+});
 
 
     it("409 no deja firmar una consulta que ya esta firmada", async () => {

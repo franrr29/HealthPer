@@ -1,5 +1,5 @@
 //Recibe info de patient.routes y envia a patient.service data:
-import { RequestHandler } from "express";
+import { NextFunction, RequestHandler, Request, Response } from "express";
 import * as patientService from "../services/patient.service";
 import { schemaPatient } from "../schemas/schema.patient";
 
@@ -211,5 +211,48 @@ export const deletePatient: RequestHandler = async (req, res, next): Promise<voi
     } catch (error){
         
         next (error)
+    }
+}
+
+
+//Funcion que trae la memoria del paciente por parte del doctor con verificacion IDOR de patientmemoryService:
+export const getPatientMemoryController: RequestHandler = async (req, res, next) => {
+
+    try {
+
+        if (!req.user) {
+
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        
+
+        const { id: doctor_id } = req.user;
+        const patient_id = Number(req.params.id);
+
+
+        const memory = await patientService.getPatientMemoryService(patient_id, doctor_id);
+
+
+        if (!memory) {
+
+            res.status(404).json({
+                message: "Patient memory not found"
+            });
+
+            return;
+        }
+
+
+        res.status(200).json({
+
+            message: "Patient memory retrieved successfully",
+            data: memory
+        });
+
+
+    } catch (error) {
+
+        next(error);
     }
 }

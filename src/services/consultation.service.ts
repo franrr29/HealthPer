@@ -131,7 +131,7 @@ export async function summarizeConsultation(consultation_id: number, doctor_id: 
 
    const [saveSummaryResult] = await conexionDB.query<ResultSetHeader>(
 
-    "UPDATE consultations SET ai_summary = ?, status = 'signed' WHERE id = ? AND doctor_id = ?",
+    "UPDATE consultations SET ai_summary = ?, status = 'reviewed' WHERE id = ? AND doctor_id = ?",
     [summaryString, consultation_id, doctor_id]);
 
 

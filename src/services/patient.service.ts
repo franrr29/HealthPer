@@ -1,10 +1,11 @@
 // Recibe datos del controller y ejecuta queries en BD
 //Puse algunas funciones sin TRY /CATCH porque al volver a controller, next relanza el error al errorHandler
 
-import { ResultSetHeader } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { conexionDB } from "../config/db";
 import { Patient } from "../schemas/schema.patient";
 import { AppError } from "../errors/appError";
+
 
 
 // Obtener todos los pacientes del doctor
@@ -116,4 +117,23 @@ export async function deletePatient(id: string, doctor_id: number) {
     );
 
     return result.affectedRows > 0;
+}
+
+
+export async function getPatientMemoryService (patient_id: number, doctor_id: number) {
+
+    // patient_memory no tiene doctor_id, entonces hago un JOIN con
+    //  patients por patient_id para poder filtrar por doctor_id y 
+    // garantizar que el doctor solo ve la memory de sus propios pacientes
+    const [rows] = await conexionDB.query<RowDataPacket[]>(
+        `SELECT pm.*  FROM patient_memory pm JOIN patients p ON pm.patient_id = p.id WHERE pm.patient_id = ? 
+         AND p.doctor_id = ?`,[patient_id, doctor_id]
+    );
+
+    if (rows.length === 0){
+        
+        return null;
+    }
+
+    return rows[0];
 }
