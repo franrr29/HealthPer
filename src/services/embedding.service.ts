@@ -16,9 +16,9 @@ export async function createEmbeddings(chunks: string[]): Promise<number[][]> {
 
     const embeddings: number[][] = [];
 
-    for (const chunks of chunks) {
+    for (const chunk of chunks) {
 
-        const response= await model.embedContent (chunks);
+        const response= await model.embedContent (chunk);
         embeddings.push(response.embedding.values);
     
     }

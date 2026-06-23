@@ -1,11 +1,17 @@
 //Aca creo los chunks y contexto de la historia clinica para el llm y los guardo en bd:
 
-import { RecursiveCharacterTextSplitter  } from "langchain/text_splitter";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 
 
-const splitter = new recursivecharacterTextSplitter({
+const splitter = new RecursiveCharacterTextSplitter({
   chunkSize: 1000,
   chunkOverlap: 200,
 });
 
-const chunks= await splitter.splitText("Chunks for the clinical history context to store in db");
+
+//Funcion para crear los chunks de texto y guardarlos en la base de datos
+export async function chunkText(text: string): Promise<string[]> {
+
+    const chunks = await splitter.splitText(text);
+    return chunks;
+}
