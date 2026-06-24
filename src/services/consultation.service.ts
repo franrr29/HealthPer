@@ -6,6 +6,7 @@ import { RowDataPacket, ResultSetHeader } from "mysql2";
 import { AppError } from "../errors/appError";
 import { logger } from "../config/logger"
 import { updatePatientMemoryService } from "./memory.service";
+import { indexConsultation } from "./indexing.service";
 
 
 // Crea una consulta mdica validando que el paciente pertenezca al doctor
@@ -181,12 +182,10 @@ export async function signConsultationService(consultation_id: number, doctor_id
 
     const consulta = rows[0];
 
-    //Si no hay consulta o no tiene resumen tiro error
     if (!consulta) {
         throw new AppError("Consultation not found", 404);
     }
 
-    //Verificamos que no este firmada la consulta sino, no podemos modificarla:
     if (consulta.status === "signed") {
         throw new AppError("Consultation is already signed", 409);
     }
@@ -196,14 +195,13 @@ export async function signConsultationService(consultation_id: number, doctor_id
         throw new AppError("AI summary is required to sign the consultation", 400);
     }
 
-    //Si paso ambos chequeos actualizo el status a signed y guardo la fecha de firma
     await conexionDB.query<ResultSetHeader>(
         `UPDATE consultations SET status = 'signed', signed_at = NOW() WHERE id = ? AND doctor_id = ?`,
         [consultation_id, doctor_id]
     );
 
     //Releo signed_at real desde mysql para el timestamp,
-    //en vez de generarlo de nuevo en JS evita desfasaje por reloj del servidor node
+    //en vez de generarlo de nuevo en js evita desfasaje por reloj del servidor node
 
     const [updatedRows] = await conexionDB.query<RowDataPacket[]>(
         `SELECT signed_at FROM consultations WHERE id = ?`,
@@ -215,13 +213,26 @@ export async function signConsultationService(consultation_id: number, doctor_id
 
     try {
         await updatePatientMemoryService(consulta.patient_id, consulta.ai_summary);
+
     } catch (error) {
+
         memoryUpdated = false;
         logger.error(`Failed to update patient memory after signing consultation ${consultation_id}: ${(error as Error).message}`);
     }
 
     //Despues del catch porque asi me aseguro que este firmada la consulta y no depender de la actualizacion
     //de la memoria del paciente para firmar la consulta
+
+
+    //Le mando los datos a indexConsultation para que haga el chunking, embedding y guarde en la base de datos:
+    try {
+
+        await indexConsultation (consulta.patient_id, consultation_id, consulta.transcript);
+
+    } catch (error){
+
+        logger.error(`Failed to index consultation ${consultation_id}: ${(error as Error).message}`);
+    }
     
     return {
         message: memoryUpdated
