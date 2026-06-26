@@ -1,3 +1,6 @@
+import { retrieveRelevantChunks } from "./rag.service"
+
+
 //Genera todo el prompt que se exporta con las indicaciones al llm y la estructura a guardar en base datos: 
 
 export const SUMMARY_SYSTEM_PROMPT = `
@@ -37,9 +40,24 @@ Response:
 }
 `
 
-//Recibe todo el transcript en llm.service y genera todo el resumen de la consulta
+//funcion q ue genera el prompt completo para enviar al llm, con el system prompt y los chunks relevantes del paciente
 
-export function buildSummaryPrompt(transcript: string): string {
+export async function buildSummaryPrompt (patient_id: number, transcript: string): Promise <string> {
 
-    return `Please analyze the following medical consultation transcript and extract the clinical information:\n\n${transcript}`
+
+  const relevantChunks = await retrieveRelevantChunks(patient_id, transcript, 5);
+
+  const chunksText = relevantChunks.map(chunk => chunk.text).join("\n\n");
+  
+
+  //mando al llm el contexto del paciente que saco del transcrip con dr y 
+  // los chunks de consultas anteriores
+  return `The following is context from previous consultations of this patient:
+
+  ${chunksText}
+
+  Now analyze the following current consultation transcript and extract the clinical information:
+
+  ${transcript}`;
+
 }
