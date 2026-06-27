@@ -124,7 +124,7 @@ export async function summarizeConsultation(consultation_id: number, doctor_id: 
     }
 
 
-    const summary = await generateConsultationSummary(consultation.transcript);
+    const summary = await generateConsultationSummary(consultation.patient_id, consultation.transcript);
 
 
     const summaryString = JSON.stringify(summary);

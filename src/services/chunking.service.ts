@@ -1,7 +1,6 @@
 //Aca creo los chunks y contexto de la historia clinica para el llm y los guardo en bd:
 
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-
+import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 
 const splitter = new RecursiveCharacterTextSplitter({
   chunkSize: 1000,

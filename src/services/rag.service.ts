@@ -1,8 +1,6 @@
 import { createEmbeddings } from "./embedding.service";
-import {
-  getChunksByPatient,
-  getChunksByFulltext
-} from "../repositories/consultationChunks.repositories";
+import {getChunksByPatient,getChunksByFulltext}
+from "../repositories/consultationChunks.repositories";
 
 // funcion que calcula la similitud coseno entre dos embeddings
 function cosineSimilarity(a: number[], b: number[]): number {

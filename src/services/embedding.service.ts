@@ -1,27 +1,24 @@
-//Crear los embeddings de los chunks de texto y guardarlos en la base de datos
+import { GoogleGenAI } from "@google/genai";
+import { env } from "../config/env";
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { env } from "../env";
+const ai = new GoogleGenAI({ 
+    apiKey: env.GEMINI_API_KEY,
+    httpOptions: { apiVersion: "v1" }
+});
 
-
-
-const genAI = new GoogleGenerativeAI(
-  env.GEMINI_API_KEY);
-
-const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
-
-//Funcion para crear los embeddings de los chunks de texto y guardarlos en la base de datos
+//funcion que recibe chunks y devuelve un array de embeddings, 
+// se usa para indexar las consultas en la base de datos y poder hacer busquedas semanticas
 
 export async function createEmbeddings(chunks: string[]): Promise<number[][]> {
-
     const embeddings: number[][] = [];
 
     for (const chunk of chunks) {
-
-        const response= await model.embedContent (chunk);
-        embeddings.push(response.embedding.values);
-    
+        const response = await ai.models.embedContent({
+            model: "gemini-embedding-001",
+            contents: chunk,
+        });
+        embeddings.push(response.embeddings[0].values);
     }
-    
+
     return embeddings;
 }

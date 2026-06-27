@@ -11,7 +11,7 @@ export async function indexConsultation(patient_id: number, consultation_id: num
 
     if (!text || text.trim() === "") return;
 
-    const chunks = chunkText(text);
+    const chunks = await chunkText(text);
 
     const embeddings = await createEmbeddings(chunks);
 

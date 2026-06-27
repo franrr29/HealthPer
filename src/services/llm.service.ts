@@ -3,16 +3,15 @@ import { env } from "../config/env";
 import { SUMMARY_SYSTEM_PROMPT, buildSummaryPrompt } from "./prompt.service";
 import { consultationSummarySchema } from "../schemas/schema.llmAnswer";
 
+
 //Crear conexion con el LLM:
 const groqLLM= new OpenAI ({
     apiKey: env.GROQ_API_KEY,
     baseURL: "https://api.groq.com/openai/v1" 
 });
 
-
 // Generar resumen con el LLM:
-
-export async function generateConsultationSummary(transcript: string) {
+export async function generateConsultationSummary(patient_id: number, transcript: string) {
 
 
     if (!transcript?.trim()) {
@@ -20,8 +19,8 @@ export async function generateConsultationSummary(transcript: string) {
     }
 
 
-    //genera el resumen con la info de la consulta
-    const prompt = buildSummaryPrompt(transcript);
+    //genera el resumen con la info de la consulta y envia parametros a la funcion del prompt.services
+    const prompt = await buildSummaryPrompt(patient_id, transcript);
 
 
     //defino contexto y y peticion enviada al modelo
