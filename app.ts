@@ -11,7 +11,7 @@ import consultationRouter from "./src/routes/consultation.routes";
 
 const app = express();
 
-// Seguridad: headers HTTP (primero de todo)
+// Seguridad: headers HTTP
 app.use(helmet());
 
 // Middlewares globales
