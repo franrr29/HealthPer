@@ -13,21 +13,21 @@ async function main() {
   try {
     const connection = await conexionDB.getConnection();
 
-    logger.info("Conectado a la base de datos con exito");
+    logger.info("connection to database successful");
 
     // Devuelve la conexin al pool para que pueda reutilizarse
     connection.release();
 
     //Levantar el servidor:
     app.listen(PORT, () => {
-      logger.info(`Servidor corriendo en puerto: ${PORT}`);
+      logger.info(`Server running on port: ${PORT}`);
     });
 
   } catch (error) {
 
     logger.error(
       { error },
-      "Error al conectar con la base de datos"
+      "Error connecting to the database"
     );
 
     process.exit(1); //indica si termino por algun fallo
