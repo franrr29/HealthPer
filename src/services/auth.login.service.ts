@@ -9,6 +9,7 @@ import { RowDataPacket } from "mysql2/promise";
 import { AppError } from "../errors/appError";
 
 
+
 async function loginUser(email: string, password: string) {
 
 
@@ -55,7 +56,13 @@ async function loginUser(email: string, password: string) {
     const token = jwt.sign(
         { id: doctor.id, email: doctor.email },
         env.JWT_SECRET,
-        { expiresIn: "1d" }
+        { expiresIn: "15m" }
+    );
+
+    const refreshToken = jwt.sign(
+        { id: doctor.id, email: doctor.email },
+        env.REFRESH_TOKEN_SECRET,
+        { expiresIn: "7d" }
     );
 
 
@@ -71,7 +78,8 @@ async function loginUser(email: string, password: string) {
 
     return {
         doctor,
-        token
+        token,
+        refreshToken
     };
 
 

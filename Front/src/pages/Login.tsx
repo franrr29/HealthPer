@@ -28,13 +28,13 @@ export default function Login() {
           const response = await api.post("auth/login", {
             email,password});
 
-          login(response.data.data.token);
+          login(response.data.data.token, response.data.data.refreshToken);
           navigate("/dashboard");
 
         } catch (err) {
           // Si la api no devuelve un mensaje usa uno por defecto geenrico
             const message= err.response?.data?.message ?? "Something went wrong";
-            setError(message);;
+            setError(message);
 
         } finally {
           setLoading(false);

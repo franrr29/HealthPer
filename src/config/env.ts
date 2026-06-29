@@ -4,7 +4,8 @@ import { z } from "zod";
 
 export const serverSchema = z.object({
   // servidor
-  PORT: z.coerce.number(), //coerce pasa de string a number
+  PORT: z.coerce.number(),
+   //coerce pasa de string a number
 
   // Base de datos
   DB_HOST: z.string(),
@@ -20,6 +21,7 @@ export const serverSchema = z.object({
 
   // Seguridad
   JWT_SECRET: z.string().min(5),
+  REFRESH_TOKEN_SECRET: z.string().min(5),
 
 });
 

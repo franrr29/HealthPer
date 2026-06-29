@@ -3,6 +3,16 @@ import registerDoc from "../services/auth.service";
 import loginUser from "../services/auth.login.service";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env";
+
+
+
+interface tokenPayload {
+    id: number;
+    email: string;
+}
+
+
+
 //Funcion para capturar datos del front y dirigir a auth.service:
 
 async function registerUser (req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -93,18 +103,16 @@ export function refreshToken(req: Request, res: Response): void {
 
         const payload = jwt.verify(
             refreshToken,
-            env.JWT_SECRET
+            env.REFRESH_TOKEN_SECRET
         );
 
 
         // Crear nuevo access token
 
         const newAccessToken = jwt.sign(
-            payload,
+            { id: (payload as tokenPayload).id, email: (payload as tokenPayload).email },
             env.JWT_SECRET,
-            {
-                expiresIn: "15m"
-            }
+            { expiresIn: "15m" }
         );
 
 
