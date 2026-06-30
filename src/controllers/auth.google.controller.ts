@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env";
 
+
 export function handleGoogleCallback(req: Request, res: Response) {
 
     // Passport ya valido al usuario y lo puso en req.user
@@ -20,8 +21,17 @@ export function handleGoogleCallback(req: Request, res: Response) {
     const token = jwt.sign(
         { id: user.id, email: user.email, role: user.role },
         env.JWT_SECRET,
-        { expiresIn: "1d" }
+        { expiresIn: "15m" }
     );
 
-    res.status(200).json({ token });
+    //Genera un refresh token igual que en el login normal
+
+    const refreshToken = jwt.sign(
+        { id: user.id, email: user.email, role: user.role },
+        env.REFRESH_TOKEN_SECRET,
+        { expiresIn: "7d" }
+    )
+
+    // Redirige al frontend con los tokens como query params
+    res.redirect(`${env.FRONTEND_URL}/auth/callback?token=${token}&refreshToken=${refreshToken}`);
 }

@@ -54,13 +54,13 @@ async function loginUser(email: string, password: string) {
 
     //Si existe en base de datos firmo con JWT:
     const token = jwt.sign(
-        { id: doctor.id, email: doctor.email },
+        { id: doctor.id, email: doctor.email, role: doctor.role },
         env.JWT_SECRET,
         { expiresIn: "15m" }
     );
 
     const refreshToken = jwt.sign(
-        { id: doctor.id, email: doctor.email },
+        { id: doctor.id, email: doctor.email, role: doctor.role },
         env.REFRESH_TOKEN_SECRET,
         { expiresIn: "7d" }
     );

@@ -17,11 +17,15 @@ export const serverSchema = z.object({
   GOOGLE_CLIENT_SECRET: z.string(),
   GROQ_API_KEY: z.string().min(10),
   GEMINI_API_KEY: z.string (). min (10),
+
   
 
   // Seguridad
   JWT_SECRET: z.string().min(5),
   REFRESH_TOKEN_SECRET: z.string().min(5),
+
+  //ruta al front
+  FRONTEND_URL: z.string().url(),
 
 });
 

@@ -65,6 +65,18 @@ export default function Login() {
       <Button type="submit" disabled={loading}>
         {loading ? "Logging in..." : "Login"}
       </Button>
+
+
+      {/* Boton para login con google */}
+      <Button
+        type="button"
+        onClick={() => {
+          window.location.href = "http://localhost:4000/auth/google";
+        }}
+      >
+        Login with Google
+       
+      </Button>
     </form>
   );
 }
