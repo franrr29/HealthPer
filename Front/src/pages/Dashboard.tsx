@@ -1,9 +1,28 @@
+import { useQuery } from "@tanstack/react-query"
+import { getPatients } from "@/services/patients.service"
+
 
 export default function Dashboard() {
+
+  const { data: patients, isLoading, error } = useQuery({
+    queryKey: ["patients"],
+    queryFn: getPatients,
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error instanceof Error ? error.message : "Unknown error"}</div>;
+  }
+
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
-      <p className="text-muted-foreground mt-2">Welcome to HealthPer</p>
+    <div>
+      <h1>Dashboard</h1>
+      <h2>Total patients</h2>
+      <p>{patients?.length ?? 0}</p>
     </div>
   )
+
 }

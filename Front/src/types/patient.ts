@@ -8,3 +8,4 @@ export type Patient = {
     national_id: string;
     phone: string;
 }
+

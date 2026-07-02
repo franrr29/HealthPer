@@ -11,7 +11,7 @@ const AuthContext = createContext<AuthContextType | null>(null)
 //componente que provee el contexto a los componentes hijos
 export default function AuthProvider({children}: {children: React.ReactNode}) {
 
-    const [token, setToken] = useState<string | null>(null);
+    const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
     const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
     function login(newToken: string, newRefreshToken: string) {
