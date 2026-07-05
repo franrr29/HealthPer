@@ -1,6 +1,7 @@
 
 
 //funcion para formatear la fecha en formato dd/mm/yyyy
+
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
   const day = String(date.getDate()).padStart(2, "0");

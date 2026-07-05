@@ -38,3 +38,23 @@ export async function getAllConsultations(patient_id: number): Promise<Consultat
     }
 }
 
+// CRUD DE PACIENTES (para admin)
+
+//crear un paciente nuevo:
+export async function createPatient(patientData: Omit<Patient, "id">): Promise<Patient> {
+
+    const response = await api.post("/patients", patientData);
+
+    return response.data.patient;
+
+}
+
+
+//actualizar un paciente existente:
+
+export async function updatePatient(id: number, patientData: Partial<Omit<Patient, "id">>): Promise<string> {
+
+    const response = await api.patch(`/patients/${id}`, patientData);
+
+    return response.data.message;
+}
