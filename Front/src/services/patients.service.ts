@@ -36,7 +36,9 @@ export async function getAllConsultations(patient_id: number): Promise<Consultat
         }
         throw error;
     }
-}
+};
+
+
 
 // CRUD DE PACIENTES (para admin)
 
@@ -47,7 +49,7 @@ export async function createPatient(patientData: Omit<Patient, "id">): Promise<P
 
     return response.data.patient;
 
-}
+};
 
 
 //actualizar un paciente existente:
@@ -57,4 +59,14 @@ export async function updatePatient(id: number, patientData: Partial<Omit<Patien
     const response = await api.patch(`/patients/${id}`, patientData);
 
     return response.data.message;
-}
+};
+
+
+//borrar un paciente existente:
+
+export async function deletePatient(id: number): Promise<string> {
+
+    const response = await api.delete(`/patients/${id}`);
+
+    return response.data.message;
+};

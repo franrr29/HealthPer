@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { formatDate } from "@/utils/format";
 
 
+
 //el tipado viene de patient.ts desde el service y se propaga a todo el componente
 export default function Patients() {
 
@@ -39,6 +40,8 @@ export default function Patients() {
                     </Link>
                 </div>
             ))}
+
+            <Link to="/patients/new">Create New Patient</Link>
         </div>
     );
 }

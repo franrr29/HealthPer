@@ -7,6 +7,8 @@ import AuthCallback from "@/pages/AuthCallback"
 import AppLayout from "@/layouts/AppLayout"
 import Patients from "@/pages/Patients"
 import PatientDetails from "@/pages/PatientDetails"
+import { CreatePatient } from "@/pages/CreatePatient"
+import { EditPatient } from "@/pages/EditPatient"
 
 export default function App() {
   return (
@@ -22,6 +24,8 @@ export default function App() {
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/patients" element={<Patients />} />
+              <Route path="/patients/new" element={<CreatePatient />} />
+              <Route path="/patients/:id/edit" element={<EditPatient />} />
               <Route path="/patients/:id" element={<PatientDetails />} />
             </Route>
           </Route>

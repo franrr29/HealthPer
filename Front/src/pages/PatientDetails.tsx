@@ -1,20 +1,32 @@
 import { useQuery } from "@tanstack/react-query";
 import { getPatientById, getAllConsultations } from "@/services/patients.service";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { formatDate } from "@/utils/format";
+import { useDeletePatientMutation } from "@/hooks/usePatientMutation";
 
+
+//component que muestra detalles del paciente:
 export default function PatientDetails() {
+
   const { id } = useParams<{ id: string }>();
 
   const patientId = Number(id);
 
   //para traer la info del paciente por su id:
-  const {data: patient,isLoading,error,
-  } = useQuery({
+  const {data: patient,isLoading,error,} = useQuery({
     queryKey: ["patient", patientId],
     queryFn: () => getPatientById(patientId),
     enabled: !!id,
   });
+
+
+
+  //para eliminar un paciente llamoo al hook de useDeletePatientMutation
+  const deleteMutation = useDeletePatientMutation();
+
+
+  //para navegar a otra pagina despues de eliminar el paciente
+  const navigate= useNavigate();
 
   //para traer todas las consultas del paciente por su id:
   const {data: consultations,isLoading: consultationsLoading,error: consultationsError,} = useQuery({
@@ -48,17 +60,43 @@ export default function PatientDetails() {
       <p>Phone: {patient.phone}</p>
 
       <h2>Consultations</h2>
+
        {consultations && consultations.length > 0 ? (
+
         <ul>
+
           {consultations.map((consultation) => (
+
             <li key={consultation.id}>
+
               {formatDate(consultation.created_at)} - {consultation.status}
+
             </li>
+
           ))}
+
         </ul>
       ) : (
         <p>No consultations found for this patient.</p>
       )}
+
+      <Link to={`/patients/${patient.id}/edit`}>Edit Patient</Link>
+
+      <button onClick={() => {
+
+        if (window.confirm("Are you sure you want to delete this patient?")) {
+
+          deleteMutation.mutate(patient.id, {
+             //navego a patients asi no queda en la pagina de detalles del paciente que ya no existe
+            onSuccess: () => {
+              navigate("/patients");
+            }
+          });
+          
+        } 
+      }}>Delete Patient</button>
+
+
     </div>
   );
 }

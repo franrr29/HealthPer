@@ -9,3 +9,6 @@ export type Patient = {
     phone: string;
 }
 
+export type PatientFormProps = {
+    patient?: Patient;
+}
