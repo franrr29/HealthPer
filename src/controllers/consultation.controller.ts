@@ -322,9 +322,14 @@ export async function editSummaryController (req: Request, res: Response, next: 
       return res.status(404).json({ message: "Consultation not found" });
     }
 
-    return res.status(200).json({ message: "Summary edited successfully", data: result });
+    return res.status(200).json({ 
+      
+      message: "Summary edited successfully", 
+      
+      data: result });
 
   } catch (error) {
+    
     next(error);
   }
 }

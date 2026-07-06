@@ -20,7 +20,7 @@ export default function PatientDetails() {
   });
 
 
-  //traer la 
+  //traer la memoria del paciente por su id y doctor_id, con verificacion de IDOR:
   const {data: memory,isLoading: memoryLoading,error: memoryError,} = useQuery({
     queryKey: ["memory", patientId],
     queryFn: () => patientMemory(patientId),
