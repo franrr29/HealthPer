@@ -70,3 +70,13 @@ export async function deletePatient(id: number): Promise<string> {
 
     return response.data.message;
 };
+
+
+
+//traer la memoria de un paciente por su id, para ver en detalle:
+export async function patientMemory (patient_id: number): Promise<string> {
+
+    const response = await api.get(`/patients/${patient_id}/memory`);
+
+    return response.data.data;
+}

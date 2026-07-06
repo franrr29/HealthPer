@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getPatientById, getAllConsultations } from "@/services/patients.service";
+import { getPatientById, getAllConsultations,patientMemory } from "@/services/patients.service";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { formatDate } from "@/utils/format";
 import { useDeletePatientMutation } from "@/hooks/usePatientMutation";
@@ -20,6 +20,13 @@ export default function PatientDetails() {
   });
 
 
+  //traer la 
+  const {data: memory,isLoading: memoryLoading,error: memoryError,} = useQuery({
+    queryKey: ["memory", patientId],
+    queryFn: () => patientMemory(patientId),
+    enabled: !!id,
+  });
+
 
   //para eliminar un paciente llamoo al hook de useDeletePatientMutation
   const deleteMutation = useDeletePatientMutation();
@@ -35,6 +42,8 @@ export default function PatientDetails() {
     enabled: !!id,
   });
 
+
+
   if (isLoading || consultationsLoading) {
     return <div>Loading...</div>;
   }
@@ -43,8 +52,12 @@ export default function PatientDetails() {
     return <div>Error loading patient details</div>;
   }
 
-  if (consultationsError) {
+  if (consultationsError ) {
     return <div>Error loading consultations</div>;
+  }
+
+  if (memoryError) {
+    return <div>Error loading memory</div>;
   }
 
   if (!patient) {
@@ -61,6 +74,19 @@ export default function PatientDetails() {
 
       <h2>Consultations</h2>
 
+
+       {memory && (
+
+          <div>
+
+            <h3>Patient Memory</h3>
+
+            <p>{memory}</p>
+
+          </div>
+        )}
+
+
        {consultations && consultations.length > 0 ? (
 
         <ul>
@@ -71,6 +97,10 @@ export default function PatientDetails() {
 
               {formatDate(consultation.created_at)} - {consultation.status}
 
+
+              { consultation.ai_summary && <p>AI Summary: {consultation.ai_summary}</p>}
+
+            
             </li>
 
           ))}
