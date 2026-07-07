@@ -12,10 +12,7 @@ function cosineSimilarity(a: number[], b: number[]): number {
 }
 
 //recupera los chunks mas relevantes de un paciente
-export async function retrieveRelevantChunks(
-  patient_id: number,
-  queryText: string,
-  topK: number
+export async function retrieveRelevantChunks(patient_id: number,queryText: string,topK: number
 ): Promise<{ chunk_index: number; text: string }[]> {
 
   
