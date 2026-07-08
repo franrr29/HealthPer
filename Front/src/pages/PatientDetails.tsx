@@ -3,6 +3,7 @@ import { getPatientById, getAllConsultations,patientMemory } from "@/services/pa
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { formatDate } from "@/utils/format";
 import { useDeletePatientMutation } from "@/hooks/usePatientMutation";
+import { createConsultation } from "@/services/consultations.service";
 
 
 //component que muestra detalles del paciente:
@@ -125,6 +126,23 @@ export default function PatientDetails() {
           
         } 
       }}>Delete Patient</button>
+
+
+      
+     <button onClick={() => {
+      createConsultation(patient.id)
+      .then((newConsultation) => {
+        //navego a la pagina de la nueva consulta creada
+        navigate(`/patients/${patient.id}/consultations/${newConsultation.id}`)
+      })
+      .catch((error) => {
+        console.error("Error creating consultation:", error);
+        alert("Error creating consultation");
+      });
+  }}
+>
+  Create New Consultation
+</button>
 
 
     </div>
