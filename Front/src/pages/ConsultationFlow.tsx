@@ -48,7 +48,7 @@ export default function ConsultationFlow() {
     return (
 
         <div>
-            <h1>Consultation Flow</h1>
+            <h1>Consultation</h1>
             <p>Patient ID: {patientIdNumber}</p>
             <p>Consultation ID: {consultationIdNumber}</p>
 
@@ -61,7 +61,7 @@ export default function ConsultationFlow() {
 
 
 
-        <button onClick={startRecording} disabled={isRecording}>
+       <button onClick={startRecording} disabled={isRecording || isTranscribing}>
             Start recording consultation
         </button>
 
@@ -97,7 +97,7 @@ export default function ConsultationFlow() {
                        }}
                    >
                        Sign Consultation
-                       
+
                    </button>
                )
            )
@@ -114,7 +114,7 @@ export default function ConsultationFlow() {
 
                 .then(summary => {
 
-                    setSummary(summary);
+                    setSummary(JSON.stringify(summary, null, 2)); 
                     setLoadingSummary(false);
                 })
 

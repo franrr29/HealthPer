@@ -65,7 +65,7 @@ export default function PatientDetails() {
     return <div>Patient not found</div>;
   }
 
-  
+  console.log(JSON.stringify(memory, null, 2))
 
   return (
     <div>
@@ -80,14 +80,17 @@ export default function PatientDetails() {
 
        {memory && (
 
-          <div>
+    <div>
 
-            <h3>Patient Memory</h3>
-
-            <p>{memory}</p>
-
-          </div>
-        )}
+        <h3>Patient Memory</h3>
+        <p>Summary: {memory.master_summary?.summary}</p>
+        <p>Follow Up: {memory.master_summary?.follow_up}</p>
+        <p>Chronic Diseases: {memory.chronic_diseases?.join(", ") || "None"}</p>
+        <p>Allergies: {memory.allergies?.join(", ") || "None"}</p>
+        <p>Medications: {memory.medications?.join(", ") || "None"}</p>
+        <p>Recurrent Symptoms: {memory.recurrent_symptoms?.join(", ") || "None"}</p>
+    </div>
+)}
 
 
        {consultations && consultations.length > 0 ? (
@@ -99,10 +102,8 @@ export default function PatientDetails() {
             <li key={consultation.id}>
 
               {formatDate(consultation.created_at)} - {consultation.status}
-
-
-              { consultation.ai_summary && <p>AI Summary: {consultation.ai_summary}</p>}
-
+              
+              { consultation.ai_summary && <p>AI Summary: {consultation.ai_summary.summary}</p>}
             
             </li>
 

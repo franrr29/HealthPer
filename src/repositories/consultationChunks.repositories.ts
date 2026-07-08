@@ -45,7 +45,7 @@ export async function getChunksByPatient(
     id: row.id,
     chunk_index: row.chunk_index,
     text: row.text,
-    embedding: JSON.parse(row.embedding)
+    embedding: typeof row.embedding === "string" ? JSON.parse(row.embedding) : row.embedding
   }));
 }
 
