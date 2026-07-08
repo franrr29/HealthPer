@@ -1,6 +1,6 @@
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
-import { useParams } from "react-router-dom";
-import { transcribeAudio, summarizeConsultation } from "@/services/consultations.service";
+import { useParams, useNavigate } from "react-router-dom";
+import { transcribeAudio, summarizeConsultation, signConsultation } from "@/services/consultations.service";
 import { useEffect, useState } from "react";
 import EditSummary from "./EditSummary";
 
@@ -17,6 +17,11 @@ export default function ConsultationFlow() {
     const [loadingSummary, setLoadingSummary] = useState(false);
     const [summaryError, setSummaryError] = useState<string | null>(null);
     const { isRecording, audioBlob, startRecording, stopRecording, error } = useAudioRecorder();
+    const [signing, setSigning] = useState(false);
+    const [signError, setSignError] = useState<string | null>(null);
+
+
+    const navigate = useNavigate();
     
 
     //se ejecuta al parar de grabar, para enviar el audio a la api y transcribirlo
@@ -67,6 +72,38 @@ export default function ConsultationFlow() {
         </button>
 
 
+       {
+           summary && (
+               signing ? (
+                   <p>Signing consultation...</p>
+               ) : (
+                   <button
+                       onClick={() => {
+                           // Firma la consulta y la guarda en la base de datos
+                           setSigning(true);
+       
+                           signConsultation(consultationIdNumber)
+                               .then(() => {
+                                   alert("Consultation signed successfully");
+                                   navigate(`/patients/${patientId}`);
+                               })
+                               .catch((err) => {
+                                   console.error("Error signing consultation:", err);
+                                   setSignError("Error signing consultation");
+                               })
+                               .finally(() => {
+                                   setSigning(false);
+                               });
+                       }}
+                   >
+                       Sign Consultation
+                       
+                   </button>
+               )
+           )
+       }
+       
+
 
        { transcription && !loadingSummary && !summary &&
 
@@ -76,16 +113,22 @@ export default function ConsultationFlow() {
             summarizeConsultation(consultationIdNumber)
 
                 .then(summary => {
+
                     setSummary(summary);
                     setLoadingSummary(false);
                 })
 
                 .catch(err => {
+
                     console.error('Error summarizing consultation:', err);
                     setSummaryError('Error summarizing consultation');
                     setLoadingSummary(false);
                 });
+
         }}>Summarize Consultation</button>}
+
+
+
 
         {error && <p style={{ color: 'red' }}>{error}</p>}
 
@@ -104,6 +147,10 @@ export default function ConsultationFlow() {
                 <EditSummary consultationId={consultationIdNumber} summary={summary} />
             </div>
         )}
+
+        {signing && <p>Signing consultation...</p>}
+
+        {signError && <p style={{ color: 'red' }}>{signError}</p>}
          </div>
     )
 }
