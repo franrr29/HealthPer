@@ -29,7 +29,7 @@ export default function PatientDetails() {
   });
 
 
-  //para eliminar un paciente llamoo al hook de useDeletePatientMutation
+  //para eliminar un paciente llamoo al hook de usedeletepatientMut
   const deleteMutation = useDeletePatientMutation();
 
 
@@ -64,6 +64,8 @@ export default function PatientDetails() {
   if (!patient) {
     return <div>Patient not found</div>;
   }
+
+  
 
   return (
     <div>
