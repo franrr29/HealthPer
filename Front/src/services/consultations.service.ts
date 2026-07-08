@@ -41,13 +41,14 @@ export async function signConsultation(consultation_id: number){
 
 //funcion para enviar el audio a whisper.service:
 
-export async function transcribeAudio(audioBuffer: Buffer){
+export async function transcribeAudio(consultation_id: number, audioBuffer: File){
 
-    const response = await api.post(`/consultations/transcribe`, audioBuffer, {
-        headers: {
-            'Content-Type': 'audio/webm'
-        }
-    });
+    //para enviar el audio a la api, se crea un FormData y se agrega el audio como archivo
+    const formData = new FormData();
+    formData.append('audio', audioBuffer);
+
+    const response = await api.post(`/consultations/${consultation_id}/transcribe`, formData);
 
     return response.data.transcription;
+   
 }
