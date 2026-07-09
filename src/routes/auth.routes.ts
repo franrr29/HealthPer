@@ -1,13 +1,16 @@
 //Archivo con rutas e imports para registrar, login, etc:
 
 import { Router, RequestHandler } from "express";
-import { registerUser, logginUser, logout, refreshToken } from "../controllers/auth.controller";
+import {tryDemo, registerUser, logginUser, logout, refreshToken } from "../controllers/auth.controller";
+
 
 
 const router = Router();
 
 
 //ruta para registrar usuarios y redirige a controllers
+
+router.post("/try-demo", tryDemo as RequestHandler);
 
 router.post("/register", registerUser as RequestHandler);
 

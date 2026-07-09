@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import registerDoc from "../services/auth.service";
 import loginUser from "../services/auth.login.service";
+import { tryDemoService } from "../services/auth.login.service";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env";
 
@@ -11,6 +12,29 @@ interface tokenPayload {
     email: string;
 }
 
+
+//Funcion para usar el TryDemo del front y logear usuario demo:
+
+async function tryDemo(req: Request, res: Response, next: NextFunction): Promise<void> {
+
+    try {
+
+        const demoUser= await tryDemoService();
+
+
+        res.status(200).json({
+
+            success: true,
+
+            message: "Demo user logged successfully",
+
+            data: demoUser});
+
+    } catch (error) {
+
+        next (error)
+    }
+}
 
 
 //Funcion para capturar datos del front y dirigir a auth.service:
@@ -136,4 +160,4 @@ export function refreshToken(req: Request, res: Response): void {
 }
 
 
-export { registerUser, logginUser };
+export { tryDemo, registerUser, logginUser };

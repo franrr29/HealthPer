@@ -77,6 +77,35 @@ export default function Login() {
         Login with Google
        
       </Button>
+
+
+      <button
+
+        disabled={loading}
+        onClick={async () => {
+
+          try {
+            setLoading(true);
+            setError(null);
+      
+            const response = await api.post("auth/try-demo");
+            login(response.data.data.token, response.data.data.refreshToken);
+            navigate("/dashboard");
+
+          } catch (err) {
+            const message =err.response?.data?.message ?? "Something went wrong";
+            setError(message);
+            
+          } finally {
+            setLoading(false);
+          }
+        }}
+      >
+        {loading ? "Loading..." : "Try Demo"}
+
+      </button>
+      
+      
     </form>
   );
 }
