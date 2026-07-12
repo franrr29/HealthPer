@@ -5,6 +5,9 @@ import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { conexionDB } from "../config/db";
 import { Patient } from "../schemas/schema.patient";
 import { AppError } from "../errors/appError";
+import { retrieveRelevantChunks } from "./rag.service";
+import { buildAskPrompt } from "./prompt.service";
+import { generateTextAnswer } from "./llm.service";
 
 
 
@@ -136,4 +139,32 @@ export async function getPatientMemoryService (patient_id: number, doctor_id: nu
     }
 
     return rows[0];
+}
+
+
+
+
+//recibe la pregunta del dr y trae los chunks relevantes del paciente usando la funcion retrieveRelevantChunks
+export async function askPatientMemoryService (patient_id: number, doctor_id: number, question: string): Promise<string> {
+
+
+    const patient= await getPatientByID (doctor_id, patient_id);
+
+    if (!patient){
+
+        throw new AppError ("Patient not found", 404);
+    }
+
+    //traer los chunks relevantes del paciente usando la funcion retrieveRelevantChunks
+    const retrievedChunks = await retrieveRelevantChunks(patient_id, question, 5);
+
+    if (retrievedChunks.length === 0) {
+
+        return "There isn't enough information in this patient's history yet to answer that question.";
+    }
+
+    //envio el prompt al llm y traigo la respuesta en texto plano
+    const prompt = buildAskPrompt(question, retrievedChunks);
+
+    return await generateTextAnswer(prompt);
 }

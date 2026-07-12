@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import api from "@/services/api";
 
 
@@ -12,13 +11,13 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth()!;
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
-      <div className="bg-white rounded-2xl shadow-md p-6 border border-[#E2E8F0] w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-[#2D3748] mb-6">HealthPer</h1>
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="bg-card rounded-2xl shadow-md p-6 border border-border w-full max-w-sm">
+        <h1 className="text-2xl font-bold text-foreground mb-6">HealthPer</h1>
 
         {/* form del front qe envia email y passw y trae token si hay y navega a dashboard */}
         <form
@@ -51,7 +50,7 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
-              className="w-full px-4 py-2.5 rounded-xl border border-[#E2E8F0] text-[#2D3748] placeholder-[#A0AEC0] focus:outline-none focus:border-[#3B9ECF]"
+              className="w-full px-4 py-2.5 rounded-xl border border-border text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary"
             />
           </div>
 
@@ -61,16 +60,16 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
-              className="w-full px-4 py-2.5 rounded-xl border border-[#E2E8F0] text-[#2D3748] placeholder-[#A0AEC0] focus:outline-none focus:border-[#3B9ECF]"
+              className="w-full px-4 py-2.5 rounded-xl border border-border text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary"
             />
           </div>
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && <p className="text-sm text-destructive">{error}</p>}
 
           <button
             type="submit"
             disabled={loading}
-            className="bg-[#3B9ECF] text-white rounded-xl px-5 py-2.5 shadow-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed w-full"
+            className="bg-primary text-primary-foreground rounded-xl px-5 py-2.5 shadow-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed w-full"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
@@ -81,7 +80,7 @@ export default function Login() {
             onClick={() => {
               window.location.href = "http://localhost:4000/auth/google";
             }}
-            className="bg-white text-[#2D3748] rounded-xl px-5 py-2.5 border border-[#E2E8F0] shadow-sm font-medium w-full"
+            className="bg-card text-foreground rounded-xl px-5 py-2.5 border border-border shadow-sm font-medium w-full"
           >
             Login with Google
           </button>
@@ -105,7 +104,7 @@ export default function Login() {
                 setLoading(false);
               }
             }}
-            className="bg-white text-[#2D3748] rounded-xl px-5 py-2.5 border border-[#E2E8F0] shadow-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed w-full"
+            className="bg-card text-foreground rounded-xl px-5 py-2.5 border border-border shadow-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed w-full"
           >
             {loading ? "Loading..." : "Try Demo"}
           </button>

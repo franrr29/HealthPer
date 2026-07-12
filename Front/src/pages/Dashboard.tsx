@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { getPatients } from "@/services/patients.service";
-import { getDoctorData } from "@/services/doctor.service";
+import { getDoctorData, getDoctorStats } from "@/services/doctor.service";
 
+//mostrar todo el dashboard del doctor con sus datos y estadisticas y pacientes
 export default function Dashboard() {
 
   //datos del doctor:
@@ -11,64 +12,118 @@ export default function Dashboard() {
   });
 
   //datos de los pacientes:
-  const { data: patients, isLoading, error } = useQuery({
+  const { data: patients, isLoading: isPatientsLoading, error: patientsError } = useQuery({
     queryKey: ["patients"],
     queryFn: getPatients,
   });
 
-  const initials =
-    doctorData?.name
-      ?.split(" ")
-      .slice(0, 2)
-      .map((name) => name[0])
-      .join("")
-      .toUpperCase() || "DR";
+  //estadisticas del doctor:
+  const { data: doctorStats, isLoading: isDoctorStatsLoading, error: doctorStatsError } = useQuery({
+    queryKey: ["doctorStats"],
+    queryFn: getDoctorStats,
+  });
 
-  if (isLoading || isDoctorLoading) {
+  if (isPatientsLoading || isDoctorLoading || isDoctorStatsLoading) {
     return <div>Loading...</div>;
   }
 
-  if (error || doctorError) {
-    return (
-      <div>
-        Error:{" "}
-        {(error || doctorError) instanceof Error
-          ? (error || doctorError).message
-          : "Unknown error"}
-      </div>
-    );
-  }
+  const error = patientsError || doctorError || doctorStatsError;
+
+  if (error) {
+     return <div>Error: {error.message}</div>;
+    }
 
   return (
     <div>
-      <div className="bg-white rounded-2xl shadow-md border border-[#E2E8F0] p-6 mb-6">
-        <p className="text-sm text-[#718096] mb-4">Welcome back</p>
+      <div className="bg-card rounded-2xl shadow-md border border-border p-6 mb-6">
+        <p className="text-sm text-muted-foreground mb-4">Welcome back</p>
 
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-sky-100 flex items-center justify-center text-sky-700 font-bold text-lg">
-            {initials}
-          </div>
+          <img
+            src="/doctor.png"
+            alt={doctorData?.name || "Doctor"}
+            className="w-14 h-14 rounded-full object-cover"
+          />
 
           <div>
-            <h1 className="text-2xl font-bold text-[#2D3748]">
+            <h1 className="text-2xl font-bold text-foreground">
               {doctorData?.name}
             </h1>
 
-            <p className="text-[#718096]">
+            <p className="text-muted-foreground">
               {doctorData?.specialty}
             </p>
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-md p-6 border border-[#E2E8F0] w-fit">
-        <p className="text-sm font-medium text-[#718096] uppercase tracking-wide mb-1">
-          Total patients
+      {/* cards con los numeros del doctor */}
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
+
+        <div className="bg-card rounded-2xl shadow-md p-6 border border-border flex-1">
+          <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-1">
+            Total patients
+          </p>
+
+          <p className="text-2xl font-bold text-foreground">
+            {patients?.length ?? 0}
+          </p>
+        </div>
+
+        <div className="bg-card rounded-2xl shadow-md p-6 border border-border flex-1">
+          <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-1">
+            Total consultations
+          </p>
+
+          <p className="text-2xl font-bold text-foreground">
+            {doctorStats?.totalConsultations ?? 0}
+          </p>
+        </div>
+
+        <div className="bg-card rounded-2xl shadow-md p-6 border border-border flex-1">
+          <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-1">
+            Pending drafts
+          </p>
+
+          <p className="text-2xl font-bold text-foreground">
+            {doctorStats?.pendingDrafts ?? 0}
+          </p>
+        </div>
+
+      </div>
+
+      {/* ultimas 3 consultas */}
+      <div className="bg-card rounded-2xl shadow-md p-6 border border-border">
+        <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-4">
+          Recent consultations
         </p>
 
-        <p className="text-2xl font-bold text-[#2D3748]">
-          {patients?.length ?? 0}
-        </p>
+        {doctorStats?.recentConsultations.length === 0 ? (
+          <p className="text-muted-foreground">No consultations yet</p>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {doctorStats?.recentConsultations.map((consultation) => (
+              <div
+                key={consultation.id}
+                className="flex items-center justify-between border border-border rounded-2xl p-4"
+              >
+                <div>
+                  <p className="font-medium text-foreground">
+                    {consultation.patient_name}
+                  </p>
+
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(consultation.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+
+                <span className="text-sm font-medium text-primary uppercase">
+                  {consultation.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

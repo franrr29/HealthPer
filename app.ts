@@ -8,6 +8,8 @@ import googleAuthRouter from "./src/routes/auth.google.routes";
 import { errorHandler } from "./src/middleware/errorHandler";
 import patientRouter from "./src/routes/patient.routes";
 import consultationRouter from "./src/routes/consultation.routes";
+import doctorRouter from "./src/routes/doctor.routes";
+
 
 const app = express();
 
@@ -31,6 +33,7 @@ app.use("/auth", authRouter);
 app.use("/auth", googleAuthRouter);
 app.use("/patients", patientRouter);
 app.use("/", consultationRouter);
+app.use("/doctor", doctorRouter);
 
 // ErrorHandler
 app.use(errorHandler);

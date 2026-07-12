@@ -1,9 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
-import { getPatientById, getAllConsultations,patientMemory } from "@/services/patients.service";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { getPatientById, getAllConsultations, patientMemory, askPatientInfo } from "@/services/patients.service";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { formatDate } from "@/utils/format";
 import { useDeletePatientMutation } from "@/hooks/usePatientMutation";
+import type { ChatMessage } from "@/types/patient";
 import { createConsultation } from "@/services/consultations.service";
+import { useState } from "react";
 
 
 //component que muestra detalles del paciente:
@@ -12,6 +14,17 @@ export default function PatientDetails() {
   const { id } = useParams<{ id: string }>();
 
   const patientId = Number(id);
+
+  const [question, setQuestion] = useState<string>("");
+
+  //controla si se muestra el modal de confirmacion de borrado
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  //error al crear una consulta nueva
+  const [createError, setCreateError] = useState<string | null>(null);
+
+  //array de mensajes
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
   //para traer la info del paciente por su id:
   const {data: patient,isLoading,error,} = useQuery({
@@ -22,11 +35,21 @@ export default function PatientDetails() {
 
 
   //traer la memoria del paciente por su id y doctor_id, con verificacion de IDOR:
-  const {data: memory,isLoading: memoryLoading,error: memoryError,} = useQuery({
+  const {data: memory,error: memoryError,} = useQuery({
     queryKey: ["memory", patientId],
     queryFn: () => patientMemory(patientId),
     enabled: !!id,
   });
+
+
+  //mutation para preguntar a la IA sobre el paciente y guardar el par pregunta-respuesta en el chat:
+  const askMutation = useMutation({
+  mutationFn: (question: string) => askPatientInfo(patientId, question),
+  onSuccess: (answer, question) => {
+    setChatMessages((prevMessages) => [...prevMessages, { question, answer }]);
+    setQuestion("");
+  },
+});
 
 
   //para eliminar un paciente llamoo al hook de usedeletepatientMut
@@ -44,110 +67,229 @@ export default function PatientDetails() {
   });
 
 
-
-  if (isLoading || consultationsLoading) {
-    return <div>Loading...</div>;
+  //borra el paciente y navega a la lista
+  function handleDelete() {
+    deleteMutation.mutate(patient!.id, {
+      onSuccess: () => {
+        navigate("/patients");
+      }
+    });
   }
 
-  if (error) {
-    return <div>Error loading patient details</div>;
-  }
-
-  if (consultationsError ) {
-    return <div>Error loading consultations</div>;
-  }
-
-  if (memoryError) {
-    return <div>Error loading memory</div>;
-  }
-
-  if (!patient) {
-    return <div>Patient not found</div>;
-  }
-
-  console.log(JSON.stringify(memory, null, 2))
-
-  return (
-    <div>
-      <h1>Patient: {patient.name}</h1>
-      <p>Gender: {patient.gender}</p>
-      <p>Birth Date: {formatDate(patient.birth_date)}</p>
-      <p>National ID: {patient.national_id}</p>
-      <p>Phone: {patient.phone}</p>
-
-      <h2>Consultations</h2>
-
-
-       {memory && (
-
-    <div>
-
-        <h3>Patient Memory</h3>
-        <p>Summary: {memory.master_summary?.summary}</p>
-        <p>Follow Up: {memory.master_summary?.follow_up}</p>
-        <p>Chronic Diseases: {memory.chronic_diseases?.join(", ") || "None"}</p>
-        <p>Allergies: {memory.allergies?.join(", ") || "None"}</p>
-        <p>Medications: {memory.medications?.join(", ") || "None"}</p>
-        <p>Recurrent Symptoms: {memory.recurrent_symptoms?.join(", ") || "None"}</p>
-    </div>
-)}
-
-
-       {consultations && consultations.length > 0 ? (
-
-        <ul>
-
-          {consultations.map((consultation) => (
-
-            <li key={consultation.id}>
-
-              {formatDate(consultation.created_at)} - {consultation.status}
-              
-              { consultation.ai_summary && <p>AI Summary: {consultation.ai_summary.summary}</p>}
-            
-            </li>
-
-          ))}
-
-        </ul>
-      ) : (
-        <p>No consultations found for this patient.</p>
-      )}
-
-      <Link to={`/patients/${patient.id}/edit`}>Edit Patient</Link>
-
-      <button onClick={() => {
-
-        if (window.confirm("Are you sure you want to delete this patient?")) {
-
-          deleteMutation.mutate(patient.id, {
-             //navego a patients asi no queda en la pagina de detalles del paciente que ya no existe
-            onSuccess: () => {
-              navigate("/patients");
-            }
-          });
-          
-        } 
-      }}>Delete Patient</button>
-
-
-      
-     <button onClick={() => {
-      createConsultation(patient.id)
+  //crea una consulta nueva y navega a su flujo
+  function handleCreateConsultation() {
+    setCreateError(null);
+    createConsultation(patient!.id)
       .then((newConsultation) => {
-        //navego a la pagina de la nueva consulta creada
-        navigate(`/patients/${patient.id}/consultations/${newConsultation.id}`)
+        navigate(`/patients/${patient!.id}/consultations/${newConsultation.id}`);
       })
       .catch((error) => {
         console.error("Error creating consultation:", error);
-        alert("Error creating consultation");
+        setCreateError("Error creating consultation");
       });
-  }}
->
-  Create New Consultation
-</button>
+  }
 
+  //dispara la pregunta al LLM sobre el paciente, si el input no esta vacio
+  function handleAskQuestion() {
+    if (question.trim() === "") {
+      return;
+    }
+    askMutation.mutate(question);
+  }
 
-    </div>
-  );
-}
+  if (isLoading || consultationsLoading) {
+    return <div className="p-8 text-muted-foreground">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="p-8 text-destructive">Error loading patient details</div>;
+  }
+
+  if (consultationsError ) {
+    return <div className="p-8 text-destructive">Error loading consultations</div>;
+  }
+
+  if (memoryError) {
+    return <div className="p-8 text-destructive">Error loading memory</div>;
+  }
+
+  if (!patient) {
+    return <div className="p-8 text-muted-foreground">Patient not found</div>;
+  }
+
+  return (
+    <div>
+      {/* link para volver a la lista */}
+      <Link to="/patients" className="text-sm text-muted-foreground mb-4 inline-block">
+        ← Back to patients
+      </Link>
+
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-foreground">{patient.name}</h1>
+        <div className="flex gap-3">
+          <Link to={`/patients/${patient.id}/edit`} className="bg-card text-foreground rounded-xl px-5 py-2.5 border border-border shadow-sm font-medium">
+            Edit
+          </Link>
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            className="bg-destructive text-white rounded-xl px-5 py-2.5 shadow-sm font-medium"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+
+      {/* datos del paciente */}
+      <div className="bg-card rounded-2xl shadow-md p-6 border border-border mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Gender</p>
+            <p className="text-base text-foreground">{patient.gender}</p>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Birth Date</p>
+            <p className="text-base text-foreground">{formatDate(patient.birth_date)}</p>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">National ID</p>
+            <p className="text-base text-foreground">{patient.national_id}</p>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Phone</p>
+            <p className="text-base text-foreground">{patient.phone}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* memoria del paciente */}
+      {memory && (
+        <div className="bg-card rounded-2xl shadow-md p-6 border border-border mb-6">
+          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-4">Patient Memory</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Summary</p>
+              <p className="text-base text-foreground">{memory.master_summary?.summary}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Follow Up</p>
+              <p className="text-base text-foreground">{memory.master_summary?.follow_up}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Chronic Diseases</p>
+              <p className="text-base text-foreground">{memory.chronic_diseases?.join(", ") || "None"}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Allergies</p>
+              <p className="text-base text-foreground">{memory.allergies?.join(", ") || "None"}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Medications</p>
+              <p className="text-base text-foreground">{memory.medications?.join(", ") || "None"}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Recurrent Symptoms</p>
+              <p className="text-base text-foreground">{memory.recurrent_symptoms?.join(", ") || "None"}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* consultas */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-2xl font-bold text-foreground">Consultations</h2>
+        <button
+          onClick={handleCreateConsultation}
+          className="bg-primary text-primary-foreground rounded-xl px-5 py-2.5 shadow-sm font-medium"
+        >
+          New Consultation
+        </button>
+      </div>
+
+      {createError && <p className="text-sm text-destructive mb-3">{createError}</p>}
+
+      {consultations && consultations.length > 0 ? (
+        <ul>
+          {consultations.map((consultation) => (
+            <li key={consultation.id} className="bg-card rounded-xl p-4 border border-border shadow-sm mb-3">
+              <p className="text-sm text-muted-foreground">{formatDate(consultation.created_at)}</p>
+              <p className={`text-sm font-medium ${consultation.status === "signed" ? "text-green-600" : "text-yellow-600"}`}>
+                {consultation.status}
+              </p>
+              {consultation.ai_summary && <p className="text-base text-foreground mt-1">{consultation.ai_summary.summary}</p>}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-sm text-muted-foreground">No consultations found for this patient.</p>
+      )}
+
+      {/* modal de confirmacion para borrar paciente */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-card rounded-2xl shadow-md p-6 border border-border w-full max-w-sm">
+            <h3 className="text-lg font-bold text-foreground mb-2">Delete patient</h3>
+            <p className="text-sm text-muted-foreground mb-6">
+              Are you sure you want to delete {patient.name}? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                disabled={deleteMutation.isPending}
+                className="bg-card text-foreground rounded-xl px-5 py-2.5 border border-border shadow-sm font-medium disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleteMutation.isPending}
+                className="bg-destructive text-white rounded-xl px-5 py-2.5 shadow-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {deleteMutation.isPending ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+          {/* sección para preguntar a la IA sobre el paciente */}
+      <div className="bg-card rounded-2xl shadow-md p-6 border border-border mb-6">
+        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-4">
+          Ask AI about this patient
+        </h3>
+      
+        {/* input + boton */}
+        <div className="flex gap-3 mb-4">
+          <input
+            type="text"
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            placeholder="Ask a question about the patient"
+            className="border border-border rounded-xl px-4 py-2 flex-1"
+          />
+          <button
+            onClick={handleAskQuestion}
+            disabled={askMutation.isPending || !question.trim()}
+            className="bg-primary text-white rounded-xl px-5 py-2.5 shadow-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {askMutation.isPending ? "Asking..." : "Ask"}
+          </button>
+        </div>
+      
+        {/* mensaje de error */}
+        {askMutation.isError && (
+          <p className="text-sm text-destructive mb-4">Something went wrong. Please try again.</p>
+        )}
+      
+        {/* historial de preguntas y respuestas */}
+        {chatMessages.map((msg, index) => (
+          <div key={index} className="mb-4">
+            <p className="text-sm font-medium text-foreground mb-1">{msg.question}</p>
+            <p className="text-base text-foreground bg-background rounded-xl p-4 border border-border whitespace-pre-line">
+              {msg.answer}
+            </p>
+          </div>
+        ))}
+      </div>
+      </div>
+        );
+      }

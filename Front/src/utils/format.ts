@@ -9,3 +9,20 @@ export function formatDate(dateString: string): string {
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
 }
+
+
+//funcion para calcular la edad a partir de la fecha de nacimiento
+export function calculateAge(dateString: string): number {
+  const today = new Date();
+  const birth = new Date(dateString);
+
+  let age = today.getFullYear() - birth.getFullYear();
+
+  //si todavia no cumplio años este año le resto uno
+  const monthDiff = today.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+
+  return age;
+}

@@ -256,3 +256,57 @@ export const getPatientMemoryController: RequestHandler = async (req, res, next)
         next(error);
     }
 }
+
+
+
+//Responder preguntas del doctor sobre el paciente usando RAG:
+export const askPatientController: RequestHandler = async (req, res, next): Promise<void> => {
+
+    try {
+
+        if (!req.user) {
+
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+
+
+        const { id: doctor_id } = req.user;
+        const patient_id = Number(req.params.id);
+        const question = req.body.question;
+
+
+        if (Number.isNaN(patient_id)) {
+
+            res.status(400).json({ message: "Invalid patient id" });
+            return;
+        }
+
+        if (!question || question.trim().length === 0) {
+
+            res.status(400).json({ message: "Question is required" });
+            return;
+        }
+
+
+        const answer = await patientService.askPatientMemoryService(patient_id, doctor_id, question);
+
+
+        if (!answer) {
+
+            res.status(404).json({ message: "Unable to get answer for this patient" });
+            return;
+        }
+
+
+        res.status(200).json({
+
+            message: "Answer retrieved successfully",
+            data: answer
+        });
+
+    } catch (error) {
+
+        next(error);
+    }
+}

@@ -80,3 +80,12 @@ export async function patientMemory (patient_id: number): Promise<string> {
 
     return response.data.data;
 }
+
+
+//preguntar al llm sobre informacion del paciente que busca por RAG:
+export async function askPatientInfo (patient_id: number, question: string): Promise<string> {
+
+    const response = await api.post(`/patients/${patient_id}/ask`, { question });
+    
+    return response.data.data;
+}

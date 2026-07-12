@@ -61,3 +61,35 @@ export async function buildSummaryPrompt (patient_id: number, transcript: string
   ${transcript}`;
 
 }
+
+
+
+//funcion que responde lo que le pregunta el dr:
+
+export function buildAskPrompt(question: string,chunks: { chunk_index: number; text: string }[]): string {
+
+  // Aplano los chunks a un bloque de texto legible para el modelo
+  const contexto = chunks
+    .map((chunk) => `- ${chunk.text}`)
+    .join("\n");
+
+  return `
+You are a clinical assistant supporting a physician in reviewing a patient's medical records.
+
+PATIENT RECORDS:
+${contexto}
+
+PHYSICIAN'S QUESTION:
+${question}
+
+INSTRUCTIONS:
+- Answer ONLY using the information available in the patient records above.
+- Do NOT use external knowledge, prior assumptions, or fill in missing details.
+- If the records do not contain enough information to answer the question, reply that there is not enough information in this patient's records to answer it. Do not invent diagnoses, medications, allergies, laboratory results, procedures, dates, symptoms, or any other clinical information.
+- If the question contains multiple parts, answer only the parts that are supported by the records and clearly state when information is unavailable.
+- Keep the response concise, accurate, and directly relevant to the physician's question. Do not include unnecessary explanations or unsolicited information.
+- Detect the language of the physician's question and respond in that same language.
+- Respond naturally as a clinical assistant. Never mention terms such as "context", "retrieved information", "records provided", "fragments", or "chunks". Simply answer the physician's question.
+`.trim();
+
+}

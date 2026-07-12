@@ -61,3 +61,35 @@ export async function generateConsultationSummary(patient_id: number, transcript
 
 }
 
+
+
+
+//enviar el prompt al llm y traer la respuesta en textp plano
+export async function generateTextAnswer(prompt:string): Promise<string> {
+
+    if(!prompt?.trim()) {
+
+        throw new Error("Prompt is required");
+    }
+
+    const messagesLLM = [
+        {
+            role: "user" as const,
+            content: prompt
+        }
+    ];
+
+    //llamo al llm
+    const response = await groqLLM.chat.completions.create({
+        model: "llama-3.3-70b-versatile",
+        messages: messagesLLM
+    });
+
+    const raw = response.choices[0].message.content
+
+    if (!raw) {
+        throw new Error("LLM returned empty response");
+    }
+
+    return raw.trim();
+}
