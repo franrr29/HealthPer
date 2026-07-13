@@ -1,11 +1,11 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { getPatientById, getAllConsultations, patientMemory, askPatientInfo } from "@/services/patients.service";
+import { useQuery } from "@tanstack/react-query";
+import { getPatientById, getAllConsultations, patientMemory } from "@/services/patients.service";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { formatDate } from "@/utils/format";
 import { useDeletePatientMutation } from "@/hooks/usePatientMutation";
-import type { ChatMessage } from "@/types/patient";
 import { createConsultation } from "@/services/consultations.service";
 import { useState } from "react";
+import PatientChatWidget from "./ChatPatientMessage";
 
 
 //component que muestra detalles del paciente:
@@ -15,16 +15,12 @@ export default function PatientDetails() {
 
   const patientId = Number(id);
 
-  const [question, setQuestion] = useState<string>("");
-
   //controla si se muestra el modal de confirmacion de borrado
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   //error al crear una consulta nueva
   const [createError, setCreateError] = useState<string | null>(null);
 
-  //array de mensajes
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
   //para traer la info del paciente por su id:
   const {data: patient,isLoading,error,} = useQuery({
@@ -41,15 +37,6 @@ export default function PatientDetails() {
     enabled: !!id,
   });
 
-
-  //mutation para preguntar a la IA sobre el paciente y guardar el par pregunta-respuesta en el chat:
-  const askMutation = useMutation({
-  mutationFn: (question: string) => askPatientInfo(patientId, question),
-  onSuccess: (answer, question) => {
-    setChatMessages((prevMessages) => [...prevMessages, { question, answer }]);
-    setQuestion("");
-  },
-});
 
 
   //para eliminar un paciente llamoo al hook de usedeletepatientMut
@@ -87,14 +74,6 @@ export default function PatientDetails() {
         console.error("Error creating consultation:", error);
         setCreateError("Error creating consultation");
       });
-  }
-
-  //dispara la pregunta al LLM sobre el paciente, si el input no esta vacio
-  function handleAskQuestion() {
-    if (question.trim() === "") {
-      return;
-    }
-    askMutation.mutate(question);
   }
 
   if (isLoading || consultationsLoading) {
@@ -250,46 +229,7 @@ export default function PatientDetails() {
           </div>
         </div>
       )}
-
-          {/* sección para preguntar a la IA sobre el paciente */}
-      <div className="bg-card rounded-2xl shadow-md p-6 border border-border mb-6">
-        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-4">
-          Ask AI about this patient
-        </h3>
-      
-        {/* input + boton */}
-        <div className="flex gap-3 mb-4">
-          <input
-            type="text"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Ask a question about the patient"
-            className="border border-border rounded-xl px-4 py-2 flex-1"
-          />
-          <button
-            onClick={handleAskQuestion}
-            disabled={askMutation.isPending || !question.trim()}
-            className="bg-primary text-white rounded-xl px-5 py-2.5 shadow-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {askMutation.isPending ? "Asking..." : "Ask"}
-          </button>
-        </div>
-      
-        {/* mensaje de error */}
-        {askMutation.isError && (
-          <p className="text-sm text-destructive mb-4">Something went wrong. Please try again.</p>
-        )}
-      
-        {/* historial de preguntas y respuestas */}
-        {chatMessages.map((msg, index) => (
-          <div key={index} className="mb-4">
-            <p className="text-sm font-medium text-foreground mb-1">{msg.question}</p>
-            <p className="text-base text-foreground bg-background rounded-xl p-4 border border-border whitespace-pre-line">
-              {msg.answer}
-            </p>
-          </div>
-        ))}
-      </div>
+      <PatientChatWidget patientId={patient.id} />
       </div>
         );
       }

@@ -9,6 +9,10 @@ export type Patient = {
     phone: string;
 }
 
+export type PatientChatWidgetProps = {
+  patientId: number;
+};
+
 export type ChatMessage = {
     question: string;
     answer: string;
