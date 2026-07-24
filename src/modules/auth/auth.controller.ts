@@ -5,6 +5,7 @@ import { tryDemoService } from "./auth.login.service";
 import jwt from "jsonwebtoken";
 import { env } from "../../config/env";
 import { loginSchema, registerSchema, refreshTokenSchema } from "../../schemas/schema.auth";
+import { accessTokenCookieOptions, refreshTokenCookieOptions, clearCookieOptions } from "../../config/cookieOptions";
 
 
 
@@ -29,19 +30,9 @@ async function tryDemo(req: Request, res: Response, next: NextFunction): Promise
 
         const demoUser= await tryDemoService();
 
-        res.cookie("accessToken", demoUser.token, {
-            httpOnly: true,
-            secure: env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 15 * 60 * 1000 
-        });
+        res.cookie("accessToken", demoUser.token, accessTokenCookieOptions);
 
-        res.cookie("refreshToken", demoUser.refreshToken, {
-            httpOnly: true,
-            secure: env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 7 * 24 * 60 * 60 * 1000 
-        });
+        res.cookie("refreshToken", demoUser.refreshToken, refreshTokenCookieOptions);
 
         res.status(200).json({
             success: true,
@@ -107,18 +98,8 @@ async function logginUser(req: Request, res: Response, next: NextFunction): Prom
 
         const loggedUser= await loginUser (parsedData.email, parsedData.password);
 
-        res.cookie("accessToken", loggedUser.token, {
-            httpOnly: true,
-            secure: env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 15 * 60 * 1000 
-        });
-        res.cookie("refreshToken", loggedUser.refreshToken, {
-            httpOnly: true,
-            secure: env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 7 * 24 * 60 * 60 * 1000 
-        });
+        res.cookie("accessToken", loggedUser.token, accessTokenCookieOptions);
+        res.cookie("refreshToken", loggedUser.refreshToken, refreshTokenCookieOptions);
 
         res.status(200).json({
             success: true,
@@ -138,17 +119,9 @@ async function logginUser(req: Request, res: Response, next: NextFunction): Prom
 
 export function logout (req: Request, res: Response): void {
 
-    res.clearCookie("accessToken", {
-        httpOnly: true,
-        secure: env.NODE_ENV === "production",
-        sameSite: "strict"
-    });
+    res.clearCookie("accessToken", clearCookieOptions);
 
-    res.clearCookie("refreshToken", {
-        httpOnly: true,
-        secure: env.NODE_ENV === "production",
-        sameSite: "strict"
-    });
+    res.clearCookie("refreshToken", clearCookieOptions);
 
     res.status(200).json({
         message: "Logout successful"
@@ -187,12 +160,7 @@ export function refreshToken(req: Request, res: Response): void {
         );
 
         // setear nuevo access token en cookie
-        res.cookie("accessToken", newAccessToken, {
-            httpOnly: true,
-            secure: env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 15 * 60 * 1000
-        });
+        res.cookie("accessToken", newAccessToken, accessTokenCookieOptions);
 
         res.status(200).json({
             message: "Token refreshed successfully"

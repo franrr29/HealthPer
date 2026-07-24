@@ -3,6 +3,7 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { env } from "../../config/env";
+import { accessTokenCookieOptions, refreshTokenCookieOptions } from "../../config/cookieOptions";
 
 
 export function handleGoogleCallback(req: Request, res: Response) {
@@ -33,19 +34,9 @@ export function handleGoogleCallback(req: Request, res: Response) {
     )
 
     // Redirige al frontend con los tokens en cookies
-    res.cookie("accessToken", token, {
-        httpOnly: true,
-        secure: env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 15 * 60 * 1000 
-    });
+    res.cookie("accessToken", token, accessTokenCookieOptions);
 
-    res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000
-    });
+    res.cookie("refreshToken", refreshToken, refreshTokenCookieOptions);
 
     res.redirect(`${env.FRONTEND_URL}/auth/callback`);
 }
