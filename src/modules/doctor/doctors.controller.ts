@@ -66,11 +66,12 @@ export async function getRecentActivity(req: Request, res: Response, next: NextF
 
         if (recentActivity.length === 0) {
             
-           return res.status(200).json({
+            res.status(200).json({
                 success: true,
                 message: "No recent activity found",
                 data: []
             });
+            return;
         }
 
         res.status(200).json({
@@ -96,7 +97,7 @@ export async function getTopConditions(req: Request, res: Response, next: NextFu
 
         if (topConditions.topChronicDiseases.length === 0 && topConditions.topAllergies.length === 0) {
 
-            return res.status(200).json({
+             res.status(200).json({
 
                 success: true,
 
@@ -104,6 +105,7 @@ export async function getTopConditions(req: Request, res: Response, next: NextFu
 
                 data: { topChronicDiseases: [], topAllergies: [] }
             });
+            return;
         }
 
         res.status(200).json({
