@@ -25,6 +25,11 @@ passport.use(
           return done(new Error("Google account does not have an email associated"));
         }
 
+        // no permito creacion de cuentas nuevas via oauth
+        if (!env.ALLOW_REGISTER) {
+          return done(new Error("Registration is currently disabled"));
+        }
+
         // Buscar si el usuario ya existe
 
         const [rows]: any = await conexionDB.execute(

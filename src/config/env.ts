@@ -6,6 +6,7 @@ export const serverSchema = z.object({
   // servidor
   PORT: z.coerce.number(),
    //coerce pasa de string a number
+  NODE_ENV: z.enum(["development", "production"]).default("development"),
 
   // Base de datos
   DB_HOST: z.string(),
@@ -21,11 +22,17 @@ export const serverSchema = z.object({
   
 
   // Seguridad
-  JWT_SECRET: z.string().min(5),
-  REFRESH_TOKEN_SECRET: z.string().min(5),
+  JWT_SECRET: z.string().min(32),
+  REFRESH_TOKEN_SECRET: z.string().min(32),
+  ALLOW_REGISTER: z.enum(["true", "false"]).transform((value) => value === "true"),
+  ALLOW_DEMO: z.enum(["true", "false"]).transform((value) => value === "true"),
 
   //ruta al front
   FRONTEND_URL: z.string().url(),
+
+
+  // Resend API Key
+  RESEND_API_KEY: z.string().min(10),
 
 });
 

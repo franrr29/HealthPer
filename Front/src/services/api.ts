@@ -2,62 +2,24 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: "http://localhost:4000",
+  withCredentials: true,
 });
 
 
-
-// Agrega el access token a cada request
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-
-  return config;
-});
-
-
-
-
-
-
-// Pide un nuevo acces token usando el refresh token
+// pide un nuevo access token usando el refresh token de la cookie
 async function refreshAccessToken() {
-  const refreshToken = localStorage.getItem("refreshToken");
-
-  if (!refreshToken) {
-    return null;
-  }
-
-  const response = await axios.post(
-    "http://localhost:4000/auth/refresh",
-    { refreshToken }
-  );
-
-  const newToken = response.data.accessToken;
-
-  localStorage.setItem("token", newToken);
-
-  return newToken;
+  await api.post("/auth/refresh");
 }
 
 
-
-
-
-// Borra los tokens y manda al login
+// limpia el flag de auth y redirige al login
 function logout() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("refreshToken");
-
+  localStorage.removeItem("isAuthenticated");
   window.location.href = "/login";
 }
 
 
-
-
-// Si el token vence intenta renovarlo y repetir la request
+// si el token vence intenta renovarlo y repetir la request
 api.interceptors.response.use(
   (response) => response,
 
@@ -71,15 +33,7 @@ api.interceptors.response.use(
     originalRequest._retry = true;
 
     try {
-      const newToken = await refreshAccessToken();
-
-      if (!newToken) {
-        logout();
-        return Promise.reject(error);
-      }
-
-      originalRequest.headers.Authorization = `Bearer ${newToken}`;
-
+      await refreshAccessToken();
       return api(originalRequest);
     } catch {
       logout();

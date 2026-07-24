@@ -1,5 +1,5 @@
 //Testear todo el trancript de la ia mas firma del doctor a signed: import request from "supertest";
-import app from "../../app";
+import app from "../app";
 import { conexionDB } from "../config/db";
 import OpenAI from "openai";
 import request from "supertest";

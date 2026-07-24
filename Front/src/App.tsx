@@ -1,28 +1,35 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-import Login from "@/pages/Login"
-import Dashboard from "@/pages/Dashboard"
-import ProtectedRoute from "@/components/ui/ProtectedRoute"
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import Login from "@/pages/auth/Login"
+import Dashboard from "@/pages/dashboard/Dashboard"
+import ProtectedRoute from "@/components/auth/ProtectedRoute"
 import AuthProvider from "./context/AuthContext"
-import AuthCallback from "@/pages/AuthCallback"
+import AuthCallback from "@/pages/auth/AuthCallback"
 import AppLayout from "@/layouts/AppLayout"
-import Patients from "@/pages/Patients"
-import PatientDetails from "@/pages/PatientDetails"
-import { CreatePatient } from "@/pages/CreatePatient"
-import { EditPatient } from "@/pages/EditPatient"
-import ConsultationFlow from "./pages/ConsultationFlow"
+import Patients from "@/pages/patients/Patients"
+import PatientDetails from "@/pages/patients/PatientDetails"
+import { CreatePatient } from "@/pages/patients/CreatePatient"
+import { EditPatient } from "@/pages/patients/EditPatient"
+import ConsultationFlow from "./pages/consultation/ConsultationFlow"
+import Welcome from "./pages/welcome/Welcome"
+import ErrorBoundary from "./components/common/ErrorBoundary"
+import NotFound from "./pages/NotFound"
+
 
 export default function App() {
+  
   return (
-    
-    
     <AuthProvider>
+      <ErrorBoundary>
       <BrowserRouter>
         <Routes>
+          {/* rutas publicas */}
+          <Route path="/" element={<Welcome />} />
           <Route path="/login" element={<Login />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
+
+          {/* rutas protegidas: necesitan sesion */}
           <Route element={<ProtectedRoute />}>
             <Route element={<AppLayout />}>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/patients" element={<Patients />} />
               <Route path="/patients/:patientId/consultations/:consultationId" element={<ConsultationFlow />} />
@@ -31,9 +38,12 @@ export default function App() {
               <Route path="/patients/:id" element={<PatientDetails />} />
             </Route>
           </Route>
-          <Route path="*" element={<Navigate to="/login" replace />} />
+
+          {/* cualquier otra cosa a NotFound */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
+      </ErrorBoundary>
     </AuthProvider>
   )
 }

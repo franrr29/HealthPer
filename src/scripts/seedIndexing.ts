@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { conexionDB } from "../config/db";
-import { indexConsultation } from "../services/indexing.service";
+import { indexConsultation } from "../modules/ai/indexing.service";
 
 
 //como habia consultas sin indexar, este script se encarga de indexarlas todas q estsn en la DB

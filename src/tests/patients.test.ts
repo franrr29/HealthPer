@@ -1,5 +1,5 @@
 import request from "supertest";
-import app from "../../app";
+import app from "../app";
 import { conexionDB } from "../config/db";
 import { getAuthToken } from "./helpers/auth.helper";
 

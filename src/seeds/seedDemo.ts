@@ -84,6 +84,20 @@ async function seedDemo() {
         national_id: "11223344",
         phone: "+598 99 789 012",
       },
+      {
+        name: "Sofia Herrera",
+        birth_date: "1996-05-12",
+        gender: "F",
+        national_id: "55667788",
+        phone: "+598 99 234 567",
+      },
+      {
+        name: "Jorge Ramirez",
+        birth_date: "1980-09-03",
+        gender: "M",
+        national_id: "99887766",
+        phone: "+598 99 345 678",
+      },
     ];
 
     const patientIds: number[] = [];
@@ -213,6 +227,72 @@ async function seedDemo() {
           },
         ],
       },
+
+      //sofia herrera - migrana con aura
+      {
+        patientIndex: 3,
+        consultations: [
+          {
+            transcript:
+              "Doctor: Hi Sofia, what brings you in today? Patient: Hi doctor. I've been getting these really bad headaches for the last four months, and they're getting more frequent. Doctor: Can you describe them for me? Patient: They start on one side, usually the right side, right behind my eye. It's throbbing, like a pulse. And when it's really bad I can't stand light or noise, I just want to lie down in a dark room. Sometimes I feel nauseous too, once I actually threw up. Doctor: How long do they typically last? Patient: Anywhere from a few hours to almost a full day if I don't catch it early. Doctor: How often are you getting them? Patient: When it started it was maybe once a month. The last few weeks it's been more like twice a week. It's affecting my work, I had to leave a client meeting last week because the light in the conference room was unbearable. Doctor: Do you notice anything before the headache starts, any warning signs? Patient: Sometimes I see these zigzag lines in my vision for about 15 minutes before the pain starts. It's strange, like a shimmering line off to one side. Doctor: That's called an aura, it's actually a classic feature of migraine with aura. Have you noticed any triggers? Patient: Stress for sure, work has been intense lately. And I think when I don't sleep enough, like under 6 hours, I'm more likely to get one. Also maybe around my period, though I haven't tracked it carefully. Doctor: Any family history of migraines? Patient: Yes, actually, my mother gets migraines too. Doctor: That's very relevant, migraines have a strong genetic component. What have you been taking for the pain? Patient: Just ibuprofen, but honestly it barely touches it once it's bad. Doctor: That's common, over the counter NSAIDs often aren't enough once a migraine is established. Based on everything you've described, the one-sided throbbing pain, light and sound sensitivity, nausea, and the visual aura beforehand, this is a clear presentation of migraine with aura. Given how frequently they're happening now, twice a week, I want to start you on two things. First, for acute attacks, I'm prescribing Sumatriptan 50mg. Take it as soon as you notice the headache starting, ideally during the aura or right when the pain begins. Don't wait until it's severe. Patient: And for the frequency? Doctor: Since you're having more than 4 headache days a month, you qualify for preventive treatment. I'm starting you on Propranolol 40mg twice daily. It's a beta blocker that's been shown to reduce migraine frequency significantly over time. It can take 4 to 6 weeks to see the full effect, so don't get discouraged if the first couple weeks don't show much change. Patient: Are there side effects I should watch for? Doctor: Propranolol can cause some fatigue or lightheadedness initially, and since it lowers heart rate, avoid stopping it abruptly. I also want you to start a headache diary, note the date, what you were doing, how long it lasted, and anything you ate or how much you slept the night before. That'll help us identify your specific triggers. Patient: Okay, I can do that. Doctor: Let's follow up in 6 weeks to see how the Propranolol is working and review your diary. Patient: Thank you doctor, it's a relief to have a plan.",
+            ai_summary: {
+              summary: "29-year-old female presenting with a 4-month history of migraine with aura, increasing in frequency from monthly to twice weekly. Headaches are unilateral, throbbing, associated with photophobia, phonophobia, and nausea with one episode of vomiting. Visual aura (zigzag scintillations) precedes attacks by approximately 15 minutes. Triggers identified include stress, sleep deprivation under 6 hours, and possible menstrual correlation. Positive family history (mother with migraines). Over-the-counter ibuprofen providing inadequate relief. Meets criteria for preventive therapy given attack frequency exceeding 4 days per month. Starting abortive and prophylactic treatment with headache diary for trigger identification.",
+              chief_complaint: "Recurrent unilateral throbbing headaches with visual aura, increasing in frequency over 4 months",
+              diagnosis: "Migraine with aura, high frequency (twice weekly)",
+              treatment: "Sumatriptan 50mg as needed at onset of attack or during aura. Propranolol 40mg twice daily for prevention. Headache diary to track frequency, duration, and potential triggers.",
+              possible_considerations: ["Rule out secondary causes if red flags develop (sudden severe onset, neurological deficits, fever)", "Reassess need for prophylaxis effectiveness at 6 weeks", "Consider hormonal correlation given possible menstrual pattern", "Screen for medication overuse headache if triptan use exceeds 10 days per month"],
+              follow_up: "Follow-up in 6 weeks to assess Propranolol response and review headache diary.",
+              medications_mentioned: ["Sumatriptan 50mg PRN", "Propranolol 40mg BID"],
+            },
+          },
+          {
+            transcript:
+              "Doctor: Sofia, welcome back. It's been 6 weeks since we started the Propranolol. How have things been? Patient: Better, honestly a lot better than I expected. Looking at my diary, I only had 3 migraines in the last month, down from about 8 the month before I started treatment. Doctor: That's a great response. Tell me about the ones you did have. Patient: They were shorter too. Maybe 3 or 4 hours instead of a full day. I took the Sumatriptan right when I noticed the zigzag lines starting and it really helped, the pain never got as intense as before. Doctor: That's exactly how it should work, catching it early during the aura gives the medication time to work before the pain peaks. Any side effects from the Propranolol? Patient: The first week I felt a bit tired and my resting heart rate seemed lower, I noticed it on my fitness watch. But that went away after about 10 days. Doctor: That's typical, your body adjusts to the beta blocker. What does your diary show about triggers? Patient: It's pretty clear actually, all three migraines happened on weeks where I slept less than 6 hours at least twice. And one of them was the week before my period. Doctor: That confirms what we suspected, sleep deprivation and hormonal fluctuation are your main triggers. I'd like you to keep prioritizing sleep, especially during the week before your period when you might be more vulnerable. Patient: Should I keep taking the Propranolol? Doctor: Yes, I want to continue at the same dose since you're responding so well. We're not going to change anything that's working. Let's keep the headache diary going, it's clearly helping us understand your pattern. Patient: This is honestly the best my head has felt in months. Doctor: I'm really glad to hear that. Let's follow up again in 3 months, and continue using the Sumatriptan as needed for any breakthrough attacks.",
+            ai_summary: {
+              summary: "Six-week follow-up for migraine with aura on prophylactic Propranolol 40mg BID. Excellent treatment response: migraine frequency reduced from approximately 8 per month to 3 per month, with reduced duration (3-4 hours vs full day previously) and reduced intensity when using Sumatriptan early during the aura phase. Initial mild fatigue and reduced resting heart rate from Propranolol resolved after 10 days. Headache diary confirms sleep deprivation (under 6 hours) and premenstrual timing as primary triggers. Patient demonstrates good self-management with early abortive treatment during aura onset. Continuing current regimen given strong response.",
+              chief_complaint: "Follow-up migraine management at 6 weeks",
+              diagnosis: "Migraine with aura, significantly improved on prophylaxis",
+              treatment: "Continue Propranolol 40mg BID. Continue Sumatriptan 50mg PRN at aura onset. Continue headache diary. Reinforce sleep hygiene, particularly during premenstrual week.",
+              possible_considerations: ["Reassess in 3 months for continued response", "If frequency continues to decline, consider discussing prophylaxis taper after 6-12 months of stability", "Monitor heart rate periodically while on beta blocker", "Consider tracking menstrual cycle alongside headache diary to confirm hormonal pattern"],
+              follow_up: "Follow-up in 3 months. Continue Sumatriptan as needed for breakthrough migraines.",
+              medications_mentioned: ["Propranolol 40mg BID", "Sumatriptan 50mg PRN"],
+            },
+          },
+        ],
+      },
+
+      //jorge ramirez - distension lumbar aguda, se resuelve
+      {
+        patientIndex: 4,
+        consultations: [
+          {
+            transcript:
+              "Doctor: Jorge, what happened? Patient: I was helping my brother move a couch on Saturday and I felt this sharp pain in my lower back when I bent down to lift it. I heard myself say something wasn't right immediately. Doctor: On a scale of 1 to 10, how would you rate the pain right now? Patient: Sitting here it's maybe a 5. But if I bend forward or try to stand up from sitting, it jumps to an 8, sometimes 9. Doctor: Where exactly is the pain located? Patient: Right here, lower back, both sides but more on the left. It doesn't really go down my leg or anything, it stays in my back. Doctor: That's good to know, pain that doesn't radiate down the leg is less concerning for nerve involvement. Any numbness, tingling, or weakness in your legs? Patient: No, nothing like that. Doctor: Any problems with bladder or bowel control since the injury? Patient: No, everything's normal there. Doctor: That's reassuring, those would be red flag symptoms we'd need to address urgently. Let me examine your back. Can you point to exactly where it hurts most? Patient: Right along here, on both sides of my spine, lower down. Doctor: I'm going to press on a few areas and move your legs, let me know if anything reproduces the pain. Okay, your straight leg raise test is negative on both sides, which is reassuring, that helps rule out a disc problem pressing on a nerve. I do feel significant muscle tightness and spasm along the paraspinal muscles on both sides, worse on the left, consistent with what you're describing. Your reflexes and strength in both legs are completely normal. Patient: So it's not serious? Doctor: Based on the story and the exam, this looks like an acute lumbar muscle strain from the lifting injury. There's no evidence of nerve compression or disc herniation, which is good news. Patient: That's a relief, I was worried I did something to a disc. Doctor: The absence of leg pain, numbness, or a positive straight leg raise test are all reassuring signs. For treatment, I want you to avoid bed rest, that actually delays recovery. Staying as active as your pain allows is better for healing. Avoid heavy lifting or bending for now. I'm prescribing Naproxen 500mg twice daily with food for the inflammation, and Cyclobenzaprine 5mg at bedtime for the muscle spasm, that one can make you drowsy so only take it at night. Patient: Any home remedies that help? Doctor: Ice for the first 48 hours, 15 to 20 minutes at a time, then you can switch to heat after that, it helps relax the muscles. Patient: Should I see a physical therapist? Doctor: Yes, I'm referring you to physical therapy. They'll show you gentle stretches and core strengthening exercises once the acute pain settles a bit. Let's see how you're doing in 2 weeks.",
+            ai_summary: {
+              summary: "42-year-old male presenting with acute onset lower back pain following a lifting injury while moving furniture two days ago. Pain rated 5/10 at rest, increasing to 8-9/10 with forward flexion or transitioning from sitting to standing. Bilateral lower back pain, left greater than right, without radiation to the legs. No numbness, tingling, weakness, or bowel/bladder dysfunction. Physical exam notable for bilateral paraspinal muscle spasm, worse on the left, with negative straight leg raise bilaterally and fully intact strength and reflexes. Clinical picture consistent with acute lumbar muscle strain without evidence of disc herniation or nerve root involvement. Conservative management initiated with anti-inflammatory and muscle relaxant, activity modification, and physical therapy referral.",
+              chief_complaint: "Acute lower back pain following a lifting injury 2 days ago",
+              diagnosis: "Acute lumbar muscle strain, no evidence of disc herniation or radiculopathy",
+              treatment: "Naproxen 500mg twice daily with food. Cyclobenzaprine 5mg at bedtime for muscle spasm. Ice for the first 48 hours, then heat. Avoid heavy lifting and bending. Stay active within pain tolerance, avoid bed rest. Physical therapy referral for stretching and core strengthening.",
+              possible_considerations: ["MRI if no improvement within 4-6 weeks or if red flag symptoms develop", "Reassess for radicular symptoms at follow-up", "Cyclobenzaprine causes drowsiness, advise caution with driving", "Negative straight leg raise and absence of neurological deficits are reassuring against disc herniation"],
+              follow_up: "Follow-up in 2 weeks to assess pain improvement and physical therapy progress.",
+              medications_mentioned: ["Naproxen 500mg BID", "Cyclobenzaprine 5mg at bedtime"],
+            },
+          },
+          {
+            transcript:
+              "Doctor: Jorge, good to see you. It's been 2 weeks, how's the back doing? Patient: Much better actually. I'd say the pain is down to maybe a 1 or 2, and only if I move a certain way first thing in the morning. Most of the day I don't really notice it anymore. Doctor: That's excellent progress. Are you still taking the Naproxen and Cyclobenzaprine? Patient: I stopped the Cyclobenzaprine after about 5 days, I didn't need it for the spasms anymore and it was making me groggy in the mornings. I'm still taking the Naproxen occasionally, maybe once a day, mostly if I've been sitting a lot at my desk. Doctor: That's fine, you can taper off the Naproxen as needed now, you don't need it on a fixed schedule anymore. How did physical therapy go? Patient: I went to 4 sessions. The therapist gave me some core exercises and stretches, and honestly they've helped a lot. I've been doing them at home every morning. Doctor: That's great, building that core strength will help prevent this from happening again. Let me examine you again. Range of motion looks good, you can bend forward almost fully without pain. Paraspinal muscles feel relaxed now, no spasm like last time. Straight leg raise is still negative, reflexes and strength are normal. Patient: So am I good to go back to normal activity? Doctor: Yes, I think you've recovered well from the muscle strain. You can return to your normal activities, including lifting, but I want you to use proper lifting technique going forward, bend at the knees, keep the object close to your body, and avoid twisting while lifting. Patient: I definitely learned that lesson the hard way. Doctor: Continue the core exercises from physical therapy a few times a week even now that you're feeling better, that's what will keep this from recurring. You can stop the Naproxen entirely at this point since your pain is minimal. Patient: Do I need to come back for anything else? Doctor: Not for this issue, you've fully recovered from the lumbar strain. If you have another episode of back pain in the future or if anything changes, feel free to come back in. Patient: Thank you doctor, I really appreciate how thorough you were from the start.",
+            ai_summary: {
+              summary: "Two-week follow-up for acute lumbar muscle strain sustained during a lifting injury. Complete clinical resolution: pain improved from 8-9/10 at presentation to 1-2/10, occurring only with certain morning movements. Discontinued Cyclobenzaprine after 5 days once spasms resolved; tapering Naproxen as needed. Completed 4 physical therapy sessions with core strengthening and stretching exercises, performed consistently at home with good effect. Exam shows full pain-free range of motion, resolved paraspinal spasm, and persistently negative straight leg raise with normal strength and reflexes. Patient cleared to resume normal activity including lifting, with counseling on proper lifting mechanics to prevent recurrence. This was a self-limited acute musculoskeletal injury with full recovery, not a chronic condition.",
+              chief_complaint: "Follow-up for lumbar strain, near-complete symptom resolution",
+              diagnosis: "Resolved acute lumbar muscle strain",
+              treatment: "Discontinue Naproxen. Continue core strengthening and stretching exercises learned in physical therapy 2-3 times per week. Counseled on proper lifting technique: bend at knees, keep load close to body, avoid twisting while lifting.",
+              possible_considerations: ["No further imaging or referral needed given full clinical recovery", "Educate on lifting mechanics to reduce recurrence risk", "Return if symptoms recur or new radicular symptoms develop"],
+              follow_up: "No scheduled follow-up needed for this issue. Return as needed if back pain recurs.",
+              medications_mentioned: [],
+            },
+          },
+        ],
+      },
     ];
 
     //insertar consultas
@@ -234,14 +314,14 @@ async function seedDemo() {
       }
     }
 
-    logger.info("7 consultas demo creadas");
+    logger.info("11 consultas demo creadas");
 
     //crear patient memory para cada paciente
     const memories = [
       {
         patientIndex: 0,
         chronic_diseases: ["Essential hypertension"],
-        allergies: [],
+        allergies: ["Penicillin"],
         medications: ["Losartan 50mg daily"],
         recurrent_symptoms: ["Morning headaches", "Positional dizziness"],
         master_summary:
@@ -250,7 +330,7 @@ async function seedDemo() {
       {
         patientIndex: 1,
         chronic_diseases: ["Type 2 diabetes mellitus", "Dyslipidemia"],
-        allergies: [],
+        allergies: ["Penicillin", "Sulfa drugs"],
         medications: ["Metformin 1000mg BID", "Atorvastatin 20mg daily"],
         recurrent_symptoms: ["Fatigue (resolved)", "Polydipsia (resolved)", "Nocturia (resolved)"],
         master_summary:
@@ -259,11 +339,29 @@ async function seedDemo() {
       {
         patientIndex: 2,
         chronic_diseases: ["Generalized anxiety disorder"],
-        allergies: [],
+        allergies: ["Latex"],
         medications: ["Sertraline 25mg daily"],
         recurrent_symptoms: ["Anxiety episodes", "Panic attacks", "Insomnia", "Tachycardia"],
         master_summary:
           "34-year-old female with generalized anxiety disorder and panic attacks. Symptom onset approximately 2 months ago correlating temporally with a job change to a more demanding role 3 months ago. Self-described lifelong worrier but current episode qualitatively different with prominent physical symptoms. Thyroid workup negative (TSH 2.1, free T4 1.2). Two documented panic attacks: one at work during a meeting, one at home at rest. Breathing exercises provide transient symptom relief. High caffeine intake being reduced (from 4+ cups to 2 cups daily). Started on Sertraline 25mg with referral to Dr. Fernandez for CBT. Significant functional impairment across work, relationships, and social activities. Pending 3-week follow-up to assess SSRI response and initial CBT progress.",
+      },
+      {
+        patientIndex: 3,
+        chronic_diseases: ["Migraine with aura"],
+        allergies: ["Aspirin"],
+        medications: ["Propranolol 40mg BID", "Sumatriptan 50mg PRN"],
+        recurrent_symptoms: ["Unilateral throbbing headaches", "Visual aura", "Photophobia", "Nausea"],
+        master_summary:
+          "29-year-old female with migraine with aura, significantly improved on Propranolol 40mg BID prophylaxis. Frequency reduced from roughly 8 episodes per month at diagnosis to 3 per month after 6 weeks of treatment, with shorter duration and lower intensity when Sumatriptan 50mg is taken early during the aura phase. Primary triggers identified through headache diary: sleep deprivation under 6 hours and premenstrual timing. Positive family history of migraine (mother). Tolerating Propranolol well after initial mild fatigue resolved. No red flag features. Continuing current prophylactic and abortive regimen given strong response.",
+      },
+      {
+        patientIndex: 4,
+        chronic_diseases: [],
+        allergies: [],
+        medications: [],
+        recurrent_symptoms: [],
+        master_summary:
+          "42-year-old male with a fully resolved episode of acute lumbar muscle strain sustained while lifting furniture. Presented with bilateral lower back pain and muscle spasm without radicular features, neurological deficits, or red flag symptoms. Treated conservatively with NSAIDs, a short course of muscle relaxant, and physical therapy, with full resolution of pain and function within 2 weeks. No chronic musculoskeletal condition identified. No known drug allergies. Not currently on any medications. Counseled on proper lifting mechanics to reduce risk of recurrence.",
       },
     ];
 
@@ -284,13 +382,13 @@ async function seedDemo() {
       );
     }
 
-    logger.info("3 patient memories creadas");
+    logger.info("5 patient memories creadas");
 
     logger.info({
       doctorId,
       patients: patientIds.length,
-      consultations: 7,
-      memories: 3,
+      consultations: 11,
+      memories: 5,
     }, "demo seed completado - correr seedIndexing.ts para chunks + embeddings");
 
   } catch (error) {

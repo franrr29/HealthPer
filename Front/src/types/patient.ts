@@ -9,6 +9,13 @@ export type Patient = {
     phone: string;
 }
 
+export type PatientFollowUp = {
+    id: number;
+    name: string;
+    last_consultation: string | null;
+    days_since_last_visit: number | null;
+}
+
 export type PatientChatWidgetProps = {
   patientId: number;
 };

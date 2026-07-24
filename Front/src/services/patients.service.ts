@@ -1,5 +1,5 @@
 import api from "../services/api";
-import type { Patient } from "@/types/patient";
+import type { Patient, PatientFollowUp } from "@/types/patient";
 import type { Consultation } from "@/types/consultation";
 
 
@@ -74,11 +74,22 @@ export async function deletePatient(id: number): Promise<string> {
 
 
 //traer la memoria de un paciente por su id, para ver en detalle:
-export async function patientMemory (patient_id: number): Promise<string> {
+export async function patientMemory (patient_id: number) {
 
-    const response = await api.get(`/patients/${patient_id}/memory`);
+    try {
 
-    return response.data.data;
+        const response = await api.get(`/patients/${patient_id}/memory`);
+
+        return response.data.data;
+
+    } catch (error: any) {
+
+        if (error.response?.status === 404) {
+
+            return null;
+        }
+        throw error;
+    }
 }
 
 
@@ -87,5 +98,14 @@ export async function askPatientInfo (patient_id: number, question: string): Pro
 
     const response = await api.post(`/patients/${patient_id}/ask`, { question });
     
+    return response.data.data;
+}
+
+
+//pacientes que necesitan seguimiento:
+export async function getPatientsNeedingFollowUp (): Promise<PatientFollowUp[]> {
+
+    const response = await api.get("/patients/follow-up");
+
     return response.data.data;
 }

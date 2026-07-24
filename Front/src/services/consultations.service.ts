@@ -1,4 +1,5 @@
 import api from './api.ts';
+import type { PendingConsultation } from '../types/consultation';
 
 
 //crea una nueva consulta con audio
@@ -41,7 +42,7 @@ export async function signConsultation(consultation_id: number){
 
 //funcion para enviar el audio a whisper.service:
 
-export async function transcribeAudio(consultation_id: number, audioBuffer: File){
+export async function transcribeAudio(consultation_id: number, audioBuffer: Blob){
 
     //para enviar el audio a la api, se crea un FormData y se agrega el audio como archivo
     const formData = new FormData();
@@ -52,3 +53,13 @@ export async function transcribeAudio(consultation_id: number, audioBuffer: File
     return response.data.transcription;
    
 }
+
+
+//consultas pendientes del dr:
+export async function getPendingConsultations(): Promise<PendingConsultation[]> {
+
+    const response = await api.get('/consultations/pending');
+
+    return response.data.data;
+}
+

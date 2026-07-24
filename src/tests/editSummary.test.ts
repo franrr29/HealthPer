@@ -1,7 +1,7 @@
 // testear PATCH /consultations/:id edicion del resumen por el doctor
 
 import request from "supertest";
-import app from "../../app";
+import app from "../app";
 import { conexionDB } from "../config/db";
 
 let doctorToken: string;

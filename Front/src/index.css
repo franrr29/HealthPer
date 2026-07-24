@@ -2,6 +2,9 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+@import "@fontsource-variable/space-grotesk";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/fraunces";
 
 @theme inline {
     --font-heading: var(--font-sans);
@@ -37,6 +40,8 @@
     --color-card: var(--card);
     --color-foreground: var(--foreground);
     --color-background: var(--background);
+    --color-navy: var(--navy);
+    --color-navy-elevated: var(--navy-elevated);
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);
     --radius-lg: var(--radius);
@@ -60,8 +65,12 @@
     --popover-foreground: oklch(0.32 0.03 258);
 
     /* celeste de marca */
-    --primary: oklch(0.68 0.11 236);
-    --primary-foreground: oklch(1 0 0);
+    --primary: oklch(0.383 0.076 263.2);
+    --primary-foreground: oklch(0.98 0 0);
+
+    /* navy oscuro, para paneles/fondos dark (sidebar de la app, footer, panel de login) */
+    --navy: oklch(0.162 0.028 270);
+    --navy-elevated: oklch(0.206 0.041 269.9);
 
     /* grises secundarios */
     --secondary: oklch(0.97 0.003 248);
@@ -79,7 +88,7 @@
     /* bordes e inputs */
     --border: oklch(0.91 0.01 248);
     --input: oklch(0.91 0.01 248);
-    --ring: oklch(0.68 0.11 236);
+    --ring: oklch(0.533 0.069 263.2);
 
     /* charts */
     --chart-1: oklch(0.68 0.11 236);
@@ -109,4 +118,162 @@
   html {
     @apply font-sans;
   }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-feature: "Fraunces Variable", Georgia, serif;
+
+  --color-wc-navy: #112240;
+  --color-wc-navy-dark: #0a1628;
+  --color-wc-blue-medical: #2563eb;
+  --color-wc-teal-accent: #0ea5e9;
+  --color-wc-text-muted: #64748b;
+  --color-wc-bg: #f0f4f8;
+}
+
+/* insignia "Recording": titila en rojo para que se note a simple vista que se esta grabando */
+@keyframes recording-blink {
+  0%, 100% {
+    background-color: oklch(0.577 0.245 27.325); /* rose-600 */
+    box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.55);
+  }
+  50% {
+    background-color: oklch(0.505 0.213 27.518); /* rose-700, mas oscuro */
+    box-shadow: 0 0 0 5px rgba(225, 29, 72, 0);
+  }
+}
+.recording-badge {
+  animation: recording-blink 1.3s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .recording-badge {
+    animation: none;
+  }
+}
+
+/* cursor del efecto maquina de escribir del login mobile */
+@keyframes caret {
+  50% {
+    opacity: 0;
+  }
+}
+.typewriter-caret {
+  animation: caret 0.8s step-end infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .typewriter-caret {
+    animation: none;
+  }
+}
+
+/*
+ * Fondo atmosferico del hero de Welcome (marketing page).
+ * Solo modo claro: la app no tiene un sistema de dark mode real
+ * (sin .dark toggle ni tokens dark), asi que estas clases no usan
+ * dark:/prefers-color-scheme para evitar que el hero cambie de golpe
+ * segun el SO mientras el resto del sitio se queda claro.
+ */
+.hero-atmosphere {
+  background: radial-gradient(
+    120% 70% at 50% 0%,
+    rgba(17, 34, 64, 0.45) 0%,
+    rgba(14, 165, 233, 0.28) 35%,
+    rgba(147, 197, 253, 0.12) 55%,
+    rgba(241, 245, 249, 0) 80%
+  );
+}
+
+.hero-grid {
+  background-image:
+    linear-gradient(to right, rgba(15, 23, 42, 0.16) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.16) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: radial-gradient(120% 70% at 50% 0%, black 0%, transparent 80%);
+}
+
+/*
+ * Neumorfismo para el area de Welcome (hero, botones, FeatureCard).
+ * Doble sombra suave (clara arriba-izq, navy abajo-der) sobre la misma
+ * superficie de fondo -- sin bordes duros, look "extruido"/"hundido".
+ */
+.neu-surface {
+  /* Sin resalte blanco: esta card vive sobre el degradado navy/celeste
+     del hero, no sobre una superficie plana, asi que el highlight claro
+     de neumorfismo clasico se veia como un blur blanco fuera de lugar. */
+  box-shadow: 10px 10px 26px rgba(8, 16, 29, 0.28);
+}
+
+.neu-button {
+  box-shadow:
+    6px 6px 14px rgba(17, 34, 64, 0.18),
+    -6px -6px 14px rgba(255, 255, 255, 0.85);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.neu-button:hover {
+  box-shadow:
+    8px 8px 18px rgba(17, 34, 64, 0.22),
+    -8px -8px 18px rgba(255, 255, 255, 0.9);
+  transform: translateY(-1px);
+}
+.neu-button:active {
+  box-shadow:
+    inset 4px 4px 10px rgba(17, 34, 64, 0.22),
+    inset -4px -4px 10px rgba(255, 255, 255, 0.8);
+  transform: translateY(0);
+}
+
+.neu-card {
+  box-shadow:
+    8px 8px 18px rgba(17, 34, 64, 0.14),
+    -8px -8px 18px rgba(255, 255, 255, 0.9);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.neu-card:hover {
+  box-shadow:
+    11px 11px 24px rgba(17, 34, 64, 0.18),
+    -11px -11px 24px rgba(255, 255, 255, 0.95);
+  transform: translateY(-2px);
+}
+
+.neu-inset {
+  box-shadow:
+    inset 4px 4px 8px rgba(17, 34, 64, 0.16),
+    inset -4px -4px 8px rgba(255, 255, 255, 0.85);
+}
+
+/*
+ * Variantes "dark" para elementos que viven DENTRO de una superficie
+ * navy (ej. la card de Engineering), no sobre el fondo claro de la
+ * pagina -- el highlight se invierte porque la luz relativa cambia.
+ */
+.neu-inset-dark {
+  box-shadow:
+    inset 4px 4px 8px rgba(0, 0, 0, 0.4),
+    inset -4px -4px 8px rgba(255, 255, 255, 0.05);
+}
+
+.neu-button-dark {
+  box-shadow:
+    6px 6px 14px rgba(0, 0, 0, 0.35),
+    -6px -6px 14px rgba(255, 255, 255, 0.04);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.neu-button-dark:hover {
+  box-shadow:
+    8px 8px 18px rgba(0, 0, 0, 0.4),
+    -8px -8px 18px rgba(255, 255, 255, 0.06);
+  transform: translateY(-1px);
+}
+.neu-button-dark:active {
+  box-shadow:
+    inset 4px 4px 10px rgba(0, 0, 0, 0.4),
+    inset -4px -4px 10px rgba(255, 255, 255, 0.04);
+  transform: translateY(0);
 }

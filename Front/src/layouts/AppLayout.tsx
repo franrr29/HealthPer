@@ -1,93 +1,139 @@
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { NavLink, Outlet, useNavigate, type NavLinkRenderProps } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { LayoutDashboard, Users, LogOut, Menu, X } from "lucide-react";
 
-//componente que renderiza la barra de navegacion y el contenido de la ruta protegida
+const navItems = [
+  { to: "/dashboard", end: true, icon: LayoutDashboard, label: "Dashboard" },
+  { to: "/patients", end: false, icon: Users, label: "Patients" },
+];
+
+function linkClass({ isActive }: NavLinkRenderProps) {
+  return `flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 ${
+    isActive
+      ? "neu-button-dark bg-white text-slate-900 font-semibold"
+      : "neu-button-dark text-white/70 hover:bg-white/10 hover:text-white"
+  }`;
+}
+
 export default function AppLayout() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
-    //saco el logout del context y el navigate para redirigir despues de salir
-    const { logout } = useAuth();
-    const navigate = useNavigate();
+  function handleLogout() {
+    logout();
+    navigate("/login");
+  }
 
-    //cierro sesion y mando al login
-    function handleLogout() {
-        logout();
-        navigate("/login");
-    }
+  return (
+    <div className="flex h-screen w-full overflow-hidden bg-slate-50 font-sans antialiased text-slate-800">
+      {/* desktop sidebar */}
+      <aside className="hidden w-60 shrink-0 flex-col bg-navy px-4 py-6 md:flex border-r border-white/10 shadow-xl">
+        {/* Brand Container */}
+        <div className="mb-8 flex items-center gap-3 px-2">
+          {/* Logo Box */}
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-900 border border-white/10 shadow-sm p-1.5">
+            <img 
+              src="/logo.png" 
+              alt="HealthPer Logo" 
+              className="h-full w-full object-contain"
+            />
+          </div>
 
-    return (
-        <div className="flex min-h-screen bg-background">
-            {/* sidebar desktop */}
-            <aside className="hidden md:flex flex-col w-64 bg-card border-r border-border p-6">
-                <p className="text-xl font-bold text-primary mb-8">HealthPer</p>
-
-                <nav className="flex flex-col gap-1">
-                    <NavLink
-                        to="/dashboard"
-                        className={({ isActive }) =>
-                            isActive
-                                ? "bg-accent text-accent-foreground py-2 px-3 rounded-lg text-sm font-medium"
-                                : "text-muted-foreground py-2 px-3 rounded-lg text-sm font-medium"
-                        }
-                    >
-                        Dashboard
-                    </NavLink>
-                    <NavLink
-                        to="/patients"
-                        className={({ isActive }) =>
-                            isActive
-                                ? "bg-accent text-accent-foreground py-2 px-3 rounded-lg text-sm font-medium"
-                                : "text-muted-foreground py-2 px-3 rounded-lg text-sm font-medium"
-                        }
-                    >
-                        Patients
-                    </NavLink>
-                </nav>
-
-                {/* logout abajo de todo, empujado con mt-auto */}
-                <button
-                    onClick={handleLogout}
-                    className="mt-auto text-left text-muted-foreground py-2 px-3 rounded-lg text-sm font-medium"
-                >
-                    Logout
-                </button>
-            </aside>
-
-            {/* nav mobile */}
-            <div className="md:hidden w-full fixed top-0 left-0 z-10 bg-card border-b border-border px-4 py-3 flex gap-4 items-center">
-                <NavLink
-                    to="/dashboard"
-                    className={({ isActive }) =>
-                        isActive
-                            ? "text-primary text-sm font-medium"
-                            : "text-muted-foreground text-sm font-medium"
-                    }
-                >
-                    Dashboard
-                </NavLink>
-                <NavLink
-                    to="/patients"
-                    className={({ isActive }) =>
-                        isActive
-                            ? "text-primary text-sm font-medium"
-                            : "text-muted-foreground text-sm font-medium"
-                    }
-                >
-                    Patients
-                </NavLink>
-
-                {/* logout a la derecha en mobile */}
-                <button
-                    onClick={handleLogout}
-                    className="ml-auto text-muted-foreground text-sm font-medium"
-                >
-                    Logout
-                </button>
-            </div>
-
-            {/* contenido de la ruta protegida */}
-            <main className="flex-1 p-4 md:p-8 mt-12 md:mt-0">
-                <Outlet />
-            </main>
+          <span className="font-display text-base font-bold tracking-tight text-white">
+            HealthPer
+          </span>
         </div>
-    );
+
+        {/* Nav */}
+        <nav className="flex flex-col gap-1.5">
+          {navItems.map((item) => (
+            <NavLink key={item.to} to={item.to} end={item.end} className={linkClass}>
+              <item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
+
+        {/* Logout */}
+        <div className="mt-auto pt-4 border-t border-white/10">
+          <button
+            onClick={handleLogout}
+            className="neu-button-dark flex w-full items-center gap-2.5 px-3 py-2.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 active:bg-red-700 rounded-xl transition-all duration-200"
+          >
+            <LogOut className="h-4 w-4 shrink-0" aria-hidden="true" />
+            Log out
+          </button>
+        </div>
+      </aside>
+
+      {/* main content area */}
+      <div className="relative flex flex-1 flex-col min-w-0">
+        {/* mobile header */}
+        <header className="flex h-14 shrink-0 items-center justify-between bg-navy px-4 md:hidden border-b border-white/10 shadow-md">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 border border-white/10 p-1">
+              <img 
+                src="/logo.png" 
+                alt="HealthPer Logo" 
+                className="h-full w-full object-contain"
+              />
+            </div>
+            <span className="font-display text-base font-bold text-white">
+              HealthPer
+            </span>
+          </div>
+
+          <button
+            type="button"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            onClick={() => setMenuOpen((open) => !open)}
+            className="neu-button-dark p-1.5 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+          >
+            {menuOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
+          </button>
+        </header>
+
+        {/* mobile dropdown menu */}
+        {menuOpen && (
+          <div className="absolute inset-x-0 top-14 z-30 bg-navy p-4 space-y-4 md:hidden border-b border-white/10 shadow-2xl backdrop-blur-xl">
+            <nav className="flex flex-col gap-1.5">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  onClick={() => setMenuOpen(false)}
+                  className={linkClass}
+                >
+                  <item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  {item.label}
+                </NavLink>
+              ))}
+            </nav>
+
+            <div className="border-t border-white/10 pt-3">
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  handleLogout();
+                }}
+                className="neu-button-dark flex w-full items-center gap-2.5 px-3 py-2.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 active:bg-red-700 rounded-xl transition-all duration-200"
+              >
+                <LogOut className="h-4 w-4 shrink-0" aria-hidden="true" />
+                Log out
+              </button>
+            </div>
+          </div>
+        )}
+
+        <main className="flex-1 overflow-y-auto">
+          <div className="mx-auto w-full max-w-5xl p-4 sm:p-6 md:p-8">
+            <Outlet />
+          </div>
+        </main>
+      </div>
+    </div>
+  );
 }

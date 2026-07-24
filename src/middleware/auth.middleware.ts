@@ -6,39 +6,27 @@ import { RequestHandler } from "express";
 
 
 export const authMiddle: RequestHandler = (req, res, next) => {
-   
-    //Token enviado por el user:
-    const authHeader= req.headers.authorization
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        
-        res.status(401).json({ 
-            success: false,
-            message: "Token required" });
+    const token = req.cookies.accessToken;
+
+    if (!token) {
+        res.status(401).json({
+            message: "Access token not provided"
+        });
         return;
     }
-    
-
-    //sacar el bearer y dejar solo el token:
-    const token = authHeader.split(" ")[1];
 
     try {
-        
-        //revisa si el token es valido:
-        const payload= jwt.verify(token, env.JWT_SECRET) as { id: number; email: string; role: string };
-        
+        // revisa si el token es valido
+        const payload = jwt.verify(token, env.JWT_SECRET) as { id: number; email: string; role: string };
 
         req.user = payload;
-        
+
         next();
 
     } catch {
-
-        res.status(401).json ({
+        res.status(401).json({
             message: "Invalid or expired token"
         });
-
     }
-
-
 }
