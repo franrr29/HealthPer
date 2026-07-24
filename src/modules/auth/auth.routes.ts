@@ -11,7 +11,7 @@ const router = Router();
 
 //ruta para registrar usuarios y redirige a controllers
 
-router.post("/try-demo", limiter, tryDemo as RequestHandler);
+router.post("/try-demo", tryDemo as RequestHandler);
 
 router.post("/register", limiter, registerUser as RequestHandler);
 
