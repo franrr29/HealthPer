@@ -6,6 +6,8 @@ import { FeatureCard } from "./FeatureCard";
 import { EngineeringDecisions } from "./EngineeringDecisions";
 import { Reveal } from "@/components/common/Reveal";
 import { Footer } from "@/layouts/Footer";
+import { RotatingText } from "@/components/common/RotatingText";
+
 
 const LINKEDIN_URL = "https://www.linkedin.com/in/franrod-dev/";
 
@@ -15,54 +17,54 @@ const FEATURES = [
     icon: Mic,
     image: "/grabar.png",
     alt: "Voice recording during a consultation",
-    title: "AI Audio Capture",
+    title: "Live Audio Capture",
     description:
-      "Capture multi-speaker clinical dialogues into high-fidelity transcripts engineered with Whisper.",
+      "Stream ambient clinical audio in real time. The system captures multi-speaker dialogue ready for downstream processing by Whisper.",
   },
   {
     step: "02",
     icon: Sparkles,
     image: "/preguntas.jpg",
     alt: "AI suggested questions while recording is paused",
-    title: "Intelligent Pause Insights",
+    title: "Context-Aware Suggested Questions",
     description:
-      "The system monitors silence thresholds to recommend high-yield diagnostic prompts in real time.",
+      "Pause the session and instantly receive AI-generated follow-up questions drawn from the patient's full history and the current conversation.",
   },
   {
     step: "03",
     icon: History,
     image: "/transcrib.png",
-    alt: "Transcribed consultation history",
-    title: "Longitudinal Patient Memory",
+    alt: "Transcribed consultation text",
+    title: "Precision Transcription",
     description:
-      "Vector-indexed medical history. Every encounter dynamically updates the patient's context window.",
+      "Stop the recording and the entire session is transcribed with high accuracy, preserving clinical terminology and speaker turns.",
   },
   {
     step: "04",
     icon: FileText,
     image: "/processing.png",
     alt: "AI processing a clinical summary",
-    title: "SOAP Note Synthesis",
+    title: "SOAP Note Generation",
     description:
-      "Deterministic LLM pipelines map unstructured conversations into standard SOAP clinical notes.",
+      "The transcription is processed through a deterministic LLM pipeline that maps unstructured dialogue into a standard SOAP clinical note.",
   },
   {
     step: "05",
     icon: MessageSquare,
     image: "/summ.png",
     alt: "Text-based question and answer",
-    title: "History Search Assistant",
+    title: "Medical History Assistant",
     description:
-      "Perform semantic queries against the entire medical record to surface critical background instantly.",
+      "Run semantic queries against the patient's entire medical record to surface relevant background before, during, or after a consultation.",
   },
   {
     step: "06",
     icon: Mail,
     image: "/sendMail.jpg",
     alt: "Consultation summary sent to the patient by email",
-    title: "Patient Summary Dispatch",
+    title: "Patient Summary by Email",
     description:
-      "Asynchronous email delivery sends clear, patient-friendly summaries without blocking the main workflow.",
+      "Send a clear, patient-friendly summary of the consultation directly to the patient's inbox without blocking the clinical workflow.",
   },
 ];
 
@@ -92,11 +94,14 @@ export default function Welcome() {
             <div className="grid grid-cols-1 items-stretch gap-10 lg:grid-cols-12">
               <div className="lg:col-span-6 flex flex-col justify-center rounded-2xl border border-slate-300/80 bg-slate-100 p-6 sm:p-8 shadow-[8px_8px_18px_#cbd5e1,-8px_-8px_18px_#ffffff]">
                 <h1 className="font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl lg:leading-tight">
-                  Clinical conversations translated into structured medical intelligence.
+                  The AI medical copilot that
+                  <br className="hidden lg:block" />
+                  {" "}
+                  <RotatingText words={["captures", "questions", "transcribes", "summarizes", "delivers"]} />
                 </h1>
 
                 <p className="mt-4 text-base leading-relaxed text-slate-600">
-                  An ambient AI copilot tailored for medical practice. Stream live ambient audio, cross-reference historical charts via RAG, and sign off on SOAP documentation in seconds.
+                  An ambient AI copilot for medical consultations. Capture live audio, get context-aware suggested questions from the patient's history, generate SOAP notes automatically, and send a clear summary straight to the patient's inbox.
                 </p>
 
                 {/* botones de accion */}
@@ -105,7 +110,7 @@ export default function Welcome() {
                     href="#features"
                     className="group inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-xs font-semibold uppercase tracking-wider text-white border border-slate-800 shadow-[4px_4px_10px_#cbd5e1] hover:bg-slate-800 transition duration-150"
                   >
-                    <span>Explore Architecture Pipeline</span>
+                    <span>See How It Works</span>
                     <ChevronRight className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-0.5" />
                   </a>
                 </div>
@@ -126,7 +131,7 @@ export default function Welcome() {
                   </div>
                 </div>
                 <p className="mt-2 text-center font-mono text-[10px] uppercase tracking-wider text-slate-500">
-                  Ambient processing paired with automated clinical chart generation.
+                  From live audio to structured clinical notes — fully automated.
                 </p>
               </div>
             </div>
@@ -159,14 +164,14 @@ export default function Welcome() {
 
               <div className="relative rounded-2xl border border-white/20 bg-white/10 backdrop-blur-[3px] p-6 sm:p-8">
                 <div className="grid items-center gap-6 md:grid-cols-12">
-                  
+
                   {/* metric principal */}
                   <div className="md:col-span-5">
-                    <p className="font-mono text-5xl font-extrabold tracking-tight text-white drop-shadow-sm">
+                    <p className="font-mono text-4xl sm:text-5xl font-extrabold tracking-tight text-white drop-shadow-sm">
                       98.4%
                     </p>
 
-                    <p className="mt-2 text-base font-bold text-white drop-shadow-sm">
+                    <p className="mt-2 text-sm sm:text-base font-bold text-white drop-shadow-sm">
                       Clinical Term Precision
                     </p>
 
@@ -177,31 +182,31 @@ export default function Welcome() {
 
                   {/* estadisticas secundarias */}
                   <div className="md:col-span-7">
-                    <div className="grid grid-cols-3 gap-3">
-                      <div className="rounded-xl border border-white/30 bg-white/15 p-4 text-center backdrop-blur-md shadow-[inset_2px_2px_6px_rgba(255,255,255,0.2)]">
-                        <p className="font-mono text-2xl font-black text-white">
+                    <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                      <div className="rounded-xl border border-white/30 bg-white/15 p-2 sm:p-4 text-center backdrop-blur-md shadow-[inset_2px_2px_6px_rgba(255,255,255,0.2)]">
+                        <p className="font-mono text-lg sm:text-2xl font-black text-white">
                           &lt;10s
                         </p>
-                        <p className="mt-1 text-[10px] uppercase tracking-wider text-slate-100 font-bold">
+                        <p className="mt-1 text-[8px] sm:text-[10px] uppercase tracking-wider text-slate-100 font-bold">
                           Latency to SOAP
                         </p>
                       </div>
 
-                      <div className="rounded-xl border border-white/30 bg-white/15 p-4 text-center backdrop-blur-md shadow-[inset_2px_2px_6px_rgba(255,255,255,0.2)]">
-                        <p className="font-mono text-2xl font-black text-white">
-                          + 136
+                      <div className="rounded-xl border border-white/30 bg-white/15 p-2 sm:p-4 text-center backdrop-blur-md shadow-[inset_2px_2px_6px_rgba(255,255,255,0.2)]">
+                        <p className="font-mono text-lg sm:text-2xl font-black text-white">
+                          +136
                         </p>
-                        <p className="mt-1 text-[10px] uppercase tracking-wider text-slate-100 font-bold">
-                          Encounters Processed
+                        <p className="mt-1 text-[8px] sm:text-[10px] uppercase tracking-wider text-slate-100 font-bold">
+                          Encounters
                         </p>
                       </div>
 
-                      <div className="rounded-xl border border-white/30 bg-white/15 p-4 text-center backdrop-blur-md shadow-[inset_2px_2px_6px_rgba(255,255,255,0.2)]">
-                        <p className="font-mono text-2xl font-black text-white">
+                      <div className="rounded-xl border border-white/30 bg-white/15 p-2 sm:p-4 text-center backdrop-blur-md shadow-[inset_2px_2px_6px_rgba(255,255,255,0.2)]">
+                        <p className="font-mono text-lg sm:text-2xl font-black text-white break-words">
                           Real-time
                         </p>
-                        <p className="mt-1 text-[10px] uppercase tracking-wider text-slate-100 font-bold">
-                          RAG Memory Sync
+                        <p className="mt-1 text-[8px] sm:text-[10px] uppercase tracking-wider text-slate-100 font-bold">
+                          RAG Sync
                         </p>
                       </div>
                     </div>
@@ -219,13 +224,13 @@ export default function Welcome() {
             <Reveal>
               <div className="max-w-2xl">
                 <span className="font-mono text-[10px] font-bold tracking-widest uppercase text-slate-500 block mb-1">
-                  System Architecture
+                  Consultation Workflow
                 </span>
                 <h2 className="font-display text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-                  End-to-End Processing Pipeline
+                  From Live Audio to Patient Inbox
                 </h2>
                 <p className="mt-2 text-sm sm:text-base text-slate-600">
-                  A multi-stage asynchronous system built to convert natural clinical dialogue into structured, queryable data.
+                  A step-by-step pipeline that captures the consultation, suggests questions in real time, transcribes, summarizes, and delivers the result to the patient.
                 </p>
               </div>
             </Reveal>
