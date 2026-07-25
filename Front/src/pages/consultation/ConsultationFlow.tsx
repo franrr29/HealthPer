@@ -92,12 +92,6 @@ export default function ConsultationFlow() {
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
         <h1 className="font-display text-2xl font-bold tracking-tight text-black">Clinical Consultation</h1>
-        {roundPhase === 'recording' && (
-          <span className="recording-badge flex items-center gap-2 px-3 py-1 rounded-full bg-rose-600 border border-rose-700/60 text-white font-mono text-[10px] font-extrabold uppercase tracking-widest">
-            <Mic className="h-3 w-3" />
-            Recording
-          </span>
-        )}
         {roundPhase === 'analyzing' && (
           <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-500 border border-slate-600/60 text-white font-mono text-[10px] font-extrabold uppercase tracking-widest">
             <Pause className="h-3 w-3" />
@@ -210,6 +204,13 @@ export default function ConsultationFlow() {
                 ))}
               </div>
             )}
+
+            <div className="flex items-center gap-2">
+              <span className="recording-badge h-4 w-4 rounded-full bg-rose-600 border border-rose-700/60 shrink-0" />
+              <span className="font-mono text-[10px] font-extrabold uppercase tracking-widest text-rose-600">
+                Recording
+              </span>
+            </div>
 
             <div className="flex gap-2.5">
               <button
