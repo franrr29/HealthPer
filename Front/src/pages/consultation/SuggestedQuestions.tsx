@@ -1,4 +1,4 @@
-import { Sparkles, MessageCircleQuestion } from "lucide-react";
+import { Sparkles, MessageCircleQuestion, Mic } from "lucide-react";
 
 interface Props {
     questions: { question: string; reason: string }[];
@@ -40,8 +40,9 @@ export default function SuggestedQuestions({ questions, onContinue, onFinalize }
             <div className="flex gap-2.5">
                 <button
                     onClick={onContinue}
-                    className="neu-card bg-card text-foreground hover:brightness-95 rounded-xl px-4 py-2 border border-border text-xs font-bold uppercase tracking-wider transition-all duration-200"
+                    className="neu-card bg-card text-foreground hover:brightness-95 rounded-xl px-4 py-2 border border-border text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-2"
                 >
+                    <Mic className="h-3.5 w-3.5" />
                     Continue recording
                 </button>
                 <button

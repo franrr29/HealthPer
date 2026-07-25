@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import EditSummary from "./EditSummary";
 import PatientChatWidget from "@/components/common/ChatPatientMessage";
 import SendEmailPatient from "../patients/SendEmailPatient";
-import { Brain, ListChecks } from "lucide-react";
+import { Brain, ListChecks, Mic, Pause, Sparkles } from "lucide-react";
 import useConsultationRounds from "./useConsultationRounds";
 import SuggestedQuestions from "./SuggestedQuestions";
 
@@ -90,12 +90,24 @@ export default function ConsultationFlow() {
         <span>←</span> Back to patient
       </Link>
 
-      <div className="flex items-center justify-between border-b border-border pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
         <h1 className="font-display text-2xl font-bold tracking-tight text-black">Clinical Consultation</h1>
         {roundPhase === 'recording' && (
           <span className="recording-badge flex items-center gap-2 px-3 py-1 rounded-full bg-rose-600 border border-rose-700/60 text-white font-mono text-[10px] font-extrabold uppercase tracking-widest">
-            <span className="w-2 h-2 rounded-full bg-rose-200 animate-pulse" />
+            <Mic className="h-3 w-3" />
             Recording
+          </span>
+        )}
+        {roundPhase === 'analyzing' && (
+          <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-500 border border-slate-600/60 text-white font-mono text-[10px] font-extrabold uppercase tracking-widest">
+            <Pause className="h-3 w-3" />
+            Paused
+          </span>
+        )}
+        {roundPhase === 'reviewing' && (
+          <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-600 border border-emerald-700/60 text-white font-mono text-[10px] font-extrabold uppercase tracking-widest">
+            <Sparkles className="h-3 w-3" />
+            Questions Ready
           </span>
         )}
       </div>
@@ -168,8 +180,9 @@ export default function ConsultationFlow() {
         {roundPhase === 'idle' && (
           <button
             onClick={startRound}
-            className="neu-card bg-rose-600 hover:brightness-110 text-white rounded-xl px-4 py-2 border border-rose-700/60 text-xs font-bold uppercase tracking-wider transition-all duration-200"
+            className="neu-card bg-rose-600 hover:brightness-110 text-white rounded-xl px-4 py-2 border border-rose-700/60 text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-2"
           >
+            <Mic className="h-3.5 w-3.5" />
             Start recording
           </button>
         )}
@@ -201,8 +214,9 @@ export default function ConsultationFlow() {
             <div className="flex gap-2.5">
               <button
                 onClick={stopRound}
-                className="neu-card bg-card text-foreground hover:brightness-95 rounded-xl px-4 py-2 border border-border text-xs font-bold uppercase tracking-wider transition-all duration-200"
+                className="neu-card bg-slate-500 hover:brightness-110 text-white rounded-xl px-4 py-2 border border-slate-600/60 text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-2"
               >
+                <Pause className="h-3.5 w-3.5" />
                 Pause & analyze
               </button>
               <button
@@ -217,8 +231,8 @@ export default function ConsultationFlow() {
 
         {/* procesando la ronda */}
         {roundPhase === 'analyzing' && (
-          <div className="flex items-center gap-2.5 text-xs text-blue-700 bg-blue-50 p-3 rounded-lg border border-blue-200 animate-pulse">
-            <span className="w-3.5 h-3.5 rounded-full border-2 border-blue-600 border-t-transparent animate-spin" />
+          <div className="flex items-center gap-2.5 text-xs text-slate-600 bg-slate-100 p-3 rounded-lg border border-slate-200 animate-pulse">
+            <span className="w-3.5 h-3.5 rounded-full border-2 border-slate-500 border-t-transparent animate-spin" />
             Transcribing and analyzing consultation...
           </div>
         )}
