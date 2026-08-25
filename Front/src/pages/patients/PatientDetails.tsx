@@ -116,7 +116,7 @@ export default function PatientDetails() {
       </Link>
 
       <div className="flex items-center justify-between border-b border-border pb-4">
-        <h1 className="font-display text-2xl font-bold tracking-tight text-black">
+        <h1 className="font-feature text-2xl font-semibold tracking-tight text-foreground">
           {patient.name}
         </h1>
         <div className="flex gap-2">
@@ -182,7 +182,7 @@ export default function PatientDetails() {
               return (
                 <div
                   key={meta.label}
-                  className={`rounded-md p-3 space-y-1 shadow-[3px_3px_6px_rgba(17,34,64,0.12),-3px_-3px_6px_rgba(255,255,255,0.7)] transition-shadow duration-200 ${tone.box}`}
+                  className={`rounded-md p-3 space-y-1 shadow-sm transition-shadow duration-200 ${tone.box}`}
                 >
                   <span className={`font-mono text-[10px] font-bold uppercase tracking-widest block ${tone.label}`}>
                     {meta.label}
@@ -205,7 +205,7 @@ export default function PatientDetails() {
           </h3>
           <button
             onClick={handleCreateConsultation}
-            className="neu-card inline-flex items-center gap-2 bg-slate-900 text-white rounded-xl px-4 py-2 text-[11px] font-bold uppercase tracking-wider border border-slate-800 hover:brightness-110 transition-all duration-200 shadow-sm"
+            className="neu-card inline-flex items-center gap-2 bg-[#2F3B35] text-white rounded-md px-4 py-2 text-[11px] font-bold uppercase tracking-wider border border-[#3B4A42] hover:bg-[#3B4A42] transition-all duration-200"
           >
             Open Consultation
           </button>
@@ -239,7 +239,7 @@ export default function PatientDetails() {
                 <div
                   className={`px-4 py-1.5 border-t font-mono text-[9px] font-extrabold uppercase tracking-widest ${
                     consultation.status === "signed"
-                      ? "bg-emerald-600 border-emerald-700/60 text-white"
+                      ? "bg-[#769283] border-[#5E7367]/60 text-white"
                       : "bg-amber-400 border-amber-500/60 text-slate-950"
                   }`}
                 >
@@ -257,7 +257,7 @@ export default function PatientDetails() {
 
       {/* Modal de eliminación */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity duration-200">
+        <div className="fixed inset-0 bg-[#2F3B35]/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity duration-200">
           <div className="neu-card rounded-2xl bg-card p-5 border border-border/80 w-full max-w-sm space-y-4 transition-all duration-200 transform scale-100">
             <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-foreground">
               Destructive Protocol

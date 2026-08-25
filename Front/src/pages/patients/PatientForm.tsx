@@ -145,13 +145,13 @@ export function PatientForm({ patient }: PatientFormProps) {
 
       {/* aviso de exito antes de volver al detalle del paciente */}
       {saved && (
-        <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-emerald-700"><Check className="h-3 w-3 inline" /> Patient saved</p>
+        <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#5E7367]"><Check className="h-3 w-3 inline" /> Patient saved</p>
       )}
 
       <button
         type="submit"
         disabled={activeMutation.isPending || saved}
-        className="neu-card w-full bg-slate-900 hover:brightness-110 text-white rounded-xl px-4 py-2 border border-slate-800 text-[11px] font-bold uppercase tracking-wider transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+        className="neu-card w-full bg-[#2F3B35] hover:bg-[#3B4A42] text-white rounded-md px-4 py-2 border border-[#3B4A42] text-[11px] font-bold uppercase tracking-wider transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {activeMutation.isPending ? "Saving..." : saved ? "Saved" : "Save"}
       </button>

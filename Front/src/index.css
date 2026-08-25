@@ -52,60 +52,60 @@
 }
 
 :root {
-    --radius: 0.625rem;
+    --radius: 0.5rem;
 
-    /* fondos */
-    --background: oklch(0.98 0.003 248);
-    --foreground: oklch(0.32 0.03 258);
+    /* paleta de marca: sage green / warm beige / soft gray-green / warm ivory */
+    --background: #F2EEE3;
+    --foreground: #2B332D;
 
     /* cards y superficies */
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.32 0.03 258);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.32 0.03 258);
+    --card: #FBF9F3;
+    --card-foreground: #2B332D;
+    --popover: #FBF9F3;
+    --popover-foreground: #2B332D;
 
-    /* celeste de marca */
-    --primary: oklch(0.383 0.076 263.2);
-    --primary-foreground: oklch(0.98 0 0);
+    /* sage oscuro de marca, para acciones primarias */
+    --primary: #3E4B43;
+    --primary-foreground: #F2EEE3;
 
-    /* navy oscuro, para paneles/fondos dark (sidebar de la app, footer, panel de login) */
-    --navy: oklch(0.162 0.028 270);
-    --navy-elevated: oklch(0.206 0.041 269.9);
+    /* sage oscuro, para paneles/fondos dark (sidebar de la app, footer, panel de login) */
+    --navy: #3E4B43;
+    --navy-elevated: #4A5A50;
 
-    /* grises secundarios */
-    --secondary: oklch(0.97 0.003 248);
-    --secondary-foreground: oklch(0.32 0.03 258);
-    --muted: oklch(0.97 0.003 248);
-    --muted-foreground: oklch(0.58 0.03 257);
+    /* superficies secundarias, tinte beige calido */
+    --secondary: #ECE6D8;
+    --secondary-foreground: #2B332D;
+    --muted: #ECE6D8;
+    --muted-foreground: #6B7268;
 
-    /* celeste claro para nav activo */
-    --accent: oklch(0.95 0.02 236);
-    --accent-foreground: oklch(0.68 0.11 236);
+    /* sage claro para nav activo */
+    --accent: #DDE4DE;
+    --accent-foreground: #3E4B43;
 
     /* acciones destructivas */
     --destructive: oklch(0.58 0.22 27);
 
-    /* bordes e inputs */
-    --border: oklch(0.91 0.01 248);
-    --input: oklch(0.91 0.01 248);
-    --ring: oklch(0.533 0.069 263.2);
+    /* bordes e inputs: soft gray-green */
+    --border: #C0C3B8;
+    --input: #C0C3B8;
+    --ring: #769283;
 
     /* charts */
-    --chart-1: oklch(0.68 0.11 236);
-    --chart-2: oklch(0.58 0.03 257);
-    --chart-3: oklch(0.32 0.03 258);
-    --chart-4: oklch(0.75 0.08 236);
-    --chart-5: oklch(0.45 0.06 248);
+    --chart-1: #769283;
+    --chart-2: #8B9086;
+    --chart-3: #2B332D;
+    --chart-4: #E9DEC8;
+    --chart-5: #6B7268;
 
     /* sidebar */
-    --sidebar: oklch(1 0 0);
-    --sidebar-foreground: oklch(0.32 0.03 258);
-    --sidebar-primary: oklch(0.68 0.11 236);
-    --sidebar-primary-foreground: oklch(1 0 0);
-    --sidebar-accent: oklch(0.95 0.02 236);
-    --sidebar-accent-foreground: oklch(0.68 0.11 236);
-    --sidebar-border: oklch(0.91 0.01 248);
-    --sidebar-ring: oklch(0.68 0.11 236);
+    --sidebar: #FBF9F3;
+    --sidebar-foreground: #2B332D;
+    --sidebar-primary: #4C5F54;
+    --sidebar-primary-foreground: #F2EEE3;
+    --sidebar-accent: #DDE4DE;
+    --sidebar-accent-foreground: #3E4B43;
+    --sidebar-border: #C0C3B8;
+    --sidebar-ring: #4C5F54;
 }
 
 @layer base {
@@ -158,6 +158,19 @@
   }
 }
 
+/*
+ * Textura decorativa para secciones solidas en verde forestal: rayas finas
+ * cruzadas (45deg y -45deg), muy sutiles, tipo trama de gasa/venda medica.
+ * Rompe la monotonia del verde plano sin competir con el contenido.
+ */
+.medical-crosshatch {
+  background-image:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.035) 0px, rgba(255, 255, 255, 0.035) 1px, transparent 1px, transparent 32px),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.035) 0px, rgba(255, 255, 255, 0.035) 1px, transparent 1px, transparent 32px);
+  /* se desvanece hacia los bordes para que se lea como una textura fina, no un empapelado uniforme */
+  mask-image: radial-gradient(120% 100% at 50% 40%, black 40%, transparent 90%);
+}
+
 /* cursor del efecto maquina de escribir del login mobile */
 @keyframes caret {
   50% {
@@ -180,72 +193,39 @@
  * dark:/prefers-color-scheme para evitar que el hero cambie de golpe
  * segun el SO mientras el resto del sitio se queda claro.
  */
-.hero-atmosphere {
-  background: radial-gradient(
-    120% 70% at 50% 0%,
-    rgba(17, 34, 64, 0.45) 0%,
-    rgba(14, 165, 233, 0.28) 35%,
-    rgba(147, 197, 253, 0.12) 55%,
-    rgba(241, 245, 249, 0) 80%
-  );
-}
-
-.hero-grid {
-  background-image:
-    linear-gradient(to right, rgba(15, 23, 42, 0.16) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 23, 42, 0.16) 1px, transparent 1px);
-  background-size: 24px 24px;
-  mask-image: radial-gradient(120% 70% at 50% 0%, black 0%, transparent 80%);
-}
-
 /*
- * Neumorfismo para el area de Welcome (hero, botones, FeatureCard).
- * Doble sombra suave (clara arriba-izq, navy abajo-der) sobre la misma
- * superficie de fondo -- sin bordes duros, look "extruido"/"hundido".
+ * Sombras suaves y restringidas para superficies elevadas (hero, botones,
+ * FeatureCard). Reemplaza el neumorfismo original por un tratamiento mas
+ * editorial: sombra unica, baja intensidad, sin doble relieve.
  */
 .neu-surface {
-  /* Sin resalte blanco: esta card vive sobre el degradado navy/celeste
-     del hero, no sobre una superficie plana, asi que el highlight claro
-     de neumorfismo clasico se veia como un blur blanco fuera de lugar. */
-  box-shadow: 10px 10px 26px rgba(8, 16, 29, 0.28);
+  box-shadow: 0 6px 20px rgba(47, 59, 53, 0.1);
 }
 
 .neu-button {
-  box-shadow:
-    6px 6px 14px rgba(17, 34, 64, 0.18),
-    -6px -6px 14px rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 8px rgba(47, 59, 53, 0.1);
   transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 .neu-button:hover {
-  box-shadow:
-    8px 8px 18px rgba(17, 34, 64, 0.22),
-    -8px -8px 18px rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 12px rgba(47, 59, 53, 0.14);
   transform: translateY(-1px);
 }
 .neu-button:active {
-  box-shadow:
-    inset 4px 4px 10px rgba(17, 34, 64, 0.22),
-    inset -4px -4px 10px rgba(255, 255, 255, 0.8);
+  box-shadow: inset 0 2px 6px rgba(47, 59, 53, 0.14);
   transform: translateY(0);
 }
 
 .neu-card {
-  box-shadow:
-    8px 8px 18px rgba(17, 34, 64, 0.14),
-    -8px -8px 18px rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 16px rgba(47, 59, 53, 0.08);
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 .neu-card:hover {
-  box-shadow:
-    11px 11px 24px rgba(17, 34, 64, 0.18),
-    -11px -11px 24px rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 22px rgba(47, 59, 53, 0.12);
   transform: translateY(-2px);
 }
 
 .neu-inset {
-  box-shadow:
-    inset 4px 4px 8px rgba(17, 34, 64, 0.16),
-    inset -4px -4px 8px rgba(255, 255, 255, 0.85);
+  box-shadow: inset 0 2px 6px rgba(47, 59, 53, 0.12);
 }
 
 /*
@@ -254,26 +234,15 @@
  * pagina -- el highlight se invierte porque la luz relativa cambia.
  */
 .neu-inset-dark {
-  box-shadow:
-    inset 4px 4px 8px rgba(0, 0, 0, 0.4),
-    inset -4px -4px 8px rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 
 .neu-button-dark {
-  box-shadow:
-    6px 6px 14px rgba(0, 0, 0, 0.35),
-    -6px -6px 14px rgba(255, 255, 255, 0.04);
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  transition: background-color 0.15s ease, transform 0.15s ease;
 }
 .neu-button-dark:hover {
-  box-shadow:
-    8px 8px 18px rgba(0, 0, 0, 0.4),
-    -8px -8px 18px rgba(255, 255, 255, 0.06);
   transform: translateY(-1px);
 }
 .neu-button-dark:active {
-  box-shadow:
-    inset 4px 4px 10px rgba(0, 0, 0, 0.4),
-    inset -4px -4px 10px rgba(255, 255, 255, 0.04);
   transform: translateY(0);
 }

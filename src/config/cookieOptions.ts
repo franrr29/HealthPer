@@ -1,7 +1,3 @@
-// Opciones de cookies compartidas entre login, demo, google auth y refresh.
-// sameSite "none" + secure es obligatorio para que la cookie viaje entre
-// dominios distintos (frontend en healthper.online, backend en onrender.com).
-// En development se usa "lax" porque "none" exige Secure, y localhost corre en http.
 
 import { env } from "./env";
 

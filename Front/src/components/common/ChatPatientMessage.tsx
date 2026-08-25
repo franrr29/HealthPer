@@ -70,10 +70,10 @@ export default function PatientChatWidget({ patientId }: PatientChatWidgetProps)
       {!isChatOpen && (
         <button
           onClick={() => setIsChatOpen(true)}
-          className="fixed bottom-6 right-6 z-50 group flex items-center justify-center p-4 bg-[#0F172A] text-white rounded-2xl shadow-lg shadow-slate-900/20 border border-slate-700/50 hover:brightness-110 hover:bg-[#1E293B] active:brightness-90 transition-transform duration-200"
+          className="fixed bottom-6 right-6 z-50 group flex items-center justify-center p-4 bg-[#2F3B35] text-white rounded-lg shadow-lg border border-[#3B4A42] hover:bg-[#3B4A42] active:brightness-90 transition-transform duration-200"
           aria-label="Open AI assistant"
         >
-          <Bot size={24} className="group-hover:rotate-6 transition-transform duration-200 text-sky-400" />
+          <Bot size={24} className="group-hover:rotate-6 transition-transform duration-200 text-[#A5BCAE]" />
         </button>
       )}
 
@@ -82,23 +82,23 @@ export default function PatientChatWidget({ patientId }: PatientChatWidgetProps)
         <div className="widget-pop fixed bottom-6 right-6 z-50 w-[90vw] max-w-[380px] h-[620px] max-h-[80vh] bg-card/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-border/80 flex flex-col overflow-hidden">
 
           {/* header del panel con gradiente */}
-          <div className="flex items-center justify-between bg-[#0F172A] text-white px-5 py-4 shadow-sm border-b border-slate-800">
+          <div className="flex items-center justify-between bg-[#2F3B35] text-white px-5 py-4 border-b border-[#3B4A42]">
             <div className="flex items-center gap-3">
               {/* avatar del bot */}
-              <div className="bg-slate-800/80 backdrop-blur-md rounded-xl p-2 border border-slate-700/60 shadow-inner">
-                <Bot size={20} className="text-sky-400" />
+              <div className="bg-white/10 rounded-lg p-2 border border-white/10">
+                <Bot size={20} className="text-[#A5BCAE]" />
               </div>
               <div className="flex flex-col leading-tight">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-sm font-semibold tracking-wide text-slate-100">AI Assistant</span>
-                  <Sparkles size={13} className="text-sky-400 opacity-90" />
+                  <span className="text-sm font-semibold tracking-wide text-white">AI Assistant</span>
+                  <Sparkles size={13} className="text-[#E9DEC8] opacity-90" />
                 </div>
-                <span className="text-[11px] text-slate-400 font-medium">Patient history insights</span>
+                <span className="text-[11px] text-[#DDE6E0]/70 font-medium">Patient history insights</span>
               </div>
             </div>
             <button
               onClick={() => setIsChatOpen(false)}
-              className="text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl p-1.5 transition-colors active:scale-95"
+              className="text-[#DDE6E0]/70 hover:text-white hover:bg-white/10 rounded-lg p-1.5 transition-colors active:scale-95"
               aria-label="Close AI assistant"
             >
               <X size={18} />
@@ -111,8 +111,8 @@ export default function PatientChatWidget({ patientId }: PatientChatWidgetProps)
             {/* estado vacio: cuando todavia no hay preguntas */}
             {chatMessages.length === 0 && !askMutation.isPending && (
               <div className="flex flex-col items-center justify-center h-full text-center gap-3.5 px-4 my-auto">
-                <div className="bg-[#0F172A]/10 border border-[#0F172A]/20 rounded-2xl p-4 shadow-sm">
-                  <Bot size={32} className="text-[#0F172A]" />
+                <div className="bg-[#2F3B35]/10 border border-[#2F3B35]/20 rounded-lg p-4 shadow-sm">
+                  <Bot size={32} className="text-[#2F3B35]" />
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-foreground">How can I help with this patient?</p>
@@ -129,7 +129,7 @@ export default function PatientChatWidget({ patientId }: PatientChatWidgetProps)
 
                 {/* pregunta del doctor: derecha, celeste */}
                 <div className="flex justify-end bubble-in">
-                  <div className="bg-[#0F172A] text-white rounded-2xl rounded-tr-xs px-4 py-3 max-w-[85%] shadow-sm">
+                  <div className="bg-[#2F3B35] text-white rounded-2xl rounded-tr-xs px-4 py-3 max-w-[85%] shadow-sm">
                     <p className="text-sm leading-relaxed font-normal">{msg.question}</p>
                   </div>
                 </div>
@@ -173,14 +173,14 @@ export default function PatientChatWidget({ patientId }: PatientChatWidgetProps)
             {/* typing indicator: puntitos mientras el LLM responde */}
             {askMutation.isPending && (
               <div className="flex justify-start items-start gap-2.5 bubble-in">
-                <div className="bg-[#0F172A]/10 border border-[#0F172A]/20 rounded-xl p-1.5 shrink-0 mt-0.5">
-                  <Bot size={15} className="text-[#0F172A]" />
+                <div className="bg-[#2F3B35]/10 border border-[#2F3B35]/20 rounded-lg p-1.5 shrink-0 mt-0.5">
+                  <Bot size={15} className="text-[#2F3B35]" />
                 </div>
                 <div className="bg-card border border-border/80 rounded-2xl rounded-tl-xs px-4 py-3 shadow-xs">
                   <div className="flex items-center gap-1.5 h-4">
-                    <span className="typing-dot w-2 h-2 bg-[#0F172A]/60 rounded-full" style={{ animationDelay: "0ms" }} />
-                    <span className="typing-dot w-2 h-2 bg-[#0F172A]/60 rounded-full" style={{ animationDelay: "200ms" }} />
-                    <span className="typing-dot w-2 h-2 bg-[#0F172A]/60 rounded-full" style={{ animationDelay: "400ms" }} />
+                    <span className="typing-dot w-2 h-2 bg-[#2F3B35]/60 rounded-full" style={{ animationDelay: "0ms" }} />
+                    <span className="typing-dot w-2 h-2 bg-[#2F3B35]/60 rounded-full" style={{ animationDelay: "200ms" }} />
+                    <span className="typing-dot w-2 h-2 bg-[#2F3B35]/60 rounded-full" style={{ animationDelay: "400ms" }} />
                   </div>
                 </div>
               </div>
@@ -200,7 +200,7 @@ export default function PatientChatWidget({ patientId }: PatientChatWidgetProps)
 
           {/* input + boton de enviar (fijo abajo) */}
           <div className="p-3 border-t border-border/80 bg-card/90 backdrop-blur-md">
-            <div className="flex items-center gap-2 bg-background border border-border rounded-2xl p-1.5 focus-within:border-[#0F172A]/50 focus-within:ring-2 focus-within:ring-[#0F172A]/20 transition-all">
+            <div className="flex items-center gap-2 bg-background border border-border rounded-2xl p-1.5 focus-within:border-[#2F3B35]/50 focus-within:ring-2 focus-within:ring-[#2F3B35]/20 transition-all">
               <input
                 type="text"
                 value={question}
@@ -212,7 +212,7 @@ export default function PatientChatWidget({ patientId }: PatientChatWidgetProps)
               <button
                 onClick={handleAskQuestion}
                 disabled={askMutation.isPending || !question.trim()}
-                className="bg-[#0F172A] text-white rounded-xl p-2.5 shrink-0 shadow-sm hover:bg-[#1E293B] active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#0F172A] disabled:active:scale-100 transition-all"
+                className="bg-[#2F3B35] text-white rounded-xl p-2.5 shrink-0 shadow-sm hover:bg-[#3B4A42] active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#2F3B35] disabled:active:scale-100 transition-all"
                 aria-label="Send question"
               >
                 <Send size={15} className="translate-x-[0.5px]" />

@@ -5,12 +5,7 @@ import { AppError } from "../errors/appError";
 
 
 // Middleware global de errores: captura errores enviados con next(error)
-export const errorHandler: ErrorRequestHandler = (
-    error,
-    req,
-    res,
-    next
-) => {
+export const errorHandler: ErrorRequestHandler = (error,req,res,next) => {
 
 
     logger.error(error);

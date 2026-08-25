@@ -17,7 +17,7 @@ const DECISIONS: Decision[] = [
     category: "Data Engine",
     icon: Search,
     title: "Hybrid RAG with RRF Fusion",
-    iconColor: "text-blue-500",
+    iconColor: "text-[#5E7367]",
     text: [
       { text: "Combines vector embeddings with MySQL FULLTEXT via " },
       { text: "Reciprocal Rank Fusion", strong: true },
@@ -28,7 +28,7 @@ const DECISIONS: Decision[] = [
     category: "Security & Isolation",
     icon: ShieldCheck,
     title: "Query-Level IDOR Guardrails",
-    iconColor: "text-emerald-500",
+    iconColor: "text-[#3B4A42]",
     text: [
       { text: "Every patient record and transcript query binds " },
       { text: "doctor_id", strong: true },
@@ -39,7 +39,7 @@ const DECISIONS: Decision[] = [
     category: "Resilience",
     icon: Workflow,
     title: "Non-Blocking Asynchronous Tasks",
-    iconColor: "text-amber-500",
+    iconColor: "text-[#9C8A66]",
     text: [
       { text: "Notification delivery, memory indexing, and background tasks " },
       { text: "never block", strong: true },
@@ -50,7 +50,7 @@ const DECISIONS: Decision[] = [
     category: "State Management",
     icon: GitMerge,
     title: "Incremental Memory Synthesis",
-    iconColor: "text-indigo-500",
+    iconColor: "text-[#535B4F]",
     text: [
       { text: "Each consultation " },
       { text: "merges new observations", strong: true },
@@ -61,59 +61,68 @@ const DECISIONS: Decision[] = [
 
 export function EngineeringDecisions() {
   return (
-    <section className="w-full bg-slate-100 px-4 py-16 sm:px-8 sm:py-24">
-      {/* contenedor principal neumorfico con borde mas marcado */}
-      <div className="mx-auto max-w-5xl rounded-4xl border border-slate-300/80 bg-slate-100 p-6 shadow-[16px_16px_32px_#cbd5e1,-16px_-16px_32px_#ffffff] sm:p-12">
-        
+    <section className="relative w-full -mt-12 rounded-t-[2.5rem] bg-[#C0C3B8] px-4 py-16 shadow-[0_-16px_40px_rgba(47,59,53,0.12)] sm:-mt-16 sm:rounded-t-[3.5rem] sm:px-8 sm:py-24">
+      <div className="mx-auto max-w-5xl">
+
         <Reveal>
           <div className="max-w-2xl">
-            {/* badge neumorfico rehundido */}
-            <h2 className="mt-4 font-display text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+            <span className="font-mono text-[10px] font-bold tracking-widest uppercase text-[#6B7268] block mb-1">
+              Architecture
+            </span>
+            <h2 className="font-feature text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
               Why it's built this way
             </h2>
           </div>
         </Reveal>
 
-        <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2">
-          {DECISIONS.map((decision, index) => {
-            const Icon = decision.icon;
-            return (
-              <Reveal key={decision.title} delayMs={index * 50} durationMs={300}>
-                {/* tarjeta neumorfica con bordes mas marcados */}
-                <div className="group h-full rounded-2xl border border-slate-300/80 bg-slate-100 p-7 shadow-[8px_8px_18px_#cbd5e1,-8px_-8px_18px_#ffffff] transition-all duration-300 hover:-translate-y-1 hover:border-slate-400/80 hover:shadow-[12px_12px_24px_#cbd5e1,-12px_-12px_24px_#ffffff]">
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-xs font-bold uppercase tracking-wider text-slate-400">
-                      {decision.category}
-                    </span>
-                    
-                    {/* contenedor de icono neumorfico con borde definido */}
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-300/60 bg-slate-100 shadow-[inset_2px_2px_5px_#cbd5e1,inset_-2px_-2px_5px_#ffffff] transition-transform duration-300 group-hover:scale-105">
-                      <Icon className={`h-5 w-5 ${decision.iconColor}`} strokeWidth={2} />
-                    </div>
-                  </div>
-
-                  <h3 className="mt-3 font-display text-lg font-bold tracking-tight text-slate-900">
-                    {decision.title}
-                  </h3>
-
-                  <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                    {decision.text.map((segment, i) =>
-                      segment.strong ? (
-                        <span key={i} className="font-semibold text-slate-900">
-                          {segment.text}
-                        </span>
-                      ) : (
-                        <span key={i}>{segment.text}</span>
-                      )
-                    )}
-                  </p>
-                </div>
-              </Reveal>
-            );
-          })}
+        {/* grilla tipo ficha tecnica: 2x2 con divisores reales entre celdas */}
+        <div className="mt-12 overflow-hidden rounded-2xl border border-[#8B9086]/50 bg-white/50">
+          <div className="grid grid-cols-1 divide-y divide-[#8B9086]/50 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
+            {DECISIONS.slice(0, 2).map((decision, index) => (
+              <DecisionCell key={decision.title} decision={decision} delayMs={index * 60} />
+            ))}
+          </div>
+          <div className="grid grid-cols-1 divide-y divide-[#8B9086]/50 border-t border-[#8B9086]/50 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
+            {DECISIONS.slice(2, 4).map((decision, index) => (
+              <DecisionCell key={decision.title} decision={decision} delayMs={(index + 2) * 60} />
+            ))}
+          </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function DecisionCell({ decision, delayMs }: { decision: Decision; delayMs: number }) {
+  const Icon = decision.icon;
+  return (
+    <Reveal delayMs={delayMs} durationMs={300}>
+      <div className="group h-full p-8 transition-colors duration-300 hover:bg-white/60 sm:p-10">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#C0C3B8] bg-white shadow-sm transition-colors duration-300 group-hover:border-[#3E4B43]/40">
+            <Icon className={`h-4 w-4 ${decision.iconColor}`} strokeWidth={2} />
+          </div>
+          <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#8B9086]">
+            {decision.category}
+          </span>
+        </div>
+
+        <h3 className="mt-4 font-feature text-lg font-semibold tracking-tight text-foreground">
+          {decision.title}
+        </h3>
+
+        <p className="mt-3 text-sm leading-relaxed text-[#535B4F]">
+          {decision.text.map((segment, i) =>
+            segment.strong ? (
+              <span key={i} className="font-semibold text-foreground">
+                {segment.text}
+              </span>
+            ) : (
+              <span key={i}>{segment.text}</span>
+            )
+          )}
+        </p>
+      </div>
+    </Reveal>
   );
 }

@@ -7,6 +7,7 @@ interface FeatureCardProps {
   alt: string;
   title: string;
   description: string;
+  isLast?: boolean;
 }
 
 export const FeatureCard: React.FC<FeatureCardProps> = ({
@@ -16,47 +17,46 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
   alt,
   title,
   description,
+  isLast = false,
 }) => {
   return (
-    <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-300/80 bg-slate-100 shadow-[8px_8px_18px_#cbd5e1,-8px_-8px_18px_#ffffff] transition-all duration-300 hover:-translate-y-1 hover:border-slate-400/80 hover:shadow-[12px_12px_24px_#cbd5e1,-12px_-12px_24px_#ffffff]">
-      
-      {/* frame de la imagen */}
-      <div className="relative aspect-[3/2] overflow-hidden border-b border-slate-300/60 bg-slate-200">
-        <img
-          src={image}
-          alt={alt}
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-        />
+    <div className="group relative flex flex-col items-center gap-4 sm:flex-row sm:items-stretch sm:gap-10">
+      {/* marcador liquid glass, arriba de la card en mobile, a la izquierda en desktop + linea conectora */}
+      <div className="flex shrink-0 flex-col items-center">
+        <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-white/60 bg-white/30 shadow-[0_8px_20px_rgba(47,59,53,0.35)] backdrop-blur-md transition-all duration-300 group-hover:border-[#E9DEC8]/70 group-hover:bg-[#E9DEC8]/90">
+          {/* brillo superior, efecto liquid glass */}
+          <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-br from-white/80 via-white/10 to-transparent" aria-hidden="true" />
+          <Icon className="relative h-5 w-5 text-[#4C5F54] transition-colors duration-300 group-hover:text-[#2F3B35]" />
+        </div>
+        {!isLast && (
+          <div className="mt-2 hidden w-px flex-1 bg-gradient-to-b from-white/30 to-white/10 sm:block" aria-hidden="true" />
+        )}
       </div>
 
-      {/* contenido textual y cabecera de paso */}
-      <div className="flex flex-1 flex-col justify-between p-6 sm:p-7">
-        <div>
-          {/* indicador de pipeline (paso + icono) */}
-          <div className="flex items-center justify-between pb-3">
-            <span className="font-mono text-xs font-bold uppercase tracking-widest text-slate-400">
-              Step {step}
-            </span>
-            
-            {/* contenedor de icono neumorfico rehundido con borde */}
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-300/60 bg-slate-100 shadow-[inset_2px_2px_5px_#cbd5e1,inset_-2px_-2px_5px_#ffffff] transition-transform duration-300 group-hover:scale-105">
-              <Icon className="h-5 w-5 text-blue-500" />
+      {/* contenido: una sola card unificada, texto e imagen juntos, centrada en mobile */}
+      <div className={isLast ? "w-full max-w-md sm:max-w-none sm:flex-1" : "w-full max-w-md pb-8 sm:max-w-none sm:flex-1 sm:pb-10"}>
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-white shadow-lg transition-shadow duration-300 group-hover:shadow-xl">
+          <div className="grid grid-cols-1 sm:grid-cols-5 sm:items-stretch">
+            <div className="flex flex-col justify-center p-6 sm:col-span-2 sm:p-8">
+              <span className="font-mono text-sm font-semibold tracking-wide text-[#5E7367]">
+                {step}
+              </span>
+              <h3 className="mt-2 font-feature text-xl font-semibold leading-tight text-foreground sm:text-2xl">
+                {title}
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-[#535B4F]">
+                {description}
+              </p>
+            </div>
+
+            <div className="sm:col-span-3">
+              <img
+                src={image}
+                alt={alt}
+                className="aspect-[16/10] h-full w-full object-cover sm:aspect-auto"
+              />
             </div>
           </div>
-
-          {/* jerarquia tipografica */}
-          <h3 className="mt-1 text-lg font-bold text-slate-800 sm:text-xl">
-            {title}
-          </h3>
-
-          <p className="mt-2.5 text-sm leading-relaxed text-slate-600">
-            {description}
-          </p>
-        </div>
-
-        {/* tag funcional inferior */}
-        <div className="mt-6 flex items-center gap-2 pt-2 text-xs font-semibold text-slate-400">
-          <span>Pipeline Stage {step}</span>
         </div>
       </div>
     </div>

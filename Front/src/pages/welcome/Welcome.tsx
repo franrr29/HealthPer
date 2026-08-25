@@ -78,104 +78,98 @@ export default function Welcome() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-100 font-sans text-slate-800 antialiased">
+    <div className="flex min-h-screen flex-col bg-[#F2EEE3] font-sans text-foreground antialiased">
       <Navbar />
 
       <main className="flex-1">
-        {/* hero section */}
-        <section className="relative isolate border-b border-slate-300/80 bg-slate-100 pt-24 pb-12 sm:pt-32 sm:pb-16 overflow-hidden">
-          {/* fondo grid */}
+        {/* hero section: foto de fondo, fija en el viewport mientras el resto de la pagina se desliza encima */}
+        <section className="fixed inset-x-0 top-0 z-0 flex h-screen w-full flex-col justify-center overflow-hidden pb-16 sm:justify-end sm:pb-24">
+          {/* foto de fondo, sin tinte para que se vea natural */}
           <div
             aria-hidden="true"
-            className="hero-grid pointer-events-none absolute inset-0 -z-10 opacity-70"
+            className="absolute inset-0 -z-20 bg-cover bg-center"
+            style={{ backgroundImage: "url('/banner.jpg')" }}
           />
 
-          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 items-stretch gap-10 lg:grid-cols-12">
-              <div className="lg:col-span-6 flex flex-col justify-center rounded-2xl border border-slate-300/80 bg-slate-100 p-6 sm:p-8 shadow-[8px_8px_18px_#cbd5e1,-8px_-8px_18px_#ffffff]">
-                <h1 className="font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl lg:leading-tight">
-                  The AI medical copilot that
-                  <br className="hidden lg:block" />
-                  {" "}
-                  <RotatingText words={["captures", "questions", "transcribes", "summarizes", "delivers"]} />
-                </h1>
+          {/* degrade solo en la base, para legibilidad del texto sin cubrir el video */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 -z-10 bg-gradient-to-t from-[#2F3B35]/90 via-[#2F3B35]/25 to-transparent"
+          />
 
-                <p className="mt-4 text-base leading-relaxed text-slate-600">
-                  An ambient AI copilot for medical consultations. Capture live audio, get context-aware suggested questions from the patient's history, generate SOAP notes automatically, and send a clear summary straight to the patient's inbox.
-                </p>
+          <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#DDE6E0]/80 mb-4 block">
+              Clinical AI Copilot
+            </span>
 
-                {/* botones de accion */}
-                <div className="mt-8 flex flex-wrap items-center gap-3">
-                  <a
-                    href="#features"
-                    className="group inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-xs font-semibold uppercase tracking-wider text-white border border-slate-800 shadow-[4px_4px_10px_#cbd5e1] hover:bg-slate-800 transition duration-150"
-                  >
-                    <span>See How It Works</span>
-                    <ChevronRight className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-0.5" />
-                  </a>
-                </div>
-              </div>
+            <h1 className="font-feature text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl lg:leading-[1.05]">
+              The AI medical copilot that
+              <br className="hidden lg:block" />
+              {" "}
+              <RotatingText words={["captures", "questions", "transcribes", "summarizes", "delivers"]} />
+            </h1>
 
-              <div className="lg:col-span-6 flex flex-col">
-                <div className="flex-1 flex flex-col overflow-hidden rounded-2xl border border-slate-300/80 bg-slate-100 shadow-[8px_8px_18px_#cbd5e1,-8px_-8px_18px_#ffffff]">
-                  <div className="flex items-center justify-between border-b border-slate-300/60 bg-slate-200/50 px-4 py-2 text-xs text-slate-500 font-mono">
-                    <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
-                  </div>
+            <p className="mt-5 mx-auto max-w-md text-base leading-relaxed text-[#EDF2EE]/80">
+              An ambient AI copilot for medical consultations. Capture live audio, get context-aware suggested questions from the patient's history, generate SOAP notes automatically, and send a clear summary straight to the patient's inbox.
+            </p>
 
-                  <div className="relative flex-1 overflow-hidden bg-slate-200">
-                    <img
-                      src="/banner.png"
-                      alt="HealthPer consultation workspace UI"
-                      className="h-full w-full object-cover object-top"
-                    />
-                  </div>
-                </div>
-                <p className="mt-2 text-center font-mono text-[10px] uppercase tracking-wider text-slate-500">
-                  From live audio to structured clinical notes — fully automated.
-                </p>
-              </div>
+            {/* botones de accion */}
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <a
+                href="#features"
+                className="group inline-flex items-center gap-2 rounded-md bg-white px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[#2F3B35] hover:bg-[#F2EEE3] transition duration-150"
+              >
+                <span>See How It Works</span>
+                <ChevronRight className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-0.5" />
+              </a>
             </div>
           </div>
         </section>
 
-        {/* banner de metricas y precision */}
-        <section className="bg-slate-100 px-4 py-12 sm:px-6 sm:py-16">
+        {/* espaciador: ocupa el lugar del hero fijo para que el resto del contenido arranque debajo */}
+        <div aria-hidden="true" className="h-screen w-full" />
+
+        {/* todo el contenido restante se desliza por encima del hero fijo (z-10 > z-0) */}
+        <div className="relative z-10">
+
+        {/* banner de metricas y precision: primera seccion que cubre el hero. Sin fondo propio detras a proposito: el hueco de la esquina redondeada deja ver el video fijo, ese es el efecto de reveal buscado */}
+        <section className="rounded-t-[2.5rem] bg-[#F2EEE3] px-4 py-12 shadow-[0_-16px_40px_rgba(47,59,53,0.15)] sm:rounded-t-[3.5rem] sm:px-6 sm:py-16">
           <div className="mx-auto max-w-4xl">
             {/* titulo introductorio de la seccion */}
             <Reveal>
               <div className="mb-8 text-center sm:text-left">
-                <span className="font-mono text-[10px] font-bold tracking-widest uppercase text-slate-500 block mb-1">
+                <span className="font-mono text-[10px] font-bold tracking-widest uppercase text-[#6B7268] block mb-1">
                   Performance Metrics
                 </span>
-                <h2 className="font-display text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                <h2 className="font-feature text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
                   Engineered for Clinical Precision
                 </h2>
-                <p className="mt-1 text-sm text-slate-600">
+                <p className="mt-1 text-sm text-[#535B4F]">
                   Real-time benchmarks captured across live consultation runs and automated validation tests.
                 </p>
               </div>
             </Reveal>
 
             <div
-              className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-cover bg-center shadow-[10px_10px_22px_#cbd5e1,-10px_-10px_22px_#ffffff]"
+              className="relative overflow-hidden rounded-lg border border-[#C0C3B8] bg-cover bg-center"
               style={{ backgroundImage: "url('/bannerPrincipal.png')" }}
             >
-              <div className="absolute inset-0 bg-slate-950/40" />
+              <div className="absolute inset-0 bg-[#2F3B35]/70" />
 
-              <div className="relative rounded-2xl border border-white/20 bg-white/10 backdrop-blur-[3px] p-6 sm:p-8">
+              <div className="relative p-6 sm:p-8">
                 <div className="grid items-center gap-6 md:grid-cols-12">
 
                   {/* metric principal */}
                   <div className="md:col-span-5">
-                    <p className="font-mono text-4xl sm:text-5xl font-extrabold tracking-tight text-white drop-shadow-sm">
+                    <p className="font-feature text-4xl sm:text-5xl font-semibold tracking-tight text-[#E9DEC8]">
                       98.4%
                     </p>
 
-                    <p className="mt-2 text-sm sm:text-base font-bold text-white drop-shadow-sm">
+                    <p className="mt-2 text-sm sm:text-base font-semibold text-white">
                       Clinical Term Precision
                     </p>
 
-                    <p className="mt-1 max-w-xs text-xs leading-relaxed text-slate-100">
+                    <p className="mt-1 max-w-xs text-xs leading-relaxed text-[#EDF2EE]/80">
                       Fine-tuned on complex medical jargon, multi-accent conversations, and domain-specific acronyms.
                     </p>
                   </div>
@@ -183,29 +177,29 @@ export default function Welcome() {
                   {/* estadisticas secundarias */}
                   <div className="md:col-span-7">
                     <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                      <div className="rounded-xl border border-white/30 bg-white/15 p-2 sm:p-4 text-center backdrop-blur-md shadow-[inset_2px_2px_6px_rgba(255,255,255,0.2)]">
-                        <p className="font-mono text-lg sm:text-2xl font-black text-white">
+                      <div className="rounded-md border border-white/15 p-2 sm:p-4 text-center">
+                        <p className="font-feature text-lg sm:text-2xl font-semibold text-white">
                           &lt;10s
                         </p>
-                        <p className="mt-1 text-[8px] sm:text-[10px] uppercase tracking-wider text-slate-100 font-bold">
+                        <p className="mt-1 text-[8px] sm:text-[10px] uppercase tracking-wider text-[#EDF2EE]/80 font-bold">
                           Latency to SOAP
                         </p>
                       </div>
 
-                      <div className="rounded-xl border border-white/30 bg-white/15 p-2 sm:p-4 text-center backdrop-blur-md shadow-[inset_2px_2px_6px_rgba(255,255,255,0.2)]">
-                        <p className="font-mono text-lg sm:text-2xl font-black text-white">
+                      <div className="rounded-md border border-white/15 p-2 sm:p-4 text-center">
+                        <p className="font-feature text-lg sm:text-2xl font-semibold text-white">
                           +136
                         </p>
-                        <p className="mt-1 text-[8px] sm:text-[10px] uppercase tracking-wider text-slate-100 font-bold">
+                        <p className="mt-1 text-[8px] sm:text-[10px] uppercase tracking-wider text-[#EDF2EE]/80 font-bold">
                           Encounters
                         </p>
                       </div>
 
-                      <div className="rounded-xl border border-white/30 bg-white/15 p-2 sm:p-4 text-center backdrop-blur-md shadow-[inset_2px_2px_6px_rgba(255,255,255,0.2)]">
-                        <p className="font-mono text-lg sm:text-2xl font-black text-white break-words">
+                      <div className="rounded-md border border-white/15 p-2 sm:p-4 text-center">
+                        <p className="font-feature text-lg sm:text-2xl font-semibold text-white break-words">
                           Real-time
                         </p>
-                        <p className="mt-1 text-[8px] sm:text-[10px] uppercase tracking-wider text-slate-100 font-bold">
+                        <p className="mt-1 text-[8px] sm:text-[10px] uppercase tracking-wider text-[#EDF2EE]/80 font-bold">
                           RAG Sync
                         </p>
                       </div>
@@ -218,27 +212,33 @@ export default function Welcome() {
           </div>
         </section>
 
-        {/* pipeline de funciones */}
-        <section id="features" className="bg-slate-100 py-12 sm:py-20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* fondo solido a partir de aca: evita que las esquinas redondeadas de las secciones siguientes dejen ver el video fijo de atras */}
+        <div className="bg-[#F2EEE3]">
+
+        {/* pipeline de funciones: panel propio en verde forestal, ancho completo, para romper la monotonia del ivory y darle ritmo a la pagina */}
+        <section id="features" className="relative -mt-10 overflow-hidden rounded-t-[2.5rem] bg-[#2F3B35] py-16 shadow-[0_-16px_40px_rgba(47,59,53,0.2)] sm:-mt-14 sm:rounded-t-[3.5rem] sm:py-24">
+          {/* textura decorativa: rayas medicas cruzadas, muy sutiles, para que el verde no se sienta plano */}
+          <div aria-hidden="true" className="medical-crosshatch pointer-events-none absolute inset-0" />
+
+          <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             <Reveal>
-              <div className="max-w-2xl">
-                <span className="font-mono text-[10px] font-bold tracking-widest uppercase text-slate-500 block mb-1">
+              <div className="max-w-2xl text-center sm:mx-auto">
+                <span className="font-mono text-[10px] font-bold tracking-widest uppercase text-[#E9DEC8]/80 block mb-1">
                   Consultation Workflow
                 </span>
-                <h2 className="font-display text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                <h2 className="font-feature text-2xl font-semibold tracking-tight text-white sm:text-3xl">
                   From Live Audio to Patient Inbox
                 </h2>
-                <p className="mt-2 text-sm sm:text-base text-slate-600">
+                <p className="mt-2 text-sm sm:text-base text-[#EDF2EE]/70">
                   A step-by-step pipeline that captures the consultation, suggests questions in real time, transcribes, summarizes, and delivers the result to the patient.
                 </p>
               </div>
             </Reveal>
 
-            <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div className="mt-16">
               {FEATURES.map((feature, index) => (
-                <Reveal key={feature.title} delayMs={index * 50} durationMs={300}>
-                  <FeatureCard {...feature} />
+                <Reveal key={feature.title} delayMs={index * 60} durationMs={400}>
+                  <FeatureCard {...feature} isLast={index === FEATURES.length - 1} />
                 </Reveal>
               ))}
             </div>
@@ -247,44 +247,50 @@ export default function Welcome() {
 
         <EngineeringDecisions />
 
-        {/* seccion final de ingenieria */}
-        <section className="bg-slate-100 px-4 pb-16 sm:px-6 sm:pb-20">
+        {/* seccion final de ingenieria: panel completo con esquinas redondeadas, igual que el resto de secciones */}
+        <section
+          className="relative -mt-10 overflow-hidden rounded-[2.5rem] bg-cover bg-center px-4 py-20 shadow-[0_-16px_40px_rgba(47,59,53,0.15)] sm:-mt-14 sm:rounded-[3.5rem] sm:px-6 sm:py-28"
+          style={{ backgroundImage: "url('/bannerFinal.avif')" }}
+        >
+          <div className="absolute inset-0 bg-[#2F3B35]/80" aria-hidden="true" />
+
           <Reveal>
-            <div
-              className="relative mx-auto max-w-4xl overflow-hidden rounded-2xl border border-slate-300/80 bg-slate-100 bg-cover bg-center px-6 py-10 sm:px-8 sm:py-12 shadow-[10px_10px_22px_#cbd5e1,-10px_-10px_22px_#ffffff]"
-              style={{ backgroundImage: "url('/bannerFinal.avif')" }}
-            >
-              <div className="absolute inset-0 bg-slate-950/60" aria-hidden="true" />
+            <div className="relative mx-auto max-w-2xl text-center">
+              <h2 className="font-feature text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+                Interested in the engineering behind HealthPer?
+              </h2>
 
-              <div className="relative mx-auto max-w-2xl text-center">
-                <h2 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
-                  Interested in the engineering behind HealthPer?
-                </h2>
+              <p className="mt-3 text-xs leading-relaxed text-[#EDF2EE]/80 sm:text-sm sm:leading-relaxed">
+                Thanks for exploring HealthPer. If you'd like to discuss the project,
+                 exchange ideas about AI engineering, or explore how I could contribute to your team.
+              </p>
 
-                <p className="mt-3 text-xs leading-relaxed text-slate-200 sm:text-sm sm:leading-relaxed">
-                  Thanks for exploring HealthPer. If you'd like to discuss the project,
-                   exchange ideas about AI engineering, or explore how I could contribute to your team.
-                </p>
-
-                <div className="mt-6">
-                  <a
-                    href={LINKEDIN_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-xl border border-white/40 bg-white/10 px-5 py-2.5 font-sans text-xs font-bold tracking-wide text-white backdrop-blur-md shadow-[0_8px_16px_rgba(0,0,0,0.25)] transition-all duration-200 hover:border-white/80 hover:bg-white/25 hover:shadow-[0_12px_20px_rgba(0,0,0,0.35)] hover:-translate-y-0.5 active:translate-y-0"
-                  >
-                    <span>Connect on LinkedIn</span>
-                    <ExternalLink className="h-3.5 w-3.5 text-white/90" />
-                  </a>
-                  
-                </div>
+              <div className="mt-6">
+                <a
+                  href={LINKEDIN_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-md border border-[#E9DEC8]/40 bg-white/5 px-5 py-2.5 font-sans text-xs font-bold tracking-wide text-white transition-colors duration-200 hover:border-[#E9DEC8]/70 hover:bg-white/10"
+                >
+                  <span>Connect on LinkedIn</span>
+                  <ExternalLink className="h-3.5 w-3.5 text-[#E9DEC8]" />
+                </a>
               </div>
             </div>
           </Reveal>
         </section>
+
+        {/* spacer real (no margin) para separar del footer sin riesgo de colapso de margenes */}
+        <div className="h-12 sm:h-16" />
+
+        </div>
+        </div>
       </main>
 
-      <Footer />
+      {/* bg propio: sin esto, el hueco de la esquina redondeada del footer podria dejar ver la foto fija de atras durante el scroll */}
+      <div className="relative z-10 bg-[#F2EEE3]">
+        <Footer />
+      </div>
     </div>
   );
 }

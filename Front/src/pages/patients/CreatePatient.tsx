@@ -14,7 +14,7 @@ export function CreatePatient() {
       </Link>
 
       <div className="border-b border-border pb-4">
-        <h1 className="font-display text-2xl font-bold tracking-tight text-black">
+        <h1 className="font-feature text-2xl font-semibold tracking-tight text-foreground">
           Create Patient
         </h1>
       </div>

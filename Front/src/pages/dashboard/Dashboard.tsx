@@ -8,7 +8,7 @@ import { DoctorHeader } from "./DoctorHeader";
 import { HeartPulse, ShieldAlert } from "lucide-react";
 
 const statusStyles: Record<string, { text: string; bg: string; dot: string }> = {
-  signed: { text: "text-white", bg: "bg-emerald-600 border-emerald-700/60", dot: "bg-emerald-300" },
+  signed: { text: "text-white", bg: "bg-[#769283] border-[#5E7367]/60", dot: "bg-[#C0D0C7]" },
   reviewed: { text: "text-white", bg: "bg-blue-600 border-blue-700/60", dot: "bg-blue-300" },
   draft: { text: "text-slate-950", bg: "bg-amber-400 border-amber-500/60", dot: "bg-amber-900" },
 };
@@ -283,7 +283,7 @@ export default function Dashboard() {
               >
                 <div className="flex items-center gap-2.5">
                   <span className="h-2 w-2 rounded-full bg-blue-600" />
-                  <span className="text-sm font-semibold text-slate-900">
+                  <span className="text-sm font-semibold text-foreground">
                     {item.condition}
                   </span>
                 </div>
@@ -319,7 +319,7 @@ export default function Dashboard() {
               >
                 <div className="flex items-center gap-2.5">
                   <span className="h-2 w-2 rounded-full bg-rose-600" />
-                  <span className="text-sm font-semibold text-slate-900">
+                  <span className="text-sm font-semibold text-foreground">
                     {item.allergy}
                   </span>
                 </div>

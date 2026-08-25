@@ -53,7 +53,7 @@ export default function Patients() {
           </h1>
           <Link
             to="/patients/new"
-            className="neu-card inline-flex items-center gap-2 bg-slate-900 text-white rounded-xl px-4 py-2 text-[11px] font-bold uppercase tracking-wider border border-border hover:bg-slate-800 transition-all duration-200"
+            className="neu-card inline-flex items-center gap-2 bg-[#2F3B35] text-white rounded-md px-4 py-2 text-[11px] font-bold uppercase tracking-wider border border-[#3B4A42] hover:bg-[#3B4A42] transition-all duration-200"
           >
             <UserPlus className="h-3.5 w-3.5" />
             Create New Patient
@@ -79,7 +79,7 @@ export default function Patients() {
         </div>
         <Link
           to="/patients/new"
-          className="neu-card inline-flex items-center gap-2 bg-slate-900 text-white rounded-xl px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider border border-slate-800 hover:brightness-110 transition-all duration-200 shadow-sm"
+          className="neu-card inline-flex items-center gap-2 bg-[#2F3B35] text-white rounded-md px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider border border-[#3B4A42] hover:bg-[#3B4A42] transition-all duration-200"
         >
           <UserPlus className="h-3.5 w-3.5" />
           Create New Patient
@@ -99,7 +99,7 @@ export default function Patients() {
                 alt={patient.name}
                 className="w-16 h-16 rounded-full object-cover neu-surface border border-border/80 p-0.5"
               />
-              <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-emerald-500 border-2 border-card" />
+              <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-[#8CA696] border-2 border-card" />
             </div>
 
             <p className="text-sm font-bold text-foreground tracking-tight mb-4 border-b border-border/80 pb-2.5 w-full truncate">

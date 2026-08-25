@@ -12,6 +12,7 @@ const AuthContext = createContext<AuthContextType | null>(null)
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
 
     //para el estado de auth y persistirlo en localStorage para que no se pierda al recargar la pagina
+    //solo necesito saber si hay sesion o no a dif que si fuera con roles necesitaba un endpoint auth/me y devolver 
     const [isAuthenticated, setIsAuthenticated] = useState(
         localStorage.getItem("isAuthenticated") === "true"
     );

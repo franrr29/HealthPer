@@ -9,10 +9,10 @@ const navItems = [
 ];
 
 function linkClass({ isActive }: NavLinkRenderProps) {
-  return `flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 ${
+  return `flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md transition-colors duration-200 ${
     isActive
-      ? "neu-button-dark bg-white text-slate-900 font-semibold"
-      : "neu-button-dark text-white/70 hover:bg-white/10 hover:text-white"
+      ? "bg-white/95 text-[#2F3B35] font-semibold"
+      : "text-white/70 hover:bg-white/10 hover:text-white"
   }`;
 }
 
@@ -27,21 +27,21 @@ export default function AppLayout() {
   }
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-slate-50 font-sans antialiased text-slate-800">
+    <div className="flex h-screen w-full overflow-hidden bg-[#F2EEE3] font-sans antialiased text-foreground">
       {/* desktop sidebar */}
-      <aside className="hidden w-60 shrink-0 flex-col bg-navy px-4 py-6 md:flex border-r border-white/10 shadow-xl">
+      <aside className="hidden w-60 shrink-0 flex-col bg-navy px-4 py-6 md:flex border-r border-white/10">
         {/* Brand Container */}
         <div className="mb-8 flex items-center gap-3 px-2">
           {/* Logo Box */}
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-900 border border-white/10 shadow-sm p-1.5">
-            <img 
-              src="/logo.png" 
-              alt="HealthPer Logo" 
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-white/10 border border-white/10 p-1.5">
+            <img
+              src="/logo.png"
+              alt="HealthPer Logo"
               className="h-full w-full object-contain"
             />
           </div>
 
-          <span className="font-display text-base font-bold tracking-tight text-white">
+          <span className="font-feature text-lg font-semibold tracking-tight text-white">
             HealthPer
           </span>
         </div>
@@ -60,7 +60,7 @@ export default function AppLayout() {
         <div className="mt-auto pt-4 border-t border-white/10">
           <button
             onClick={handleLogout}
-            className="neu-button-dark flex w-full items-center gap-2.5 px-3 py-2.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 active:bg-red-700 rounded-xl transition-all duration-200"
+            className="flex w-full items-center gap-2.5 px-3 py-2.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 active:bg-red-700 rounded-md transition-colors duration-200"
           >
             <LogOut className="h-4 w-4 shrink-0" aria-hidden="true" />
             Log out
@@ -71,16 +71,16 @@ export default function AppLayout() {
       {/* main content area */}
       <div className="relative flex flex-1 flex-col min-w-0">
         {/* mobile header */}
-        <header className="flex h-14 shrink-0 items-center justify-between bg-navy px-4 md:hidden border-b border-white/10 shadow-md">
+        <header className="flex h-14 shrink-0 items-center justify-between bg-navy px-4 md:hidden border-b border-white/10">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 border border-white/10 p-1">
-              <img 
-                src="/logo.png" 
-                alt="HealthPer Logo" 
+            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-white/10 border border-white/10 p-1">
+              <img
+                src="/logo.png"
+                alt="HealthPer Logo"
                 className="h-full w-full object-contain"
               />
             </div>
-            <span className="font-display text-base font-bold text-white">
+            <span className="font-feature text-base font-semibold text-white">
               HealthPer
             </span>
           </div>
@@ -89,7 +89,7 @@ export default function AppLayout() {
             type="button"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             onClick={() => setMenuOpen((open) => !open)}
-            className="neu-button-dark p-1.5 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+            className="p-1.5 rounded-md text-white/80 hover:bg-white/10 hover:text-white transition-colors"
           >
             {menuOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
           </button>
@@ -97,7 +97,7 @@ export default function AppLayout() {
 
         {/* mobile dropdown menu */}
         {menuOpen && (
-          <div className="absolute inset-x-0 top-14 z-30 bg-navy p-4 space-y-4 md:hidden border-b border-white/10 shadow-2xl backdrop-blur-xl">
+          <div className="absolute inset-x-0 top-14 z-30 bg-navy p-4 space-y-4 md:hidden border-b border-white/10 shadow-lg">
             <nav className="flex flex-col gap-1.5">
               {navItems.map((item) => (
                 <NavLink
@@ -119,7 +119,7 @@ export default function AppLayout() {
                   setMenuOpen(false);
                   handleLogout();
                 }}
-                className="neu-button-dark flex w-full items-center gap-2.5 px-3 py-2.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 active:bg-red-700 rounded-xl transition-all duration-200"
+                className="flex w-full items-center gap-2.5 px-3 py-2.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 active:bg-red-700 rounded-md transition-colors duration-200"
               >
                 <LogOut className="h-4 w-4 shrink-0" aria-hidden="true" />
                 Log out

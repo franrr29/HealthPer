@@ -91,7 +91,7 @@ export default function ConsultationFlow() {
       </Link>
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
-        <h1 className="font-display text-2xl font-bold tracking-tight text-black">Clinical Consultation</h1>
+        <h1 className="font-feature text-2xl font-semibold tracking-tight text-foreground">Clinical Consultation</h1>
         {roundPhase === 'analyzing' && (
           <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-500 border border-slate-600/60 text-white font-mono text-[10px] font-extrabold uppercase tracking-widest">
             <Pause className="h-3 w-3" />
@@ -99,7 +99,7 @@ export default function ConsultationFlow() {
           </span>
         )}
         {roundPhase === 'reviewing' && (
-          <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-600 border border-emerald-700/60 text-white font-mono text-[10px] font-extrabold uppercase tracking-widest">
+          <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#769283] border border-[#5E7367]/60 text-white font-mono text-[10px] font-extrabold uppercase tracking-widest">
             <Sparkles className="h-3 w-3" />
             Questions Ready
           </span>
@@ -146,7 +146,7 @@ export default function ConsultationFlow() {
               return (
                 <div
                   key={meta.label}
-                  className={`rounded-md p-2.5 space-y-1 shadow-[3px_3px_6px_rgba(17,34,64,0.12),-3px_-3px_6px_rgba(255,255,255,0.7)] transition-shadow duration-200 ${tone.box}`}
+                  className={`rounded-md p-2.5 space-y-1 shadow-sm transition-shadow duration-200 ${tone.box}`}
                 >
                   <span className={`font-mono text-[10px] font-bold uppercase tracking-widest block ${tone.label}`}>
                     {meta.label}
@@ -186,20 +186,20 @@ export default function ConsultationFlow() {
           <>
             {/* preguntas de la ronda anterior como referencia */}
             {previousQuestions.length > 0 && (
-              <div className="max-h-80 overflow-y-auto rounded-2xl bg-slate-50/70 p-4 space-y-3 border border-slate-200/70 shadow-[inset_1px_1px_4px_rgba(0,0,0,0.04),inset_-1px_-1px_4px_rgba(255,255,255,0.6)]">
-                <div className="flex items-center gap-1.5 sticky top-0 bg-slate-50/95 backdrop-blur-sm pb-2 -mx-1 px-1">
-                  <ListChecks className="h-3.5 w-3.5 text-slate-500" />
-                  <span className="font-display text-[11px] font-bold uppercase tracking-widest text-slate-500">
+              <div className="max-h-80 overflow-y-auto rounded-lg bg-[#F2EEE3] p-4 space-y-3 border border-[#C0C3B8]">
+                <div className="flex items-center gap-1.5 sticky top-0 bg-[#F2EEE3]/95 backdrop-blur-sm pb-2 -mx-1 px-1">
+                  <ListChecks className="h-3.5 w-3.5 text-[#6B7268]" />
+                  <span className="font-display text-[11px] font-bold uppercase tracking-widest text-[#6B7268]">
                     Questions to address
                   </span>
                 </div>
                 {previousQuestions.map((q, i) => (
                   <div
                     key={i}
-                    className="rounded-2xl bg-white px-5 py-4 border border-slate-100 shadow-[3px_3px_9px_rgba(17,34,64,0.06),-3px_-3px_9px_rgba(255,255,255,0.7)] hover:shadow-[4px_4px_11px_rgba(17,34,64,0.09),-4px_-4px_11px_rgba(255,255,255,0.8)] transition-shadow duration-200"
+                    className="rounded-lg bg-white px-5 py-4 border border-[#C0C3B8] hover:shadow-sm transition-shadow duration-200"
                   >
-                    <p className="font-display text-sm font-bold text-slate-900 leading-snug">{q.question}</p>
-                    <p className="text-xs font-medium text-slate-500 leading-relaxed mt-2">{q.reason}</p>
+                    <p className="font-display text-sm font-bold text-foreground leading-snug">{q.question}</p>
+                    <p className="text-xs font-medium text-[#6B7268] leading-relaxed mt-2">{q.reason}</p>
                   </div>
                 ))}
               </div>
@@ -222,7 +222,7 @@ export default function ConsultationFlow() {
               </button>
               <button
                 onClick={finalizeRound}
-                className="neu-card bg-slate-900 hover:brightness-110 text-white rounded-xl px-4 py-2 border border-slate-700/60 text-xs font-bold uppercase tracking-wider transition-all duration-200"
+                className="neu-card bg-[#2F3B35] hover:bg-[#3B4A42] text-white rounded-md px-4 py-2 border border-[#3B4A42] text-xs font-bold uppercase tracking-wider transition-all duration-200"
               >
                 Finalize consultation
               </button>
@@ -273,15 +273,15 @@ export default function ConsultationFlow() {
               <button
                 disabled={loadingSummary}
                 onClick={retrySummarize}
-                className="neu-card self-start bg-slate-900 hover:brightness-110 text-white rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-200 disabled:opacity-40"
+                className="neu-card self-start bg-[#2F3B35] hover:bg-[#3B4A42] text-white rounded-md px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-200 disabled:opacity-40"
               >
                 Generate summary
               </button>
             )}
 
             {loadingSummary && (
-              <div className="flex items-center gap-2.5 text-xs text-blue-700 bg-blue-50 p-3 rounded-lg border border-blue-200 animate-pulse">
-                <span className="w-3.5 h-3.5 rounded-full border-2 border-blue-600 border-t-transparent animate-spin" />
+              <div className="flex items-center gap-2.5 text-xs text-[#4C5F54] bg-[#F2EEE3] p-3 rounded-lg border border-[#DDE6E0] animate-pulse">
+                <span className="w-3.5 h-3.5 rounded-full border-2 border-[#5E7367] border-t-transparent animate-spin" />
                 Processing clinical summary...
               </div>
             )}
@@ -324,7 +324,7 @@ export default function ConsultationFlow() {
             ) : (
               <button
                 onClick={handleSignConsultation}
-                className="neu-card w-full sm:w-auto bg-emerald-600 hover:brightness-110 text-white rounded-xl px-5 py-2.5 text-xs font-bold uppercase tracking-wider border border-emerald-700/60 transition-all duration-200"
+                className="neu-card w-full sm:w-auto bg-[#769283] hover:brightness-110 text-white rounded-xl px-5 py-2.5 text-xs font-bold uppercase tracking-wider border border-[#5E7367]/60 transition-all duration-200"
               >
                 Sign consultation
               </button>
