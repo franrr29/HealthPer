@@ -8,7 +8,7 @@ import { DoctorHeader } from "./DoctorHeader";
 import { HeartPulse, ShieldAlert } from "lucide-react";
 
 const statusStyles: Record<string, { text: string; bg: string; dot: string }> = {
-  signed: { text: "text-white", bg: "bg-[#769283] border-[#5E7367]/60", dot: "bg-[#C0D0C7]" },
+  signed: { text: "text-white", bg: "bg-[#0D9488] border-[#0D9488]/60", dot: "bg-[#CCFBF1]" },
   reviewed: { text: "text-white", bg: "bg-blue-600 border-blue-700/60", dot: "bg-blue-300" },
   draft: { text: "text-slate-950", bg: "bg-amber-400 border-amber-500/60", dot: "bg-amber-900" },
 };

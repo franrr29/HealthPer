@@ -15,7 +15,7 @@ export function RotatingText({ words, interval = 1800 }: Props) {
   }, [words.length, interval]);
 
   return (
-<span className="inline-block text-[#FCD34D] overflow-hidden align-bottom whitespace-nowrap" style={{ height: "1.15em" }}>      <AnimatePresence mode="wait">
+<span className="inline-block text-[#5EEAD4] overflow-hidden align-bottom whitespace-nowrap" style={{ height: "1.15em" }}>      <AnimatePresence mode="wait">
         <motion.span
           key={words[index]}
           initial={{ y: "100%", opacity: 0 }}

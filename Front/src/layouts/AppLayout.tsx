@@ -11,7 +11,7 @@ const navItems = [
 function linkClass({ isActive }: NavLinkRenderProps) {
   return `flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md transition-colors duration-200 ${
     isActive
-      ? "bg-white/95 text-[#2F3B35] font-semibold"
+      ? "bg-white/95 text-[#115E59] font-semibold"
       : "text-white/70 hover:bg-white/10 hover:text-white"
   }`;
 }
@@ -27,7 +27,7 @@ export default function AppLayout() {
   }
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[#F2EEE3] font-sans antialiased text-foreground">
+    <div className="flex h-screen w-full overflow-hidden bg-[#F5F5F5] font-sans antialiased text-foreground">
       {/* desktop sidebar */}
       <aside className="hidden w-60 shrink-0 flex-col bg-navy px-4 py-6 md:flex border-r border-white/10">
         {/* Brand Container */}

@@ -66,12 +66,12 @@ export default function Login() {
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-[#F2EEE3] p-4 pt-16 lg:pt-4">
+    <div className="relative flex min-h-screen items-center justify-center bg-[#F5F5F5] p-4 pt-16 lg:pt-4">
 
       {/* barra mobile para volver */}
       <Link
         to="/"
-        className="fixed left-0 right-0 top-0 z-50 flex items-center gap-2 bg-[#2F3B35] px-4 py-3 text-sm font-medium text-white lg:hidden"
+        className="fixed left-0 right-0 top-0 z-50 flex items-center gap-2 bg-[#115E59] px-4 py-3 text-sm font-medium text-white lg:hidden"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to home
@@ -79,27 +79,27 @@ export default function Login() {
 
       <Link
         to="/"
-        className="absolute left-4 top-4 sm:left-6 sm:top-6 hidden lg:inline-flex items-center gap-1.5 rounded-md border border-border bg-white px-3.5 py-2 text-xs font-semibold text-[#535B4F] hover:text-foreground transition-colors duration-200"
+        className="absolute left-4 top-4 sm:left-6 sm:top-6 hidden lg:inline-flex items-center gap-1.5 rounded-md border border-border bg-white px-3.5 py-2 text-xs font-semibold text-[#404040] hover:text-foreground transition-colors duration-200"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
         Back to home
       </Link>
 
-      <div className="flex w-full max-w-4xl flex-col overflow-hidden rounded-lg border border-[#C0C3B8] bg-white shadow-sm lg:flex-row">
+      <div className="flex w-full max-w-4xl flex-col overflow-hidden rounded-lg border border-[#E5E5E5] bg-white shadow-sm lg:flex-row">
         {/* panel izquierdo imagen de fondo */}
         <div
           className="relative hidden lg:flex lg:w-1/2 items-center justify-center bg-cover bg-center"
           style={{ backgroundImage: "url('/loginPhoto.jpg')" }}
         >
-          <div className="absolute inset-0 bg-[#2F3B35]/75" />
+          <div className="absolute inset-0 bg-[#115E59]/75" />
 
           <div className="relative px-8 pb-10 text-center">
             <h2 className="font-feature text-2xl font-semibold leading-tight text-white">
               From live audio
               <br />
-              <span className="text-[#E9DEC8]">to clinical notes, automatically.</span>
+              <span className="text-[#5EEAD4]">to clinical notes, automatically.</span>
             </h2>
-            <p className="mt-3 text-sm text-[#EDF2EE]/80">
+            <p className="mt-3 text-sm text-[#F0FDFA]/80">
               Record, get AI-powered insights, and deliver structured summaries straight to your patients.
             </p>
           </div>
@@ -115,21 +115,21 @@ export default function Login() {
                 Welcome back
               </h1>
 
-              <p className="mt-2 text-sm leading-6 text-[#6B7268]">
+              <p className="mt-2 text-sm leading-6 text-[#404040]">
                 Sign in to continue to your workspace.
               </p>
             </div>
 
             {/* seccion recruiter demo */}
-            <div className="mb-6 rounded-lg border border-[#3B4A42] bg-[#2F3B35] p-5">
+            <div className="mb-6 rounded-lg border border-[#0D9488] bg-[#115E59] p-5">
               <div className="mb-3 flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-[#E9DEC8]" />
+                <Sparkles className="h-4 w-4 text-[#5EEAD4]" />
                 <span className="text-sm font-semibold text-white">
                   Explore the live application
                 </span>
               </div>
 
-              <p className="mb-5 text-sm leading-6 text-[#EDF2EE]/80">
+              <p className="mb-5 text-sm leading-6 text-[#F0FDFA]/80">
                 Experience the full platform with realistic patient data, AI consultations, and every core feature—no account or setup required.
               </p>
 
@@ -157,7 +157,7 @@ export default function Login() {
               onClick={() => {
                 window.location.href = `${API_URL}/auth/google`;
               }}
-              className="flex h-11 w-full items-center justify-center gap-3 rounded-md border border-[#C0C3B8] bg-[#F2EEE3] text-sm font-medium text-[#414740] transition-colors duration-200 hover:bg-white"
+              className="flex h-11 w-full items-center justify-center gap-3 rounded-md border border-[#E5E5E5] bg-[#F5F5F5] text-sm font-medium text-[#171717] transition-colors duration-200 hover:bg-white"
             >
               <GoogleIcon />
               Continue with Google
@@ -165,18 +165,18 @@ export default function Login() {
 
             {/* separador */}
             <div className="my-6 flex items-center">
-              <div className="h-px flex-1 bg-[#C0C3B8]" />
-              <span className="mx-4 text-xs uppercase tracking-wider text-[#8B9086]">
+              <div className="h-px flex-1 bg-[#E5E5E5]" />
+              <span className="mx-4 text-xs uppercase tracking-wider text-[#A3A3A3]">
                 or continue with email
               </span>
-              <div className="h-px flex-1 bg-[#C0C3B8]" />
+              <div className="h-px flex-1 bg-[#E5E5E5]" />
             </div>
 
             <form onSubmit={handleLogin} className="space-y-5">
 
               {/* email */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-[#414740]">
+                <label className="mb-2 block text-sm font-medium text-[#171717]">
                   Email
                 </label>
                 <input
@@ -184,14 +184,14 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="doctor@clinic.com"
-                  className="h-11 w-full rounded-md border border-[#C0C3B8] bg-[#F2EEE3] px-4 text-sm text-foreground outline-none transition-all duration-200 placeholder:text-[#8B9086] focus:border-[#5E7367] focus:bg-white focus:ring-4 focus:ring-[#EDF2EE]"
+                  className="h-11 w-full rounded-md border border-[#E5E5E5] bg-[#F5F5F5] px-4 text-sm text-foreground outline-none transition-all duration-200 placeholder:text-[#A3A3A3] focus:border-[#0D9488] focus:bg-white focus:ring-4 focus:ring-[#F0FDFA]"
                 />
               </div>
 
               {/* password */}
               <div>
                 <div className="mb-2 flex items-center justify-between">
-                  <label className="text-sm font-medium text-[#414740]">
+                  <label className="text-sm font-medium text-[#171717]">
                     Password
                   </label>
                 </div>
@@ -201,12 +201,12 @@ export default function Login() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="h-11 w-full rounded-md border border-[#C0C3B8] bg-[#F2EEE3] pl-4 pr-11 text-sm text-foreground outline-none transition-all duration-200 placeholder:text-[#8B9086] focus:border-[#5E7367] focus:bg-white focus:ring-4 focus:ring-[#EDF2EE]"
+                    className="h-11 w-full rounded-md border border-[#E5E5E5] bg-[#F5F5F5] pl-4 pr-11 text-sm text-foreground outline-none transition-all duration-200 placeholder:text-[#A3A3A3] focus:border-[#0D9488] focus:bg-white focus:ring-4 focus:ring-[#F0FDFA]"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-[#8B9086] transition-colors hover:text-[#535B4F]"
+                    className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-[#A3A3A3] transition-colors hover:text-[#404040]"
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -228,14 +228,14 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex h-11 w-full items-center justify-center rounded-md bg-[#2F3B35] text-sm font-medium text-white transition-colors duration-200 hover:bg-[#3B4A42] disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex h-11 w-full items-center justify-center rounded-md bg-[#115E59] text-sm font-medium text-white transition-colors duration-200 hover:bg-[#0D9488] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading ? "Signing in..." : "Sign in"}
               </button>
 
             </form>
 
-            <p className="mt-6 text-center text-xs leading-5 text-[#8B9086]">
+            <p className="mt-6 text-center text-xs leading-5 text-[#A3A3A3]">
               Protected with Google OAuth and JWT authentication.
             </p>
 

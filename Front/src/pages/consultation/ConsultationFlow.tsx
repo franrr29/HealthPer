@@ -99,7 +99,7 @@ export default function ConsultationFlow() {
           </span>
         )}
         {roundPhase === 'reviewing' && (
-          <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#769283] border border-[#5E7367]/60 text-white font-mono text-[10px] font-extrabold uppercase tracking-widest">
+          <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#0D9488] border border-[#0D9488]/60 text-white font-mono text-[10px] font-extrabold uppercase tracking-widest">
             <Sparkles className="h-3 w-3" />
             Questions Ready
           </span>
@@ -186,20 +186,20 @@ export default function ConsultationFlow() {
           <>
             {/* preguntas de la ronda anterior como referencia */}
             {previousQuestions.length > 0 && (
-              <div className="max-h-80 overflow-y-auto rounded-lg bg-[#F2EEE3] p-4 space-y-3 border border-[#C0C3B8]">
-                <div className="flex items-center gap-1.5 sticky top-0 bg-[#F2EEE3]/95 backdrop-blur-sm pb-2 -mx-1 px-1">
-                  <ListChecks className="h-3.5 w-3.5 text-[#6B7268]" />
-                  <span className="font-display text-[11px] font-bold uppercase tracking-widest text-[#6B7268]">
+              <div className="max-h-80 overflow-y-auto rounded-lg bg-[#F5F5F5] p-4 space-y-3 border border-[#E5E5E5]">
+                <div className="flex items-center gap-1.5 sticky top-0 bg-[#F5F5F5]/95 backdrop-blur-sm pb-2 -mx-1 px-1">
+                  <ListChecks className="h-3.5 w-3.5 text-[#404040]" />
+                  <span className="font-display text-[11px] font-bold uppercase tracking-widest text-[#404040]">
                     Questions to address
                   </span>
                 </div>
                 {previousQuestions.map((q, i) => (
                   <div
                     key={i}
-                    className="rounded-lg bg-white px-5 py-4 border border-[#C0C3B8] hover:shadow-sm transition-shadow duration-200"
+                    className="rounded-lg bg-white px-5 py-4 border border-[#E5E5E5] hover:shadow-sm transition-shadow duration-200"
                   >
                     <p className="font-display text-sm font-bold text-foreground leading-snug">{q.question}</p>
-                    <p className="text-xs font-medium text-[#6B7268] leading-relaxed mt-2">{q.reason}</p>
+                    <p className="text-xs font-medium text-[#404040] leading-relaxed mt-2">{q.reason}</p>
                   </div>
                 ))}
               </div>
@@ -222,7 +222,7 @@ export default function ConsultationFlow() {
               </button>
               <button
                 onClick={finalizeRound}
-                className="neu-card bg-[#2F3B35] hover:bg-[#3B4A42] text-white rounded-md px-4 py-2 border border-[#3B4A42] text-xs font-bold uppercase tracking-wider transition-all duration-200"
+                className="neu-card bg-[#115E59] hover:bg-[#0D9488] text-white rounded-md px-4 py-2 border border-[#0D9488] text-xs font-bold uppercase tracking-wider transition-all duration-200"
               >
                 Finalize consultation
               </button>
@@ -273,15 +273,15 @@ export default function ConsultationFlow() {
               <button
                 disabled={loadingSummary}
                 onClick={retrySummarize}
-                className="neu-card self-start bg-[#2F3B35] hover:bg-[#3B4A42] text-white rounded-md px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-200 disabled:opacity-40"
+                className="neu-card self-start bg-[#115E59] hover:bg-[#0D9488] text-white rounded-md px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-200 disabled:opacity-40"
               >
                 Generate summary
               </button>
             )}
 
             {loadingSummary && (
-              <div className="flex items-center gap-2.5 text-xs text-[#4C5F54] bg-[#F2EEE3] p-3 rounded-lg border border-[#DDE6E0] animate-pulse">
-                <span className="w-3.5 h-3.5 rounded-full border-2 border-[#5E7367] border-t-transparent animate-spin" />
+              <div className="flex items-center gap-2.5 text-xs text-[#0D9488] bg-[#F5F5F5] p-3 rounded-lg border border-[#F0FDFA] animate-pulse">
+                <span className="w-3.5 h-3.5 rounded-full border-2 border-[#0D9488] border-t-transparent animate-spin" />
                 Processing clinical summary...
               </div>
             )}
@@ -324,7 +324,7 @@ export default function ConsultationFlow() {
             ) : (
               <button
                 onClick={handleSignConsultation}
-                className="neu-card w-full sm:w-auto bg-[#769283] hover:brightness-110 text-white rounded-xl px-5 py-2.5 text-xs font-bold uppercase tracking-wider border border-[#5E7367]/60 transition-all duration-200"
+                className="neu-card w-full sm:w-auto bg-[#0D9488] hover:brightness-110 text-white rounded-xl px-5 py-2.5 text-xs font-bold uppercase tracking-wider border border-[#0D9488]/60 transition-all duration-200"
               >
                 Sign consultation
               </button>

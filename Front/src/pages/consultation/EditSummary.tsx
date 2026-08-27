@@ -118,13 +118,13 @@ export default function EditSummary({ consultationId, summary }: EditSummaryProp
                 <button
                     onClick={saveEditedSummary}
                     disabled={saving || isUnchanged}
-                    className="neu-card bg-[#2F3B35] hover:bg-[#3B4A42] text-white rounded-md px-4 py-2 border border-[#3B4A42] text-[11px] font-bold uppercase tracking-wider transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="neu-card bg-[#115E59] hover:bg-[#0D9488] text-white rounded-md px-4 py-2 border border-[#0D9488] text-[11px] font-bold uppercase tracking-wider transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                     {saving ? "Saving..." : "Save"}
                 </button>
 
                 {saved && (
-                    <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#5E7367] flex items-center gap-1.5 animate-fade-in">
+                    <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#0D9488] flex items-center gap-1.5 animate-fade-in">
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>

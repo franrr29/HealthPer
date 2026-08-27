@@ -205,7 +205,7 @@ export default function PatientDetails() {
           </h3>
           <button
             onClick={handleCreateConsultation}
-            className="neu-card inline-flex items-center gap-2 bg-[#2F3B35] text-white rounded-md px-4 py-2 text-[11px] font-bold uppercase tracking-wider border border-[#3B4A42] hover:bg-[#3B4A42] transition-all duration-200"
+            className="neu-card inline-flex items-center gap-2 bg-[#115E59] text-white rounded-md px-4 py-2 text-[11px] font-bold uppercase tracking-wider border border-[#0D9488] hover:bg-[#0D9488] transition-all duration-200"
           >
             Open Consultation
           </button>
@@ -239,7 +239,7 @@ export default function PatientDetails() {
                 <div
                   className={`px-4 py-1.5 border-t font-mono text-[9px] font-extrabold uppercase tracking-widest ${
                     consultation.status === "signed"
-                      ? "bg-[#769283] border-[#5E7367]/60 text-white"
+                      ? "bg-[#0D9488] border-[#0D9488]/60 text-white"
                       : "bg-amber-400 border-amber-500/60 text-slate-950"
                   }`}
                 >
@@ -257,7 +257,7 @@ export default function PatientDetails() {
 
       {/* Modal de eliminación */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-[#2F3B35]/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity duration-200">
+        <div className="fixed inset-0 bg-[#115E59]/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity duration-200">
           <div className="neu-card rounded-2xl bg-card p-5 border border-border/80 w-full max-w-sm space-y-4 transition-all duration-200 transform scale-100">
             <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-foreground">
               Destructive Protocol
