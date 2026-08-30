@@ -31,4 +31,5 @@ export interface DoctorHeaderProps {
     license?: string;
     facility?: string;
   };
+  pendingCount?: number;
 }

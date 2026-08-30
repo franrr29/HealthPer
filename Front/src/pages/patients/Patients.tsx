@@ -4,11 +4,11 @@ import { Link } from "react-router-dom";
 import { calculateAge } from "@/utils/format";
 import { UserPlus } from "lucide-react";
 
-// Avatares estáticos según género
+// avatares estaticos segun genero
 const MALE_AVATARS = ["/paciente1.png", "/paciente3.png", "/paciente5.png"];
 const FEMALE_AVATARS = ["/paciente2.png", "/paciente4.png"];
 
-// Rota la imagen según el índice del registro
+// rota la imagen segun el indice del registro
 function getPatientAvatar(gender: string, index: number) {
   if (gender === "F") {
     return FEMALE_AVATARS[index % FEMALE_AVATARS.length];
@@ -53,7 +53,7 @@ export default function Patients() {
           </h1>
           <Link
             to="/patients/new"
-            className="neu-card inline-flex items-center gap-2 bg-[#115E59] text-white rounded-md px-4 py-2 text-[11px] font-bold uppercase tracking-wider border border-[#0D9488] hover:bg-[#0D9488] transition-all duration-200"
+            className="neu-card inline-flex items-center gap-2 bg-primary text-white rounded-md px-4 py-2 text-[11px] font-bold uppercase tracking-wider border border-navy-elevated hover:bg-navy-elevated transition-all duration-200"
           >
             <UserPlus className="h-3.5 w-3.5" />
             Create New Patient
@@ -79,7 +79,7 @@ export default function Patients() {
         </div>
         <Link
           to="/patients/new"
-          className="neu-card inline-flex items-center gap-2 bg-[#115E59] text-white rounded-md px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider border border-[#0D9488] hover:bg-[#0D9488] transition-all duration-200"
+          className="neu-card inline-flex items-center gap-2 bg-primary text-white rounded-md px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider border border-navy-elevated hover:bg-navy-elevated transition-all duration-200"
         >
           <UserPlus className="h-3.5 w-3.5" />
           Create New Patient
@@ -99,7 +99,7 @@ export default function Patients() {
                 alt={patient.name}
                 className="w-16 h-16 rounded-full object-cover neu-surface border border-border/80 p-0.5"
               />
-              <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-[#14B8A6] border-2 border-card" />
+              <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-teal-500 border-2 border-card" />
             </div>
 
             <p className="text-sm font-bold text-foreground tracking-tight mb-4 border-b border-border/80 pb-2.5 w-full truncate">

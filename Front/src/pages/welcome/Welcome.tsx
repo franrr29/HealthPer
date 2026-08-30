@@ -1,241 +1,150 @@
-import { Navigate } from "react-router-dom";
-import { ExternalLink, ChevronRight } from "lucide-react";
-import { useAuth } from "../../context/AuthContext";
-import { Navbar } from "@/layouts/Navbar";
-import { FeatureCard } from "./FeatureCard";
-import { EngineeringDecisions } from "./EngineeringDecisions";
-import { Reveal } from "@/components/common/Reveal";
-import { Footer } from "@/layouts/Footer";
-import { RotatingText } from "@/components/common/RotatingText";
+import { Link } from "react-router-dom";
+import { WelcomeHero } from "./WelcomeHero";
+import { WelcomeSections } from "./WelcomeSections";
+import { WelcomeNavbar } from "./WelcomeNavbar";
+import { WelcomeFooter } from "./WelcomeFooter";
 
-const LINKEDIN_URL = "https://www.linkedin.com/in/franrod-dev/";
+// estilos compartidos por todo el rediseno "Industry" (blueprint): grilla de fondo,
+// marcas de mira, duotono de fotos, marquee, cursor de tipeo -- una sola hoja para
+// que el hero y las secciones (en otros archivos) usen las mismas clases .iw-*.
+const IW_STYLES = `
+  .iw-grid {
+    background-image:
+      linear-gradient(to right, color-mix(in srgb, var(--color-bp-text) 8%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, var(--color-bp-text) 8%, transparent) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(120% 90% at 50% 40%, black 30%, transparent 85%);
+    -webkit-mask-image: radial-gradient(120% 90% at 50% 40%, black 30%, transparent 85%);
+    animation: iw-bp-drift 60s linear infinite;
+  }
+  .iw-grid-dark {
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px);
+  }
+  @keyframes iw-bp-drift { from { background-position: 0 0, 0 0; } to { background-position: 480px 0, 0 480px; } }
 
-const FEATURES = [
-  {
-    step: "01",
-    image: "/grabar.png",
-    alt: "Voice recording during a consultation",
-    title: "Live audio capture",
-    description: "Stream ambient clinical audio in real time. The system captures multi-speaker dialogue ready for downstream processing by Whisper.",
-  },
-  {
-    step: "02",
-    image: "/preguntas.jpg",
-    alt: "AI suggested questions while recording is paused",
-    title: "Context-aware suggested questions",
-    description: "Pause the session and instantly get follow-up questions drawn from the patient's history and the current conversation.",
-  },
-  {
-    step: "03",
-    image: "/transcrib.png",
-    alt: "Transcribed consultation text",
-    title: "Precision transcription",
-    description: "Stop the recording and the entire session is transcribed with high accuracy, preserving clinical terminology and speaker turns.",
-  },
-  {
-    step: "04",
-    image: "/processing.png",
-    alt: "AI processing a clinical summary",
-    title: "SOAP note generation",
-    description: "The transcription runs through a deterministic pipeline that maps unstructured dialogue into a standard SOAP clinical note.",
-  },
-  {
-    step: "05",
-    image: "/summ.png",
-    alt: "Text-based question and answer",
-    title: "Medical history assistant",
-    description: "Run semantic queries against the patient's entire medical record to surface relevant background before, during, or after a visit.",
-  },
-  {
-    step: "06",
-    image: "/sendMail.jpg",
-    alt: "Consultation summary sent to the patient by email",
-    title: "Patient summary by email",
-    description: "Send a clear, patient-friendly summary of the consultation straight to the patient's inbox without blocking the clinical workflow.",
-  },
-];
+  .iw-crosshair { width: 14px; height: 14px; color: color-mix(in srgb, var(--color-bp-text) 40%, transparent); }
+  .iw-crosshair::before, .iw-crosshair::after { content: ""; position: absolute; background: currentColor; }
+  .iw-crosshair::before { left: 50%; top: 0; bottom: 0; width: 1px; transform: translateX(-50%); }
+  .iw-crosshair::after { top: 50%; left: 0; right: 0; height: 1px; transform: translateY(-50%); }
+
+  .iw-duo { position: relative; overflow: hidden; }
+  .iw-duo img { display: block; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.05); }
+  .iw-duo::after { content: ""; position: absolute; inset: 0; background: var(--color-bp-accent); mix-blend-mode: color; pointer-events: none; }
+  .iw-duo::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, color-mix(in srgb, var(--color-bp-accent-900) 55%, transparent)); z-index: 1; pointer-events: none; }
+
+  .iw-wave-bar { animation-name: iw-wave; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+  @keyframes iw-wave { 0%, 100% { height: 12%; opacity: .5; } 50% { height: 100%; opacity: 1; } }
+
+  .iw-marquee { animation: iw-marquee-scroll 40s linear infinite; }
+  @keyframes iw-marquee-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  .iw-caret::after { content: "\\258c"; margin-left: 2px; color: var(--color-bp-accent); animation: iw-blink 1s steps(1) infinite; }
+  @keyframes iw-blink { 50% { opacity: 0; } }
+`;
+
+export function BlueprintGrid({ dark, className = "" }: { dark?: boolean; className?: string }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={`iw-grid pointer-events-none absolute -inset-px ${dark ? "iw-grid-dark" : ""} ${className}`}
+    />
+  );
+}
+
+export function Crosshair({ className = "" }: { className?: string }) {
+  return <span aria-hidden="true" className={`iw-crosshair absolute ${className}`} />;
+}
+
+export function PlateCorners({ dark }: { dark?: boolean }) {
+  const color = dark ? "bg-white/55" : "bg-bp-text/55";
+  return (
+    <>
+      {(["tl", "tr", "bl", "br"] as const).map((pos) => (
+        <span
+          key={pos}
+          aria-hidden="true"
+          className={`pointer-events-none absolute h-3 w-3 ${
+            pos === "tl" ? "-left-1.5 -top-1.5" : pos === "tr" ? "-right-1.5 -top-1.5" : pos === "bl" ? "-left-1.5 -bottom-1.5" : "-right-1.5 -bottom-1.5"
+          }`}
+        >
+          <span className={`absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 ${color}`} />
+          <span className={`absolute top-1/2 left-0 right-0 h-px -translate-y-1/2 ${color}`} />
+        </span>
+      ))}
+    </>
+  );
+}
+
+export function Kicker({ children, dark, className = "" }: { children: React.ReactNode; dark?: boolean; className?: string }) {
+  return (
+    <div
+      className={`inline-flex items-center gap-2.5 font-display text-xs font-medium uppercase tracking-[0.14em] ${
+        dark ? "text-white/60" : "text-bp-text/60"
+      } ${className}`}
+    >
+      <span className={`h-px w-6 ${dark ? "bg-white/60" : "bg-bp-text/60"}`} />
+      {children}
+    </div>
+  );
+}
+
+export function Cta({
+  href,
+  onClick,
+  type = "button",
+  disabled,
+  children,
+  ghost,
+  className = "",
+}: {
+  href?: string;
+  onClick?: () => void;
+  type?: "button" | "submit";
+  disabled?: boolean;
+  children: React.ReactNode;
+  ghost?: boolean;
+  className?: string;
+}) {
+  const base =
+    "inline-flex items-center justify-center gap-2.5 border px-5 py-3.5 font-display text-sm font-semibold uppercase tracking-wide transition-colors disabled:cursor-not-allowed disabled:opacity-60";
+  const solid = "border-bp-accent bg-bp-accent text-bp-bg hover:bg-bp-accent-700";
+  const outline = "border-bp-divider bg-transparent text-bp-text hover:border-bp-accent hover:text-bp-accent";
+  const cls = `${base} ${ghost ? outline : solid} ${className}`;
+  if (href) {
+    if (href.startsWith("/")) {
+      return (
+        <Link to={href} className={cls}>
+          {children}
+        </Link>
+      );
+    }
+    return (
+      <a href={href} className={cls}>
+        {children}
+      </a>
+    );
+  }
+  return (
+    <button type={type} onClick={onClick} disabled={disabled} className={cls}>
+      {children}
+    </button>
+  );
+}
 
 export default function Welcome() {
-  const { isAuthenticated } = useAuth();
-
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
+  // overflow-x-clip (no "hidden"): recorta el scroll lateral sin crear un scroll
+  // container -- overflow-x:hidden en un ancestro fuerza overflow-y a "auto" y
+  // eso rompe el position:sticky del nav contra el viewport. "clip" evita ese acople.
   return (
-    <div className="flex min-h-screen flex-col bg-[#F5F5F5] font-sans text-foreground antialiased selection:bg-teal-500/20 selection:text-teal-900">
-      <main className="flex-1">
-        
-        {/* HERO FULL-WIDTH EDGE-TO-EDGE */}
-        <section className="relative isolate w-full overflow-hidden">
-          <div aria-hidden="true" className="absolute inset-0 -z-20 bg-cover bg-center scale-105" style={{ backgroundImage: "url('/banner.jpg')" }} />
-          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-t from-neutral-950 via-neutral-950/50 to-neutral-950/30" />
+    <div className="min-h-screen overflow-x-clip bg-bp-bg font-sans text-bp-text antialiased">
+      <style>{IW_STYLES}</style>
+      <WelcomeNavbar />
 
-          {/* navbar y titulo en flujo normal, nunca se pueden superponer sin importar el alto de la ventana */}
-          <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-8">
-            <Navbar />
-          </div>
-
-          <div className="mx-auto w-full max-w-7xl px-4 pb-20 pt-20 sm:px-8 sm:pb-28 sm:pt-28">
-            <div className="max-w-3xl">
-
-              <h1 className="font-feature text-5xl font-black tracking-tighter text-white sm:text-6xl lg:text-7xl lg:leading-[1.02]">
-                The AI medical copilot that <br />
-                <RotatingText words={["captures", "questions", "transcribes", "summarizes", "delivers"]} />
-              </h1>
-
-              <p className="mt-6 max-w-xl text-base sm:text-lg leading-relaxed text-neutral-300 font-normal">
-                An ambient intelligence layer for modern clinical practice. Real-time audio ingestion, cross-referenced patient history, deterministic SOAP generation, and secure patient dispatch.
-              </p>
-
-              <div className="mt-10 flex flex-wrap items-center gap-4">
-                <a
-                  href="#features"
-                  className="group inline-flex items-center gap-3 rounded-xl bg-teal-400 px-7 py-4 text-xs font-bold uppercase tracking-widest text-neutral-950 shadow-xl shadow-teal-400/10 hover:bg-teal-300 hover:scale-[1.02] transition-all duration-200"
-                >
-                  <span>Explore Workflow</span>
-                  <ChevronRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
-                </a>
-              </div>
-
-            </div>
-          </div>
-        </section>
-
-        {/* METRICS */}
-        <section id="metrics" className="px-4 py-16 sm:px-8 sm:py-24 bg-white border-b border-neutral-200/60">
-          <div className="mx-auto max-w-7xl">
-            <Reveal>
-              <div className="mb-12 max-w-3xl">
-                <span className="font-mono text-xs font-bold tracking-widest uppercase text-teal-600 block mb-3">
-                  Validated benchmarks
-                </span>
-                <h2 className="font-feature text-3xl font-extrabold tracking-tight text-neutral-900 sm:text-4xl">
-                  Zero tolerance for clinical error
-                </h2>
-              </div>
-            </Reveal>
-
-            <div className="grid min-w-0 gap-10 lg:grid-cols-12 lg:items-center">
-              <Reveal className="min-w-0 lg:col-span-5">
-                <div className="overflow-hidden rounded-3xl border border-neutral-200 shadow-xl bg-neutral-100 max-w-xs lg:max-w-none">
-                  <img
-                    src="/stethoscopeFlatlay.jpg"
-                    alt="Stethoscope precision"
-                    className="aspect-[4/5] w-full object-cover sm:aspect-[3/4] hover:scale-105 transition-transform duration-700"
-                  />
-                </div>
-              </Reveal>
-
-              <Reveal delayMs={80} className="min-w-0 lg:col-span-7">
-                <p className="font-feature text-6xl font-black leading-none tracking-tighter text-neutral-900 sm:text-7xl">
-                  98.4%
-                </p>
-
-                <p className="mt-5 max-w-md text-base text-neutral-600 sm:text-lg">
-                  Transcription accuracy on specialized medical vocabulary. Trained across dense clinical lexicons and multi-accent conversations.
-                </p>
-
-                <dl className="mt-8 flex flex-wrap gap-x-10 gap-y-5 border-t border-neutral-200 pt-6">
-                  <div>
-                    <dt className="font-mono text-[11px] font-bold uppercase tracking-wider text-neutral-500">
-                      Pipeline latency
-                    </dt>
-                    <dd className="mt-1 font-feature text-2xl font-bold text-neutral-900">
-                      Under 10s
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="font-mono text-[11px] font-bold uppercase tracking-wider text-neutral-500">
-                      Trial encounters
-                    </dt>
-                    <dd className="mt-1 font-feature text-2xl font-bold text-neutral-900">
-                      136+
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="font-mono text-[11px] font-bold uppercase tracking-wider text-neutral-500">
-                      Memory sync
-                    </dt>
-                    <dd className="mt-1 font-feature text-2xl font-bold text-neutral-900">
-                      Real-time
-                    </dd>
-                  </div>
-                </dl>
-              </Reveal>
-            </div>
-          </div>
-        </section>
-
-        {/* FEATURES */}
-        <section
-          id="features"
-          className="relative overflow-hidden bg-cover bg-center bg-fixed py-20 sm:py-28"
-          style={{ backgroundImage: "url('/doctor.jpg')" }}
-        >
-          {/* bg-fixed: el tamano del fondo se calcula contra el viewport, no contra el alto total de la seccion */}
-          <div aria-hidden="true" className="absolute inset-0 bg-neutral-950/55" />
-
-          <div className="relative mx-auto max-w-5xl px-4 sm:px-8">
-            <Reveal>
-              <div className="max-w-2xl sm:mx-auto sm:text-center mb-14">
-                <span className="font-mono text-xs font-bold tracking-widest uppercase text-teal-400 block mb-3">
-                  Consultation workflow
-                </span>
-                <h2 className="font-feature text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-                  From live audio to patient inbox
-                </h2>
-                <p className="mt-4 text-base text-neutral-400">
-                  Six steps, each one handled automatically while the doctor stays focused on the patient.
-                </p>
-              </div>
-            </Reveal>
-
-            <div>
-              {FEATURES.map((feature, index) => (
-                <Reveal key={feature.title} delayMs={index * 60} durationMs={400}>
-                  <FeatureCard {...feature} />
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <EngineeringDecisions />
-
-        {/* CTA: unica seccion en teal solido, para que el color de marca cierre la pagina con fuerza */}
-        <section className="bg-teal-700 px-4 py-24 sm:px-8 sm:py-32">
-          <Reveal>
-            <div className="mx-auto max-w-2xl text-center">
-              <span className="font-mono text-xs font-bold tracking-widest uppercase text-teal-200 block mb-4">
-                Get in touch
-              </span>
-              <h2 className="font-feature text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
-                Interested in the engineering behind HealthPer?
-              </h2>
-
-              <p className="mt-5 text-base sm:text-lg leading-relaxed text-teal-50/90">
-                Thanks for exploring HealthPer. Let's connect to discuss architecture decisions, distributed AI pipelines, or software engineering collaboration.
-              </p>
-
-              <div className="mt-10">
-                <a
-                  href={LINKEDIN_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group inline-flex items-center gap-3 rounded-xl bg-white px-8 py-4 font-sans text-xs font-bold uppercase tracking-widest text-teal-800 transition-transform duration-200 hover:scale-105"
-                >
-                  <span>Connect on LinkedIn</span>
-                  <ExternalLink className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </a>
-              </div>
-            </div>
-          </Reveal>
-        </section>
-
-      </main>
-
-      <Footer />
+      <WelcomeHero />
+      <WelcomeSections />
+      <WelcomeFooter />
     </div>
   );
 }

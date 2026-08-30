@@ -2,14 +2,15 @@ import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { isAxiosError } from "axios";
-import { ArrowLeft, Eye, EyeOff, Sparkles, ArrowRight } from "lucide-react";
-import api from "@/services/api";
+import { ArrowLeft, ArrowRight, Eye, EyeOff, Sparkles, ShieldCheck } from "lucide-react";
+import { loginRequest, tryDemoRequest } from "@/services/auth.service";
+import { BlueprintGrid, Crosshair, Kicker, Cta } from "@/pages/welcome/Welcome";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 function GoogleIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5">
+    <svg viewBox="0 0 24 24" className="h-4.5 w-4.5">
       <path fill="#4285F4" d="M23.766 12.276c0-.818-.074-1.606-.212-2.364H12.24v4.474h6.482a5.54 5.54 0 0 1-2.402 3.63v3.016h3.887c2.275-2.095 3.588-5.176 3.588-8.756z" />
       <path fill="#34A853" d="M12.24 24c3.24 0 5.956-1.075 7.943-2.908l-3.887-3.016c-1.076.72-2.45 1.147-4.056 1.147-3.12 0-5.762-2.107-6.705-4.938H1.518v3.11A11.997 11.997 0 0 0 12.24 24z" />
       <path fill="#FBBC05" d="M5.535 14.285a7.19 7.19 0 0 1-.375-2.285c0-.793.136-1.563.375-2.285V6.605H1.518A11.997 11.997 0 0 0 .24 12c0 1.936.464 3.77 1.278 5.395z" />
@@ -24,6 +25,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [demoLoading, setDemoLoading] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -34,13 +36,13 @@ export default function Login() {
     setError(null);
 
     try {
-      await api.post("auth/login", { email, password });
+      await loginRequest(email, password);
       login();
       navigate("/dashboard");
     } catch (err) {
       const message = isAxiosError(err)
-        ? err.response?.data?.message ?? "Something went wrong"
-        : "Something went wrong";
+        ? err.response?.data?.message ?? "Invalid email or password."
+        : "Something went wrong. Please try again.";
       setError(message);
     } finally {
       setLoading(false);
@@ -48,197 +50,201 @@ export default function Login() {
   }
 
   async function handleTryDemo() {
-    setLoading(true);
+    setDemoLoading(true);
     setError(null);
 
     try {
-      await api.post("auth/try-demo");
+      await tryDemoRequest();
       login();
       navigate("/dashboard");
     } catch (err) {
       const message = isAxiosError(err)
-        ? err.response?.data?.message ?? "Something went wrong"
-        : "Something went wrong";
+        ? err.response?.data?.message ?? "Could not load demo environment."
+        : "Something went wrong. Please try again.";
       setError(message);
     } finally {
-      setLoading(false);
+      setDemoLoading(false);
     }
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-[#F5F5F5] p-4 pt-16 lg:pt-4">
-
-      {/* barra mobile para volver */}
-      <Link
-        to="/"
-        className="fixed left-0 right-0 top-0 z-50 flex items-center gap-2 bg-[#115E59] px-4 py-3 text-sm font-medium text-white lg:hidden"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to home
-      </Link>
-
-      <Link
-        to="/"
-        className="absolute left-4 top-4 sm:left-6 sm:top-6 hidden lg:inline-flex items-center gap-1.5 rounded-md border border-border bg-white px-3.5 py-2 text-xs font-semibold text-[#404040] hover:text-foreground transition-colors duration-200"
-      >
-        <ArrowLeft className="h-3.5 w-3.5" />
-        Back to home
-      </Link>
-
-      <div className="flex w-full max-w-4xl flex-col overflow-hidden rounded-lg border border-[#E5E5E5] bg-white shadow-sm lg:flex-row">
-        {/* panel izquierdo imagen de fondo */}
-        <div
-          className="relative hidden lg:flex lg:w-1/2 items-center justify-center bg-cover bg-center"
-          style={{ backgroundImage: "url('/loginPhoto.jpg')" }}
+    <div className="min-h-screen bg-[linear-gradient(180deg,rgba(245,245,245,1),rgba(238,242,250,0.92))] px-3 pb-4 pt-3 font-sans text-bp-text sm:px-4 sm:pb-6 sm:pt-5">
+      <div className="mx-auto w-full max-w-6xl px-1 pb-3 pt-2">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 rounded-full border border-bp-divider bg-bp-bg/92 px-3.5 py-2 font-display text-[11px] font-semibold uppercase tracking-[0.12em] text-bp-text/72 transition-colors hover:border-bp-accent hover:text-bp-text"
         >
-          <div className="absolute inset-0 bg-[#115E59]/75" />
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Back to home
+        </Link>
+      </div>
 
-          <div className="relative px-8 pb-10 text-center">
-            <h2 className="font-feature text-2xl font-semibold leading-tight text-white">
-              From live audio
-              <br />
-              <span className="text-[#5EEAD4]">to clinical notes, automatically.</span>
-            </h2>
-            <p className="mt-3 text-sm text-[#F0FDFA]/80">
-              Record, get AI-powered insights, and deliver structured summaries straight to your patients.
-            </p>
+      <div className="mx-auto grid w-full max-w-6xl grid-cols-1 overflow-hidden border border-bp-divider/80 bg-bp-bg shadow-[0_28px_90px_rgba(20,27,77,0.12)] lg:grid-cols-[1.08fr_0.92fr]">
+        <div className="relative hidden overflow-hidden border-r border-bp-divider bg-bp-text text-bp-bg lg:flex">
+          <img
+            src="/loginPhoto.jpg"
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover opacity-22"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,14,46,0.18),rgba(10,14,46,0.86))]" />
+          <BlueprintGrid dark className="opacity-70" />
+
+          <div className="relative flex min-h-full flex-col justify-between px-10 py-10 xl:px-12 xl:py-12">
+            <div className="flex items-center justify-between gap-6">
+              <div className="flex items-center gap-3">
+                <span className="relative inline-block h-[24px] w-[24px] border border-white/85">
+                  <span className="absolute inset-[3px] bg-bp-accent" />
+                </span>
+                <span className="font-display text-lg font-bold uppercase tracking-[0.08em]">Healthper</span>
+              </div>
+            </div>
+
+            <div className="my-14 max-w-[30rem]">
+              <Kicker dark className="mb-4">Clinical AI login</Kicker>
+              <h1 className="font-display text-[34px] font-bold uppercase leading-[1.02] tracking-[-0.02em] xl:text-[42px]">
+                Enter the workspace where <span className="font-normal italic text-bp-accent-300">medical context</span> becomes usable.
+              </h1>
+              <p className="mt-5 max-w-md text-[15px] leading-relaxed text-white/68">
+                Consultation audio, structured notes, patient memory, and medical decisions, all inside one clinical system.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 border-t border-white/12 pt-6">
+              <div>
+                <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/46">Access</div>
+                <div className="mt-1 font-display text-[22px] text-white">OAuth + Email</div>
+              </div>
+              <div>
+                <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/46">Demo mode</div>
+                <div className="mt-1 font-display text-[22px] italic text-emerald-400">Instant preview</div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* panel derecho */}
-        <div className="flex flex-1 items-center justify-center bg-white px-6 py-16 sm:px-10 lg:px-16">
-          <div className="w-full max-w-md">
+        <div className="relative flex flex-col justify-center bg-bp-bg px-4 py-4 sm:px-8 sm:py-8 lg:px-10 lg:py-10 xl:px-12 xl:py-12">
+          <Crosshair className="left-6 top-6 hidden sm:block" />
+          <Crosshair className="right-6 top-6 hidden sm:block" />
 
-            {/* header */}
-            <div className="mb-6 text-center">
-              <h1 className="font-feature text-3xl font-semibold tracking-tight text-foreground">
-                Welcome back
-              </h1>
-
-              <p className="mt-2 text-sm leading-6 text-[#404040]">
-                Sign in to continue to your workspace.
+          <div className="relative mx-auto w-full max-w-[28rem]">
+            <div className="mb-4 border border-bp-divider/80 bg-[linear-gradient(180deg,rgba(238,242,250,0.7),rgba(245,245,245,0.98))] p-4 sm:mb-6 lg:hidden">
+              <div className="flex items-center gap-2.5">
+                <span className="relative inline-block h-[20px] w-[20px] border border-bp-text/75 bg-bp-bg">
+                  <span className="absolute inset-[2px] bg-emerald-600" />
+                </span>
+                <span className="font-display text-sm font-bold uppercase tracking-[0.08em]">Healthper</span>
+              </div>
+              <p className="mt-3 text-sm leading-relaxed text-bp-text/70">
+                Clinical documentation, patient memory, and system access in one streamlined point.
               </p>
             </div>
 
-            {/* seccion recruiter demo */}
-            <div className="mb-6 rounded-lg border border-[#0D9488] bg-[#115E59] p-5">
-              <div className="mb-3 flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-[#5EEAD4]" />
-                <span className="text-sm font-semibold text-white">
-                  Explore the live application
-                </span>
+            <div className="border border-bp-divider bg-bp-bg p-4 shadow-[0_18px_40px_rgba(20,27,77,0.06)] sm:p-6">
+              <div className="mb-5 sm:mb-6">
+                <Kicker>Sign in</Kicker>
+                <h2 className="mt-2 font-display text-[28px] font-bold uppercase leading-[1.02] tracking-[-0.015em] sm:text-[30px]">
+                  Welcome back.
+                </h2>
+                <p className="mt-2 max-w-sm text-sm leading-relaxed text-bp-text/70">
+                  Continue with Google, use your credentials, or launch the demo preview.
+                </p>
               </div>
 
-              <p className="mb-5 text-sm leading-6 text-[#F0FDFA]/80">
-                Experience the full platform with realistic patient data, AI consultations, and every core feature—no account or setup required.
-              </p>
-
-              <button
-                type="button"
-                disabled={loading}
-                onClick={handleTryDemo}
-                className="group relative flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-md bg-gradient-to-b from-[#3D5A82] via-[#1B2A41] to-[#233A54] text-base font-bold text-[#FCD34D] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35),inset_0_-2px_4px_0_rgba(0,0,0,0.35),0_4px_12px_rgba(0,0,0,0.35)] transition-transform duration-200 hover:-translate-y-0.5"
-              >
-                {/* brillo diagonal, efecto metalizado */}
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full"
-                />
-                <span className="relative">
-                  {loading ? "Preparing Demo..." : "Recruiter Preview"}
-                </span>
-                <ArrowRight className="relative h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-              </button>
-            </div>
-
-            {/* google */}
-            <button
-              type="button"
-              onClick={() => {
-                window.location.href = `${API_URL}/auth/google`;
-              }}
-              className="flex h-11 w-full items-center justify-center gap-3 rounded-md border border-[#E5E5E5] bg-[#F5F5F5] text-sm font-medium text-[#171717] transition-colors duration-200 hover:bg-white"
-            >
-              <GoogleIcon />
-              Continue with Google
-            </button>
-
-            {/* separador */}
-            <div className="my-6 flex items-center">
-              <div className="h-px flex-1 bg-[#E5E5E5]" />
-              <span className="mx-4 text-xs uppercase tracking-wider text-[#A3A3A3]">
-                or continue with email
-              </span>
-              <div className="h-px flex-1 bg-[#E5E5E5]" />
-            </div>
-
-            <form onSubmit={handleLogin} className="space-y-5">
-
-              {/* email */}
-              <div>
-                <label className="mb-2 block text-sm font-medium text-[#171717]">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="doctor@clinic.com"
-                  className="h-11 w-full rounded-md border border-[#E5E5E5] bg-[#F5F5F5] px-4 text-sm text-foreground outline-none transition-all duration-200 placeholder:text-[#A3A3A3] focus:border-[#0D9488] focus:bg-white focus:ring-4 focus:ring-[#F0FDFA]"
-                />
-              </div>
-
-              {/* password */}
-              <div>
-                <div className="mb-2 flex items-center justify-between">
-                  <label className="text-sm font-medium text-[#171717]">
-                    Password
-                  </label>
-                </div>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="h-11 w-full rounded-md border border-[#E5E5E5] bg-[#F5F5F5] pl-4 pr-11 text-sm text-foreground outline-none transition-all duration-200 placeholder:text-[#A3A3A3] focus:border-[#0D9488] focus:bg-white focus:ring-4 focus:ring-[#F0FDFA]"
-                  />
+              <div className="relative mb-5 overflow-hidden border border-emerald-500/30 bg-[linear-gradient(180deg,rgba(16,185,129,0.08),rgba(16,185,129,0.02))] p-4 sm:mb-6">
+                <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-emerald-500/10 blur-2xl" />
+                <div className="relative z-10">
+                  <span className="inline-flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-600">
+                    <Sparkles className="h-3 w-3 animate-pulse" /> Instant Access
+                  </span>
+                  <h3 className="mt-2 font-display text-base font-bold uppercase tracking-[-0.01em] text-bp-text">Demo Environment</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-bp-text/70">
+                    Test the fully functional workspace instantly with preloaded sample patients and structured notes.
+                  </p>
                   <button
                     type="button"
-                    onClick={() => setShowPassword((v) => !v)}
-                    className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-[#A3A3A3] transition-colors hover:text-[#404040]"
+                    onClick={handleTryDemo}
+                    disabled={demoLoading || loading}
+                    className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-emerald-600 bg-emerald-600 px-4 py-3 font-display text-xs font-bold uppercase tracking-[0.14em] text-white transition-all hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-65"
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
+                    {demoLoading ? "Preparing environment..." : "Launch Demo Preview"}
+                    <ArrowRight className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </div>
 
-              {/* error */}
-              {error && (
-                <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                  {error}
-                </div>
-              )}
-
-              {/* submit */}
               <button
-                type="submit"
-                disabled={loading}
-                className="flex h-11 w-full items-center justify-center rounded-md bg-[#115E59] text-sm font-medium text-white transition-colors duration-200 hover:bg-[#0D9488] disabled:cursor-not-allowed disabled:opacity-60"
+                type="button"
+                onClick={() => {
+                  window.location.href = `${API_URL}/auth/google`;
+                }}
+                disabled={loading || demoLoading}
+                className="flex h-[48px] w-full items-center justify-center gap-3 rounded-full border border-bp-divider bg-bp-bg font-display text-sm font-semibold uppercase tracking-wide text-bp-text transition-all hover:border-emerald-600 hover:bg-bp-divider/10 disabled:opacity-65"
               >
-                {loading ? "Signing in..." : "Sign in"}
+                <GoogleIcon />
+                Continue with Google
               </button>
 
-            </form>
+              <div className="my-4 flex items-center gap-3 font-mono text-[11px] uppercase tracking-wide text-bp-text/45">
+                <span className="h-px flex-1 bg-bp-divider" />
+                or credentials
+                <span className="h-px flex-1 bg-bp-divider" />
+              </div>
 
-            <p className="mt-6 text-center text-xs leading-5 text-[#A3A3A3]">
-              Protected with Google OAuth and JWT authentication.
+              <form onSubmit={handleLogin} className="flex flex-col gap-3.5">
+                <div>
+                  <label className="mb-1.5 block font-display text-xs font-semibold uppercase tracking-wide text-bp-text/70">Email</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="doctor@clinic.com"
+                    required
+                    className="h-[48px] w-full rounded-2xl border border-bp-divider bg-bp-bg px-4 text-sm text-bp-text outline-none transition-colors focus:border-emerald-600"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-1.5 block font-display text-xs font-semibold uppercase tracking-wide text-bp-text/70">Password</label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      required
+                      className="h-[48px] w-full rounded-2xl border border-bp-divider bg-bp-bg pl-4 pr-11 text-sm text-bp-text outline-none transition-colors focus:border-emerald-600"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-bp-text/55 transition-colors hover:text-bp-text"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                {error && (
+                  <div className="border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 rounded-lg">
+                    {error}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading || demoLoading}
+                  className="mt-1 flex h-[48px] w-full items-center justify-center gap-2 rounded-full border border-bp-text bg-bp-text px-4 font-display text-xs font-bold uppercase tracking-[0.14em] text-bp-bg transition-all hover:bg-bp-text/90 disabled:cursor-not-allowed disabled:opacity-65"
+                >
+                  {loading ? "Signing in..." : "Sign in"}
+                  {!loading && <ArrowRight className="h-3.5 w-3.5" />}
+                </button>
+              </form>
+            </div>
+
+            <p className="mt-5 flex items-center justify-center gap-1.5 text-center font-mono text-[11px] text-bp-text/45 sm:mt-6">
+              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600/70" /> Secured via Google OAuth, JWT & Secure HttpOnly cookies
             </p>
-
           </div>
         </div>
       </div>

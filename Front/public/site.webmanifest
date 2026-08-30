@@ -1,0 +1,16 @@
+{
+  "name": "Healthper — Clinical AI Platform",
+  "short_name": "Healthper",
+  "description": "End-to-end AI clinical assistant with real-time transcription, intelligent suggested questions, and longitudinal patient memory.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#080b25",
+  "theme_color": "#080b25",
+  "icons": [
+    { "src": "/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/android-chrome-512x512.png", "sizes": "628x628", "type": "image/png" },
+    { "src": "/android-chrome-512x512.png", "sizes": "628x628", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -13,6 +13,7 @@ import ConsultationFlow from "./pages/consultation/ConsultationFlow"
 import Welcome from "./pages/welcome/Welcome"
 import ErrorBoundary from "./components/common/ErrorBoundary"
 import NotFound from "./pages/NotFound"
+import ScrollToTop from "./components/common/ScrollToTop"
 
 
 export default function App() {
@@ -21,6 +22,7 @@ export default function App() {
     <AuthProvider>
       <ErrorBoundary>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           {/* rutas publicas */}
           <Route path="/" element={<Welcome />} />

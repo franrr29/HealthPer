@@ -1,5 +1,6 @@
 import { createContext, useState, useContext } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import api from "../services/api";
 
 type AuthContextType = {
   isAuthenticated: boolean
@@ -26,10 +27,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     }
 
     function logout() {
-        fetch("/auth/logout", {
-            method: "POST",
-            credentials: "include"
-        });
+        api.post("/auth/logout");
 
         localStorage.removeItem("isAuthenticated");
         setIsAuthenticated(false);

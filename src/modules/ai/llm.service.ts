@@ -32,7 +32,7 @@ export async function generateConsultationSummary(patient_id: number, transcript
     ];
 
     const response = await groqLLM.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
+        model: "openai/gpt-oss-120b",
         messages: messagesLLM,
         response_format: {
             type: "json_object"
@@ -66,7 +66,7 @@ export async function generateTextAnswer(prompt: string, systemPrompt?: string):
     messagesLLM.push({ role: "user", content: prompt });
 
     const response = await groqLLM.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
+        model: "openai/gpt-oss-120b",
         messages: messagesLLM
     });
 

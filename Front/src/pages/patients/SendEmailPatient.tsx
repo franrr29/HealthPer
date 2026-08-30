@@ -49,7 +49,7 @@ export default function SendEmailPatient({ consultationId, patientId }: SendEmai
                 <div className="flex gap-3">
                     <button
                         onClick={() => setStep("inputEmail")}
-                        className="neu-card bg-[#115E59] hover:bg-[#0D9488] text-white rounded-md px-4 py-2 text-xs font-bold uppercase tracking-wider border border-[#0D9488] transition-all duration-200"
+                        className="neu-card bg-primary hover:bg-navy-elevated text-white rounded-md px-4 py-2 text-xs font-bold uppercase tracking-wider border border-navy-elevated transition-all duration-200"
                     >
                         Send summary to patient
                     </button>
@@ -69,12 +69,12 @@ export default function SendEmailPatient({ consultationId, patientId }: SendEmai
                         placeholder="Patient email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#0D9488]"
+                        className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-navy-elevated"
                     />
                     <button
                         onClick={handleGeneratePreview}
                         disabled={!email.trim()}
-                        className="neu-card bg-[#115E59] hover:bg-[#0D9488] text-white rounded-md px-4 py-2 text-xs font-bold uppercase tracking-wider border border-[#0D9488] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="neu-card bg-primary hover:bg-navy-elevated text-white rounded-md px-4 py-2 text-xs font-bold uppercase tracking-wider border border-navy-elevated transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                         Generate preview
                     </button>
@@ -82,8 +82,8 @@ export default function SendEmailPatient({ consultationId, patientId }: SendEmai
             )}
 
             {step === "loadingPreview" && (
-                <div className="flex items-center gap-2.5 text-xs text-[#0D9488] bg-[#F5F5F5] p-3 rounded-lg border border-[#F0FDFA] animate-pulse">
-                    <span className="w-3.5 h-3.5 rounded-full border-2 border-[#0D9488] border-t-transparent animate-spin" />
+                <div className="flex items-center gap-2.5 text-xs text-navy-elevated bg-muted p-3 rounded-lg border border-accent animate-pulse">
+                    <span className="w-3.5 h-3.5 rounded-full border-2 border-navy-elevated border-t-transparent animate-spin" />
                     Generating email preview...
                 </div>
             )}
@@ -96,7 +96,7 @@ export default function SendEmailPatient({ consultationId, patientId }: SendEmai
                     <div className="flex gap-3">
                         <button
                             onClick={handleSendEmail}
-                            className="neu-card bg-[#0D9488] hover:brightness-110 text-white rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-wider border border-[#0D9488]/60 transition-all duration-200"
+                            className="neu-card bg-navy-elevated hover:brightness-110 text-white rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-wider border border-navy-elevated/60 transition-all duration-200"
                         >
                             Confirm and send
                         </button>
@@ -111,14 +111,14 @@ export default function SendEmailPatient({ consultationId, patientId }: SendEmai
             )}
 
             {step === "sending" && (
-                <div className="flex items-center gap-2.5 text-xs text-[#0D9488] bg-[#F5F5F5] p-3 rounded-lg border border-[#F0FDFA] animate-pulse">
-                    <span className="w-3.5 h-3.5 rounded-full border-2 border-[#0D9488] border-t-transparent animate-spin" />
+                <div className="flex items-center gap-2.5 text-xs text-navy-elevated bg-muted p-3 rounded-lg border border-accent animate-pulse">
+                    <span className="w-3.5 h-3.5 rounded-full border-2 border-navy-elevated border-t-transparent animate-spin" />
                     Sending email...
                 </div>
             )}
 
             {step === "sent" && (
-                <div className="text-xs font-bold text-[#0D9488] bg-[#F5F5F5] border border-[#F0FDFA] rounded-lg p-4 text-center animate-pulse">
+                <div className="text-xs font-bold text-navy-elevated bg-muted border border-accent rounded-lg p-4 text-center animate-pulse">
                     Email sent successfully. Redirecting...
                 </div>
             )}

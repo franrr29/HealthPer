@@ -1,11 +1,9 @@
 import { Link } from "react-router-dom";
 import { PatientForm } from "./PatientForm";
 
-// Vista para registrar un paciente nuevo
 export function CreatePatient() {
   return (
     <div className="max-w-lg mx-auto my-4 mb-8 space-y-6 transition-all duration-300 ease-in-out">
-      {/* Botón para regresar al listado */}
       <Link
         to="/patients"
         className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors inline-block"

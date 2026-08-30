@@ -42,7 +42,7 @@ export async function updatePatientMemoryService(patient_id: number, new_summary
 
     //Llamo al llm groq: 
     const response = await groqLLM.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
+        model: "openai/gpt-oss-120b",
         messages: messageForLLM,
         response_format: { type: "json_object" }
     });

@@ -1,4 +1,3 @@
-//Pagina no encontrada para rutas no definidas
 import { Link } from "react-router-dom"
 
 

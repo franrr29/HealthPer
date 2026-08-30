@@ -59,7 +59,7 @@ export default function PatientDetails() {
   if (patientLoading || consultationsLoading) {
     return (
       <div className="p-8 font-mono text-xs uppercase tracking-wider text-muted-foreground animate-pulse">
-        Loading core metrics...
+        Loading patient record...
       </div>
     );
   }
@@ -67,7 +67,7 @@ export default function PatientDetails() {
   if (patientError || consultationsError) {
     return (
       <div className="p-6 border border-rose-300 bg-rose-50/50 text-destructive text-xs font-semibold rounded-xl flex justify-between items-center neu-surface">
-        <span>Error synchronization medical records</span>
+        <span>Error loading patient data</span>
         <button
           onClick={() => window.location.reload()}
           className="font-bold underline underline-offset-2 hover:opacity-80 transition-opacity"
@@ -81,7 +81,7 @@ export default function PatientDetails() {
   if (!patient) {
     return (
       <div className="p-8 font-mono text-xs uppercase tracking-wider text-muted-foreground">
-        Patient structure empty
+        Patient not found
       </div>
     );
   }
@@ -135,7 +135,7 @@ export default function PatientDetails() {
         </div>
       </div>
 
-      {/* Detalle básico del paciente */}
+      {/* datos basicos del paciente */}
       <div className="neu-card rounded-2xl bg-card p-5 border border-border/80 transition-all duration-200">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
           {patientDetails.map((item) => (
@@ -149,7 +149,7 @@ export default function PatientDetails() {
         </div>
       </div>
 
-      {/* Memoria clínica */}
+      {/* memoria clinica */}
       {memory && (
         <div className="neu-card rounded-2xl bg-blue-50/40 p-5 border border-blue-200/80 space-y-5 transition-all duration-200">
           <div className="flex items-center gap-2 border-b border-blue-200/90 pb-3">
@@ -197,15 +197,15 @@ export default function PatientDetails() {
         </div>
       )}
 
-      {/* Histórico de consultas */}
+      {/* historial de consultas */}
       <div className="neu-card rounded-2xl bg-card p-5 border border-border/80 space-y-5 transition-all duration-200">
         <div className="flex items-center justify-between border-b border-border/80 pb-3">
           <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-foreground">
-            Consultation Pipeline
+            Consultations
           </h3>
           <button
             onClick={handleCreateConsultation}
-            className="neu-card inline-flex items-center gap-2 bg-[#115E59] text-white rounded-md px-4 py-2 text-[11px] font-bold uppercase tracking-wider border border-[#0D9488] hover:bg-[#0D9488] transition-all duration-200"
+            className="neu-card inline-flex items-center gap-2 bg-primary text-white rounded-md px-4 py-2 text-[11px] font-bold uppercase tracking-wider border border-navy-elevated hover:bg-navy-elevated transition-all duration-200"
           >
             Open Consultation
           </button>
@@ -239,7 +239,7 @@ export default function PatientDetails() {
                 <div
                   className={`px-4 py-1.5 border-t font-mono text-[9px] font-extrabold uppercase tracking-widest ${
                     consultation.status === "signed"
-                      ? "bg-[#0D9488] border-[#0D9488]/60 text-white"
+                      ? "bg-navy-elevated border-navy-elevated/60 text-white"
                       : "bg-amber-400 border-amber-500/60 text-slate-950"
                   }`}
                 >
@@ -250,22 +250,21 @@ export default function PatientDetails() {
           </ul>
         ) : (
           <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground py-2">
-            No historical consultations in system pipeline.
+            No consultations yet.
           </p>
         )}
       </div>
 
-      {/* Modal de eliminación */}
+      {/* modal de borrado */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-[#115E59]/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity duration-200">
+        <div className="fixed inset-0 bg-primary/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity duration-200">
           <div className="neu-card rounded-2xl bg-card p-5 border border-border/80 w-full max-w-sm space-y-4 transition-all duration-200 transform scale-100">
             <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-foreground">
-              Destructive Protocol
+              Delete patient
             </h3>
             <p className="text-xs font-medium text-muted-foreground leading-relaxed">
-              Are you absolutely sure you want to completely purge{" "}
-              <span className="text-foreground font-bold">{patient.name}</span>? System memory
-              structures cannot revert this process.
+              Are you sure you want to delete{" "}
+              <span className="text-foreground font-bold">{patient.name}</span>? This can't be undone.
             </p>
             <div className="flex justify-end gap-2 pt-1">
               <button
@@ -273,14 +272,14 @@ export default function PatientDetails() {
                 disabled={deleteMutation.isPending}
                 className="neu-card inline-flex items-center gap-2 bg-card text-foreground rounded-xl px-3 py-1.5 border border-border text-[11px] font-bold uppercase tracking-wider hover:brightness-95 transition-all duration-200 disabled:opacity-50"
               >
-                Abort
+                Cancel
               </button>
               <button
                 onClick={handleDelete}
                 disabled={deleteMutation.isPending}
                 className="neu-card inline-flex items-center gap-2 bg-rose-600 text-white rounded-xl px-3 py-1.5 border border-rose-700/60 text-[11px] font-bold uppercase tracking-wider hover:brightness-110 transition-all duration-200 disabled:opacity-50"
               >
-                {deleteMutation.isPending ? "Purging..." : "Confirm Purge"}
+                {deleteMutation.isPending ? "Deleting..." : "Confirm delete"}
               </button>
             </div>
           </div>

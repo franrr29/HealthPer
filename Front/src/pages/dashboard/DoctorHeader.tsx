@@ -1,39 +1,43 @@
 import type { DoctorHeaderProps } from "../../types/doctor";
 
-// Mostrar datos del doctor de la demo
-export function DoctorHeader({ doctorData }: DoctorHeaderProps) {
+// muestra datos del doctor de la demo
+export function DoctorHeader({ doctorData, pendingCount = 0 }: DoctorHeaderProps) {
   return (
-    <div className="neu-card rounded-2xl bg-card p-5 border border-border/100 transition-all duration-200">
+    <div className="neu-card rounded-2xl bg-card border border-border p-5">
       <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <div className="neu-inset rounded-full p-1 border border-border/60 shrink-0">
-            <img
-              src="/doctor.png"
-              alt={doctorData?.name || "Doctor"}
-              className="h-14 w-14 rounded-full object-cover shrink-0"
-            />
-          </div>
+          <img
+            src="/doctor.png"
+            alt={doctorData?.name || "Doctor"}
+            className="h-14 w-14 rounded-full object-cover shrink-0 border border-border"
+          />
           <div>
-            <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-              Recruiter 
-            </p>
             <h1 className="text-lg font-extrabold tracking-tight text-foreground">
               {doctorData?.name}
             </h1>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              {pendingCount > 0 ? (
+                <>
+                  You have <span className="text-wc-blue font-semibold">{pendingCount} consultations</span> waiting for your signature.
+                </>
+              ) : (
+                "No consultations waiting for your signature."
+              )}
+            </p>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-          <span className="px-3 py-1 rounded-full bg-blue-600 text-white border border-blue-700/50 font-mono text-[10px] font-extrabold uppercase tracking-widest shadow-sm">
+          <span className="px-3 py-1 rounded-full bg-wc-blue text-white text-xs font-semibold">
             {doctorData?.specialty}
           </span>
           {doctorData?.license && (
-            <span className="px-3 py-1 rounded-full neu-surface border border-border/80 text-muted-foreground font-mono text-[10px] font-bold uppercase tracking-widest">
+            <span className="px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs font-medium">
               Reg: {doctorData.license}
             </span>
           )}
           {doctorData?.facility && (
-            <span className="px-3 py-1 rounded-full neu-surface border border-border/80 text-muted-foreground font-mono text-[10px] font-bold uppercase tracking-widest">
+            <span className="px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs font-medium">
               {doctorData.facility}
             </span>
           )}
