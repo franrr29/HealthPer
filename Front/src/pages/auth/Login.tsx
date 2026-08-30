@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { isAxiosError } from "axios";
 import { ArrowLeft, ArrowRight, Eye, EyeOff, Sparkles, ShieldCheck } from "lucide-react";
 import { loginRequest, tryDemoRequest } from "@/services/auth.service";
-import { BlueprintGrid, Crosshair, Kicker, Cta } from "@/pages/welcome/Welcome";
+import { BlueprintGrid, Crosshair, Kicker } from "@/pages/welcome/Welcome";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
