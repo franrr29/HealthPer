@@ -1,132 +1,61 @@
-//Loggear usuario, buscar en db si existe y firmar con JWT:
-
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { conexionDB } from "../../config/db";
 import { logger } from "../../config/logger";
 import { env } from "../../config/env";
-import { RowDataPacket } from "mysql2/promise";
 import { AppError } from "../../errors/appError";
+import * as authRepository from "./auth.repository";
+import type { AuthenticatedDoctor, DoctorCredentials } from "../../types/doctor.types";
 
+const DEMO_DOCTOR_EMAIL = "demo@demo.com";
 
-//Funcion para logear usuario en TryDemo sin pasarle email y password, solo para front de prueba:
-
-async function tryDemoService (){
-
-    //Buscar usuario demo en base de datos:
-    const [rows] = await conexionDB.query<RowDataPacket[]>(
-        "SELECT * FROM doctors WHERE email= ?",
-        ["demo@demo.com"]
-    );
-
-    if (rows.length === 0) {
-        throw new AppError("Demo user not found", 404);
-    }
-
-    const doctor = rows[0];
-
-    // Si existe en base de datos, firmo con JWT:
-    const token = jwt.sign(
-        { id: doctor.id, email: doctor.email, role: doctor.role },
-        env.JWT_SECRET,
-        { expiresIn: "15m" }
-    );
-
-    const refreshToken = jwt.sign(
-        { id: doctor.id, email: doctor.email, role: doctor.role },
-        env.REFRESH_TOKEN_SECRET,
-        { expiresIn: "7d" }
-    );
-
-    logger.info(`Demo user logged successfully | Email: ${doctor.email}`);
-
-    // Eliminar password_hash antes de retornar al cliente:
-    delete doctor.password_hash;
-
-    return {
-        doctor,
-        token,
-        refreshToken
-    };
+interface AuthResult {
+  doctor: AuthenticatedDoctor;
+  token: string;
+  refreshToken: string;
 }
 
+function buildAuthResult(doctor: DoctorCredentials): AuthResult {
+  const payload = { id: doctor.id, email: doctor.email, role: doctor.role };
 
+  const token = jwt.sign(payload, env.JWT_SECRET, { expiresIn: "15m" });
+  const refreshToken = jwt.sign(payload, env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
 
-//Funcion para logear usuario ya registrado:
-async function loginUser(email: string, password: string) {
+  return {
+    doctor: { id: doctor.id, name: doctor.name, email: doctor.email, role: doctor.role },
+    token,
+    refreshToken,
+  };
+}
 
+async function tryDemoService(): Promise<AuthResult> {
+  const doctor = await authRepository.getByEmail(DEMO_DOCTOR_EMAIL);
 
-    const [rows] = await conexionDB.query<RowDataPacket[]>(
-        "SELECT * FROM doctors WHERE email= ?",
-        [email]
-    );
+  if (!doctor) {
+    throw new AppError("Demo user not found", 404);
+  }
 
+  logger.info(`Demo user logged successfully | Email: ${doctor.email}`);
 
-    //verificar mail que existe:
-    if (rows.length === 0) {
+  return buildAuthResult(doctor);
+}
 
-        throw new AppError(
+async function loginUser(email: string, password: string): Promise<AuthResult> {
+  const doctor = await authRepository.getByEmail(email);
 
-            "Invalid credentials",
-            401
-        );
+  if (!doctor) {
+    throw new AppError("Invalid credentials", 401);
+  }
 
-    }
+  const isValidPassword = await bcrypt.compare(password, doctor.password_hash);
 
+  if (!isValidPassword) {
+    throw new AppError("Invalid credentials", 401);
+  }
 
-    const doctor = rows[0];
+  logger.info(`Doctor logged successfully | Email: ${email}`);
 
-
-    //comparar contraseñas:
-    const validPassword = await bcrypt.compare(
-        password,
-        doctor.password_hash
-    );
-
-
-    if (!validPassword) {
-
-        throw new AppError(
-
-            "Invalid credentials",
-            401
-        );
-
-    }
-
-
-    //Si existe en base de datos firmo con JWT:
-    const token = jwt.sign(
-        { id: doctor.id, email: doctor.email, role: doctor.role },
-        env.JWT_SECRET,
-        { expiresIn: "15m" }
-    );
-
-    const refreshToken = jwt.sign(
-        { id: doctor.id, email: doctor.email, role: doctor.role },
-        env.REFRESH_TOKEN_SECRET,
-        { expiresIn: "7d" }
-    );
-
-
-    logger.info(
-        
-        `Doctor logged successfully | Email: ${email}`
-    );
-
-
-    // Eliminar password_hash antes de retornar al cliente:
-    delete doctor.password_hash;
-
-
-    return {
-        doctor,
-        token,
-        refreshToken
-    };
-
-
-};
+  return buildAuthResult(doctor);
+}
 
 export { tryDemoService };
 export default loginUser;
