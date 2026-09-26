@@ -1,17 +1,10 @@
-import { ExternalServiceError } from "../../errors";
-import OpenAI from "openai";
 import { MEMORY_SYSTEM_PROMPT, buildMemoryPrompt } from "./memory.prompt";
 import * as memoryRepository from "./memory.repository";
 import { patientMemorySchema, PatientMemory } from "../../schemas/schema.patientMemory";
-import { env } from "../../config/env";
 import { ConsultationSummary } from "../../schemas/schema.llmAnswer";
 import { parseJsonArray } from "../../utils/json";
+import { getLLMProvider } from "./llm.factory";
 import type { PatientMemoryRow, UpsertPatientMemoryDTO } from "../../types/patientMemory.types";
-
-const groqLLM = new OpenAI({
-    apiKey: env.GROQ_API_KEY,
-    baseURL: "https://api.groq.com/openai/v1"
-});
 
 function toPatientMemory(row: PatientMemoryRow): PatientMemory {
     return {
@@ -43,22 +36,7 @@ export async function updatePatientMemoryService(
 
     const userPrompt = buildMemoryPrompt(currentMemory, new_summary);
 
-    const response = await groqLLM.chat.completions.create({
-        model: "openai/gpt-oss-120b",
-        messages: [
-            { role: "system" as const, content: MEMORY_SYSTEM_PROMPT },
-            { role: "user" as const, content: userPrompt }
-        ],
-        response_format: { type: "json_object" }
-    });
-
-    const rawText = response.choices[0].message.content;
-
-    if (!rawText) {
-        throw new ExternalServiceError("LLM returned an empty response", "groq");
-    }
-
-    const newMemory = patientMemorySchema.parse(JSON.parse(rawText));
+    const newMemory = await getLLMProvider().generateJSON(userPrompt, MEMORY_SYSTEM_PROMPT, patientMemorySchema);
     const memoryData = toUpsertDTO(newMemory);
 
     if (existingRow) {
