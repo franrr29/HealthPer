@@ -1,3 +1,4 @@
+import { ValidationError } from '../../errors';
 import { buildPatientEmailPrompt, PATIENT_EMAIL_SYSTEM_PROMPT } from '../ai/prompt.service';
 import { generateTextAnswer } from '../ai/llm.service';
 import { Resend } from 'resend';
@@ -10,7 +11,7 @@ const resend = new Resend(env.RESEND_API_KEY);
 export async function generatePatientEmailContent(patientName: string, doctorName: string, summary: string): Promise<string> {
 
     if (!summary?.trim()) {
-        throw new Error("Summary is required");
+        throw new ValidationError("Summary is required");
     }
 
     const respuesta = await generateTextAnswer(buildPatientEmailPrompt(patientName, doctorName, summary), PATIENT_EMAIL_SYSTEM_PROMPT);
@@ -24,11 +25,11 @@ export async function generatePatientEmailContent(patientName: string, doctorNam
 export async function sendPatientEmail(patientEmail: string, patientName: string, doctorName: string, aprovedSummary: string): Promise<void> {
 
     if (!patientEmail?.trim()) {
-        throw new Error("Patient email is required");
+        throw new ValidationError("Patient email is required");
     }
 
     if (!aprovedSummary?.trim()) {
-        throw new Error("Approved summary is required");
+        throw new ValidationError("Approved summary is required");
     }
 
     const emailTemplate = buildEmailTemplate(patientName, doctorName, aprovedSummary);

@@ -1,4 +1,4 @@
-import { AppError } from "../../errors/appError";
+import { NotFoundError } from "../../errors";
 import { retrieveRelevantChunks } from "../ai/rag.service";
 import { buildAskPrompt } from "../ai/prompt.service";
 import { generateTextAnswer } from "../ai/llm.service";
@@ -19,7 +19,7 @@ export async function getPatientByID(doctor_id: number, patientID: number): Prom
   const patient = await patientRepository.getByIdAndDoctorId(patientID, doctor_id);
 
   if (!patient) {
-    throw new AppError("Patient not found", 404);
+    throw new NotFoundError("Patient not found");
   }
 
   return patient;

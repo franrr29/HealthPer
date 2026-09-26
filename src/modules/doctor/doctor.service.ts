@@ -1,4 +1,4 @@
-import { AppError } from "../../errors/appError";
+import { NotFoundError, ValidationError } from "../../errors";
 import * as doctorRepository from "./doctor.repository";
 import type {
   DoctorPublicProfile,
@@ -29,13 +29,13 @@ function getTopEntries(counts: Map<string, number>): [string, number][] {
 
 export async function getDoctorByIdService(doctorId: number | undefined): Promise<DoctorPublicProfile> {
   if (!doctorId) {
-    throw new AppError("Doctor ID is required", 400);
+    throw new ValidationError("Doctor ID is required");
   }
 
   const doctor = await doctorRepository.getById(doctorId);
 
   if (!doctor) {
-    throw new AppError("Doctor not found", 404);
+    throw new NotFoundError("Doctor not found");
   }
 
   return doctor;
@@ -43,7 +43,7 @@ export async function getDoctorByIdService(doctorId: number | undefined): Promis
 
 export async function getDoctorStatsByIdService(doctorId: number | undefined): Promise<DoctorStats> {
   if (!doctorId) {
-    throw new AppError("Doctor ID is required", 400);
+    throw new ValidationError("Doctor ID is required");
   }
 
   const totalConsultations = await doctorRepository.getConsultationCount(doctorId);
@@ -58,7 +58,7 @@ export async function getDoctorStatsByIdService(doctorId: number | undefined): P
 
 export async function getRecentActivityService(doctorId: number | undefined): Promise<RecentActivity[]> {
   if (!doctorId) {
-    throw new AppError("Doctor ID is required", 400);
+    throw new ValidationError("Doctor ID is required");
   }
 
   return doctorRepository.getRecentActivity(doctorId, RECENT_ACTIVITY_LIMIT);
@@ -66,7 +66,7 @@ export async function getRecentActivityService(doctorId: number | undefined): Pr
 
 export async function getTopConditionsService(doctorId: number | undefined): Promise<TopConditions> {
   if (!doctorId) {
-    throw new AppError("Doctor ID is required", 400);
+    throw new ValidationError("Doctor ID is required");
   }
 
   const patientConditions = await doctorRepository.getPatientConditions(doctorId);

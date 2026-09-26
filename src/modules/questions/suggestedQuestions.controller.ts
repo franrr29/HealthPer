@@ -7,7 +7,7 @@ export async function suggestedQuestionsController(req: Request, res: Response, 
 
     if (!req.user) {
 
-        res.status(401).json({ message: "Unauthorized" });
+        res.status(401).json({ success: false, message: "Unauthorized" });
 
         return;
     }
@@ -21,7 +21,7 @@ export async function suggestedQuestionsController(req: Request, res: Response, 
 
     if (!transcript || !patient_id) {
 
-      return res.status(400).json({ message: "transcript and patient_id are required" });
+      return res.status(400).json({ success: false, message: "transcript and patient_id are required" });
     }
 
     const questions = await generateSuggestedQuestionsService(transcript, patient_id, doctor_id);

@@ -1,18 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import registerDoc from "./auth.service";
 import loginUser from "./auth.login.service";
-import { tryDemoService } from "./auth.login.service";
-import jwt from "jsonwebtoken";
+import { tryDemoService, refreshAccessToken } from "./auth.login.service";
 import { env } from "../../config/env";
 import { loginSchema, registerSchema, refreshTokenSchema } from "../../schemas/schema.auth";
 import { accessTokenCookieOptions, refreshTokenCookieOptions, clearCookieOptions } from "../../config/cookieOptions";
-
-
-
-interface tokenPayload {
-    id: number;
-    email: string;
-}
 
 
 //Funcion para usar el TryDemo del front y logear usuario demo:
@@ -23,7 +15,7 @@ async function tryDemo(req: Request, res: Response, next: NextFunction): Promise
         
         if (env.ALLOW_DEMO === false) {
 
-            res.status(403).json({ message: "Demo mode is currently disabled" });
+            res.status(403).json({ success: false, message: "Demo mode is currently disabled" });
 
             return;
         }
@@ -56,7 +48,7 @@ async function registerUser (req: Request, res: Response, next: NextFunction): P
 
         if (env.ALLOW_REGISTER === false) {
 
-            res.status(403).json({ message: "Registration is currently disabled" });
+            res.status(403).json({ success: false, message: "Registration is currently disabled" });
 
             return;
         }
@@ -132,45 +124,30 @@ export function logout (req: Request, res: Response): void {
 
 // Generar nuevo access token usando refresh token
 
-export function refreshToken(req: Request, res: Response): void {
+export async function refreshToken(req: Request, res: Response, next: NextFunction): Promise<void> {
 
-    // obtener refresh token de la cookie
-    const refreshToken = req.cookies.refreshToken;
+    const token = req.cookies.refreshToken;
 
-    if (!refreshToken) {
+    if (!token) {
         res.status(401).json({
-            message: "Refresh token not provided"
+            success: false, message: "Refresh token not provided"
         });
         return;
     }
 
     try {
 
-        // verificar si el refresh token es valido
-        const payload = jwt.verify(
-            refreshToken,
-            env.REFRESH_TOKEN_SECRET
-        );
+        const newAccessToken = await refreshAccessToken(token);
 
-        // crear nuevo access token
-        const newAccessToken = jwt.sign(
-            { id: (payload as tokenPayload).id, email: (payload as tokenPayload).email },
-            env.JWT_SECRET,
-            { expiresIn: "15m" }
-        );
-
-        // setear nuevo access token en cookie
         res.cookie("accessToken", newAccessToken, accessTokenCookieOptions);
 
         res.status(200).json({
             message: "Token refreshed successfully"
         });
 
-    } catch {
+    } catch (error) {
 
-        res.status(401).json({
-            message: "Invalid or expired refresh token"
-        });
+        next(error);
     }
 }
 

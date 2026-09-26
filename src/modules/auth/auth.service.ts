@@ -1,3 +1,4 @@
+import { ConflictError } from "../../errors";
 import bcrypt from "bcrypt";
 import { logger } from "../../config/logger";
 import * as authRepository from "./auth.repository";
@@ -8,7 +9,7 @@ async function registerDoc(name: string, email: string, password: string): Promi
   const existingDoctor = await authRepository.getByEmail(email);
 
   if (existingDoctor) {
-    throw new Error("Doctor already exists");
+    throw new ConflictError("Doctor already exists");
   }
 
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);

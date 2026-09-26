@@ -13,7 +13,7 @@ export const getPatients: RequestHandler = async (req, res, next): Promise<void>
 
         res.status(401).json({ 
             
-        message: "Unauthorized" });
+        success: false, message: "Unauthorized" });
 
         return;
      }
@@ -46,7 +46,7 @@ export const getPatientByID: RequestHandler = async (req, res, next): Promise<vo
 
             res.status(401).json({ 
                 
-            message: "Unauthorized" });
+            success: false, message: "Unauthorized" });
 
             return;
         }
@@ -59,7 +59,7 @@ export const getPatientByID: RequestHandler = async (req, res, next): Promise<vo
         
         if (!patientInfo) {
 
-            res.status(404).json({ message: "Patient not found" })
+            res.status(404).json({ success: false, message: "Patient not found" })
             return;
         }
 
@@ -87,7 +87,7 @@ export const createPatient: RequestHandler = async (req, res, next): Promise<voi
 
             res.status(401).json({ 
                 
-            message: "Unauthorized" });
+            success: false, message: "Unauthorized" });
 
             return;
         }
@@ -101,7 +101,7 @@ export const createPatient: RequestHandler = async (req, res, next): Promise<voi
 
             res.status(400).json({ 
 
-                message: "Failed to create patient" 
+                success: false, message: "Failed to create patient" 
             });
 
             return;
@@ -131,7 +131,7 @@ export const patchPatient: RequestHandler = async (req, res, next): Promise<void
 
             res.status(401).json({ 
                 
-            message: "Unauthorized" });
+            success: false, message: "Unauthorized" });
 
             return;
         }
@@ -145,7 +145,7 @@ export const patchPatient: RequestHandler = async (req, res, next): Promise<void
         // Evito ejecutar patch sin campos validos para actualizar usando object.keys:
         if (Object.keys(dataValidated).length === 0) {
             
-            res.status(400).json({ message: "At least one field is required for update" });
+            res.status(400).json({ success: false, message: "At least one field is required for update" });
             return;
         
         }
@@ -155,7 +155,7 @@ export const patchPatient: RequestHandler = async (req, res, next): Promise<void
         
         if (!updateInfo) {
 
-            res.status(404).json({ message: "Unable to patch patient data"})
+            res.status(404).json({ success: false, message: "Unable to patch patient data"})
             return;
         }
 
@@ -182,7 +182,7 @@ export const deletePatient: RequestHandler = async (req, res, next): Promise<voi
 
             res.status(401).json({ 
                 
-            message: "Unauthorized" });
+            success: false, message: "Unauthorized" });
 
             return;
         }
@@ -197,7 +197,7 @@ export const deletePatient: RequestHandler = async (req, res, next): Promise<voi
 
             res.status(404).json({
 
-                message: "Unable to delete patient"
+                success: false, message: "Unable to delete patient"
             });
 
             return;
@@ -222,7 +222,7 @@ export const getPatientMemoryController: RequestHandler = async (req, res, next)
 
         if (!req.user) {
 
-            res.status(401).json({ message: "Unauthorized" });
+            res.status(401).json({ success: false, message: "Unauthorized" });
             return;
         }
         
@@ -237,7 +237,7 @@ export const getPatientMemoryController: RequestHandler = async (req, res, next)
         if (!memory) {
 
             res.status(404).json({
-                message: "Patient memory not found"
+                success: false, message: "Patient memory not found"
             });
 
             return;
@@ -266,7 +266,7 @@ export const askPatientController: RequestHandler = async (req, res, next): Prom
 
         if (!req.user) {
 
-            res.status(401).json({ message: "Unauthorized" });
+            res.status(401).json({ success: false, message: "Unauthorized" });
             return;
         }
 
@@ -278,13 +278,13 @@ export const askPatientController: RequestHandler = async (req, res, next): Prom
 
         if (Number.isNaN(patient_id)) {
 
-            res.status(400).json({ message: "Invalid patient id" });
+            res.status(400).json({ success: false, message: "Invalid patient id" });
             return;
         }
 
         if (!question || question.trim().length === 0) {
 
-            res.status(400).json({ message: "Question is required" });
+            res.status(400).json({ success: false, message: "Question is required" });
             return;
         }
 
@@ -294,7 +294,7 @@ export const askPatientController: RequestHandler = async (req, res, next): Prom
 
         if (!answer) {
 
-            res.status(404).json({ message: "Unable to get answer for this patient" });
+            res.status(404).json({ success: false, message: "Unable to get answer for this patient" });
             return;
         }
 
@@ -318,7 +318,7 @@ export async function getPatientFollowUpController(req: Request, res: Response, 
 
         if (!req.user) {
 
-            res.status(401).json({ message: "Unauthorized" });
+            res.status(401).json({ success: false, message: "Unauthorized" });
 
             return;
         }

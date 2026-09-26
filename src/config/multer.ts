@@ -1,3 +1,4 @@
+import { ValidationError } from "../errors";
 //configuracion de multer para subir audios en memoria buffer
 //audio disponible en req.file.buffer 
 
@@ -31,7 +32,7 @@ export const uploadAudio = multer({
 
     } else {
 
-      cb(new Error("Invalid audio format"));
+      cb(new ValidationError("Invalid audio format"));
     }
 
   }
