@@ -219,7 +219,7 @@ export async function transcribeConsultation(req: Request, res: Response, next: 
     }
 
 
-    const sendAudio = await transcribeAudio(audioBuffer);
+    const sendAudio = await transcribeAudio(audioBuffer, req.file?.mimetype);
 
 
     if (!sendAudio) {

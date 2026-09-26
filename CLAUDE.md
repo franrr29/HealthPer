@@ -63,7 +63,7 @@ Every module must follow this structure. No exceptions.
 - **Repository Pattern:** all database access goes through repository files. Services never touch SQL.
 - **Strategy Pattern:** LLM provider must be swappable. Use a common interface so changing from Groq to OpenAI or another provider is a config change, not a rewrite.
 - **LLM Fallback + Retry:** all external AI calls (Groq, Gemini) go through a resilience wrapper that handles:
-  1. Retry with exponential backoff on 429/5xx (max 3 attempts).
+  1. Retry with exponential backoff on 429/5xx (max 3 retries, 4 attempts total).
   2. Read `x-ratelimit-remaining` headers for preventive throttle.
   3. If retries are exhausted, fall to the next provider in the fallback chain.
   4. The fallback chain and retry config are defined in config, not hardcoded in services.
