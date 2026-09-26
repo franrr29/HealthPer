@@ -1,12 +1,10 @@
-//Importo variables y passport para usar lo creado en google
-
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { env } from "./env";
-import { conexionDB } from "./db";
+import * as authRepository from "../modules/auth/auth.repository";
+import * as doctorRepository from "../modules/doctor/doctor.repository";
 
-
-//Usar el servicio de passport
+const OAUTH_PASSWORD_HASH = "oauth_google";
 
 passport.use(
   new GoogleStrategy(
@@ -15,7 +13,7 @@ passport.use(
       clientSecret: env.GOOGLE_CLIENT_SECRET,
       callbackURL: "/auth/google/callback",
     },
-    
+
     async (accessToken, refreshToken, profile, done) => {
       try {
         const email = profile.emails?.[0].value;
@@ -25,35 +23,29 @@ passport.use(
           return done(new Error("Google account does not have an email associated"));
         }
 
-        // no permito creacion de cuentas nuevas via oauth
         if (!env.ALLOW_REGISTER) {
           return done(new Error("Registration is currently disabled"));
         }
 
-        // Buscar si el usuario ya existe
+        const existingDoctor = await authRepository.getByEmail(email);
 
-        const [rows]: any = await conexionDB.execute(
-          "SELECT * FROM doctors WHERE email = ?",
-          [email]
-        );
-
-        if (rows.length > 0) {
-          return done(null, rows[0]);
+        if (existingDoctor) {
+          return done(null, {
+            id: existingDoctor.id,
+            email: existingDoctor.email,
+            role: existingDoctor.role,
+          });
         }
 
-        // Si no existe el usuario creo uno:
+        const newDoctorId = await authRepository.create({
+          name,
+          email,
+          password_hash: OAUTH_PASSWORD_HASH,
+        });
 
-        const [result]: any = await conexionDB.execute(
-          "INSERT INTO doctors (name, email, password_hash) VALUES (?, ?, ?)",
-          [name, email, "oauth_google"]
-        );
+        const newDoctor = await doctorRepository.getById(newDoctorId);
 
-        const [newUser]: any = await conexionDB.execute(
-          "SELECT * FROM doctors WHERE id = ?",
-          [result.insertId]
-        );
-
-        return done(null, newUser[0]);
+        return done(null, newDoctor ?? false);
       } catch (error) {
         return done(error);
       }
