@@ -1,189 +1,87 @@
-//Puse algunas funciones sin TRY /CATCH porque al volver a controller, next relanza el error al errorHandler
-
-import { ResultSetHeader, RowDataPacket } from "mysql2";
-import { conexionDB } from "../../config/db";
-import { Patient } from "../../schemas/schema.patient";
 import { AppError } from "../../errors/appError";
 import { retrieveRelevantChunks } from "../ai/rag.service";
 import { buildAskPrompt } from "../ai/prompt.service";
 import { generateTextAnswer } from "../ai/llm.service";
+import * as patientRepository from "./patient.repository";
+import type {
+  CreatePatientDTO,
+  ParsedPatientMemory,
+  Patient,
+  PatientFollowUp,
+  UpdatePatientDTO,
+} from "../../types/patient.types";
 
-
-
-// Obtener todos los pacientes del doctor
-
-export async function getPatients(doctor_id: number) {
-    
-    try {
-
-        const [rows]: any = await conexionDB.query(
-
-            "SELECT * FROM patients WHERE doctor_id = ?",
-            [doctor_id]
-        );
-
-        return rows;
-
-
-    } catch (error) {
-
-        throw error;
-
-    }
+export async function getPatients(doctor_id: number): Promise<Patient[]> {
+  return patientRepository.getAll(doctor_id);
 }
 
+export async function getPatientByID(doctor_id: number, patientID: number): Promise<Patient> {
+  const patient = await patientRepository.getByIdAndDoctorId(patientID, doctor_id);
 
-// Obtener un paciente específico del doctor
+  if (!patient) {
+    throw new AppError("Patient not found", 404);
+  }
 
-export async function getPatientByID(doctor_id: number, patientID: number) {
-    
-    try {
-
-        const [rows]: any = await conexionDB.query(
-
-            "SELECT * FROM patients WHERE id = ? AND doctor_id = ?",
-            [patientID, doctor_id]
-        );
-
-
-        if (rows.length === 0) {
-
-            throw new AppError ("Patient not found", 404);
-        }
-
-
-        return rows[0];
-
-
-    } catch (error) {
-
-        throw error;
-
-    }
+  return patient;
 }
 
+export async function createPatient(patientData: CreatePatientDTO, doctor_id: number): Promise<Patient> {
+  const id = await patientRepository.create(patientData, doctor_id);
 
-//Insertar datos al crear un paciente nuevo en base de datos:
-
-export async function createPatient(patientData: Patient, doctor_id: number) {
-    try {
-        const [result]: any = await conexionDB.query(
-            `INSERT INTO patients (name, birth_date, gender, national_id, phone, doctor_id)
-             VALUES (?, ?, ?, ?, ?, ?)`,
-            [patientData.name, patientData.birth_date, patientData.gender, patientData.national_id, patientData.phone,
-            doctor_id,]
-         );
-
-        if (result.affectedRows === 0) {
-
-            throw new Error("Unable to insert patient data into database");
-        }
-        
-        return { id: result.insertId, ...patientData, doctor_id };
-    
-    } catch (error) {
-        
-        throw error;
-    }
+  return getPatientByID(doctor_id, id);
 }
 
+export async function updatePatient(
+  id: string,
+  doctor_id: number,
+  dataValidated: UpdatePatientDTO
+): Promise<boolean> {
+  const patientId = Number(id);
 
-//Actualizar X dato del paciente por parte del doctor:
+  // a non numeric id can't match any row, same outcome as before the repository took numbers
+  if (Number.isNaN(patientId)) {
+    return false;
+  }
 
-export async function updatePatient(id: string, doctor_id: number, dataValidated: Partial<Patient>) {
-    //extraer campos para patch
-    const fields = Object.keys(dataValidated);
-    //query ordenada dinamica
-    const setQuery = fields.map(field => `${field} = ?`).join(", ");
-    //valores de los fields
-    const values = Object.values(dataValidated);
-
-    const [result] = await conexionDB.query<ResultSetHeader>(
-        `UPDATE patients 
-         SET ${setQuery}
-         WHERE id = ? AND doctor_id = ?`,
-        [...values, id, doctor_id]
-    );
-
-    return result.affectedRows > 0;
+  return patientRepository.update(patientId, doctor_id, dataValidated);
 }
 
+export async function deletePatient(id: string, doctor_id: number): Promise<boolean> {
+  const patientId = Number(id);
 
-//Eliminar completamente un paciente por parte del doctor:
+  if (Number.isNaN(patientId)) {
+    return false;
+  }
 
-export async function deletePatient(id: string, doctor_id: number) {
-    
-    const [result] = await conexionDB.query<ResultSetHeader>(
-        "DELETE FROM patients WHERE id = ? AND doctor_id = ?",
-        [id, doctor_id]
-    );
-
-    return result.affectedRows > 0;
+  return patientRepository.remove(patientId, doctor_id);
 }
 
-
-export async function getPatientMemoryService (patient_id: number, doctor_id: number) {
-
-    // patient_memory no tiene doctor_id, entonces hago un JOIN con
-    //  patients por patient_id para poder filtrar por doctor_id y 
-    // garantizar que el doctor solo ve la memory de sus propios pacientes
-    const [rows] = await conexionDB.query<RowDataPacket[]>(
-        `SELECT pm.*  FROM patient_memory pm JOIN patients p ON pm.patient_id = p.id WHERE pm.patient_id = ? 
-         AND p.doctor_id = ?`,[patient_id, doctor_id]
-    );
-
-    if (rows.length === 0){
-        
-        return null;
-    }
-
-    return rows[0];
+export async function getPatientMemoryService(
+  patient_id: number,
+  doctor_id: number
+): Promise<ParsedPatientMemory | null> {
+  return patientRepository.getMemoryByPatientIdAndDoctorId(patient_id, doctor_id);
 }
 
+export async function askPatientMemoryService(
+  patient_id: number,
+  doctor_id: number,
+  question: string
+): Promise<string> {
+  // validate ownership before touching the patient's chunks
+  await getPatientByID(doctor_id, patient_id);
 
+  const retrievedChunks = await retrieveRelevantChunks(patient_id, question, 5);
 
+  if (retrievedChunks.length === 0) {
+    return "There isn't enough information in this patient's history yet to answer that question.";
+  }
 
-//recibe la pregunta del dr y trae los chunks relevantes del paciente usando la funcion retrieveRelevantChunks
-export async function askPatientMemoryService (patient_id: number, doctor_id: number, question: string): Promise<string> {
+  const prompt = buildAskPrompt(question, retrievedChunks);
 
-
-    const patient= await getPatientByID (doctor_id, patient_id);
-
-    if (!patient){
-
-        throw new AppError ("Patient not found", 404);
-    }
-
-    //traer los chunks relevantes del paciente usando la funcion retrieveRelevantChunks
-    const retrievedChunks = await retrieveRelevantChunks(patient_id, question, 5);
-
-    if (retrievedChunks.length === 0) {
-
-        return "There isn't enough information in this patient's history yet to answer that question.";
-    }
-
-    //envio el prompt al llm y traigo la respuesta en texto plano
-    const prompt = buildAskPrompt(question, retrievedChunks);
-
-    return await generateTextAnswer(prompt);
+  return generateTextAnswer(prompt);
 }
 
-
-//funcion para traer pacientes que necesita seguimiento
-export async function getPatientsNeedingFollowUp(doctor_id: number) {
-
-    const [rows] = await conexionDB.query<RowDataPacket[]>(
-        `SELECT p.id, p.name, MAX(c.created_at) AS last_consultation,
-         DATEDIFF(CURDATE(), MAX(c.created_at)) AS days_since_last_visit
-         FROM patients p
-         LEFT JOIN consultations c ON c.patient_id = p.id
-         WHERE p.doctor_id = ?
-         GROUP BY p.id
-         HAVING last_consultation IS NULL
-             OR last_consultation < NOW() - INTERVAL 1 DAY
-         ORDER BY last_consultation ASC`,
-        [doctor_id]
-    );
-
-    return rows;
+export async function getPatientsNeedingFollowUp(doctor_id: number): Promise<PatientFollowUp[]> {
+  return patientRepository.getFollowUps(doctor_id);
 }
