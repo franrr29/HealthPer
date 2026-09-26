@@ -1,44 +1,91 @@
 import axios from "axios";
+import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:4000",
-  withCredentials: true,
-});
+const baseURL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
+const api = axios.create({ baseURL, withCredentials: true });
 
-// pide un nuevo access token usando el refresh token de la cookie
-async function refreshAccessToken() {
-  await api.post("/auth/refresh");
+// no interceptors here, so a failed refresh can never trigger another refresh
+const refreshClient = axios.create({ baseURL, withCredentials: true });
+
+// a 401 on these means bad credentials, not an expired token
+const AUTH_ROUTES_WITHOUT_REFRESH = ["auth/login", "auth/register", "auth/try-demo"];
+
+interface RetriableRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean;
 }
 
+interface QueuedRequest {
+  retry: () => void;
+  reject: () => void;
+}
 
-// limpia el flag de auth y redirige al login
-function logout() {
+let isRefreshing = false;
+let failedQueue: QueuedRequest[] = [];
+
+function isAuthRoute(url: string | undefined): boolean {
+  const path = (url ?? "").replace(/^\/+/, "");
+
+  return AUTH_ROUTES_WITHOUT_REFRESH.some((route) => path.startsWith(route));
+}
+
+function settleQueue(isRefreshSuccessful: boolean): void {
+  failedQueue.forEach((request) => (isRefreshSuccessful ? request.retry() : request.reject()));
+  failedQueue = [];
+}
+
+// full page navigation also resets react state and the query cache
+function logout(): void {
   localStorage.removeItem("isAuthenticated");
-  window.location.href = "/login";
+
+  if (window.location.pathname !== "/login") {
+    window.location.href = "/login";
+  }
 }
 
-
-// si el token vence intenta renovarlo y repetir la request
 api.interceptors.response.use(
   (response) => response,
 
-  async (error) => {
-    const originalRequest = error.config;
+  async (error: AxiosError) => {
+    const originalRequest = error.config as RetriableRequestConfig | undefined;
 
-    if (error.response?.status !== 401 || originalRequest._retry) {
+    if (error.response?.status !== 401 || !originalRequest || isAuthRoute(originalRequest.url)) {
+      return Promise.reject(error);
+    }
+
+    // already retried once after a refresh and still unauthorized
+    if (originalRequest._retry) {
+      logout();
       return Promise.reject(error);
     }
 
     originalRequest._retry = true;
 
+    if (isRefreshing) {
+      return new Promise((resolve, reject) => {
+        failedQueue.push({
+          retry: () => resolve(api(originalRequest)),
+          // each caller gets its own original error back
+          reject: () => reject(error),
+        });
+      });
+    }
+
+    isRefreshing = true;
+
     try {
-      await refreshAccessToken();
-      return api(originalRequest);
+      await refreshClient.post("/auth/refresh");
     } catch {
+      settleQueue(false);
       logout();
       return Promise.reject(error);
+    } finally {
+      isRefreshing = false;
     }
+
+    settleQueue(true);
+
+    return api(originalRequest);
   }
 );
 
