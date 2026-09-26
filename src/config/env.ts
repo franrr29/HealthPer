@@ -6,7 +6,9 @@ export const serverSchema = z.object({
   // servidor
   PORT: z.coerce.number(),
    //coerce pasa de string a number
-  NODE_ENV: z.enum(["development", "production"]).default("development"),
+  // "test" incluido porque Jest fija NODE_ENV=test automaticamente antes de correr los tests,
+  // y dotenv no pisa una variable que el proceso ya tiene seteada (no alcanza con .env.test)
+  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 
   // Base de datos
   DB_HOST: z.string(),
