@@ -23,7 +23,7 @@ export default function ConsultationFlow() {
   const patientIdNumber = Number(patientId);
 
   // hook de rondas de grabacion
-  const {roundPhase,suggestedQuestions,previousQuestions,fullTranscript,startRound,stopRound,finalizeRound,error,
+  const {roundPhase,suggestedQuestions,previousQuestions,fullTranscript,roundError,startRound,stopRound,finalizeRound,error,
   } = useConsultationRounds(patientIdNumber, consultationIdNumber);
 
   // estados del resumen
@@ -238,6 +238,13 @@ export default function ConsultationFlow() {
           </div>
         )}
 
+        {roundPhase === 'finalizing' && (
+          <div className="flex items-center gap-2.5 text-xs text-slate-600 bg-slate-100 p-3 rounded-lg border border-slate-200 animate-pulse">
+            <span className="w-3.5 h-3.5 rounded-full border-2 border-slate-500 border-t-transparent animate-spin" />
+            Finishing consultation...
+          </div>
+        )}
+
         {/* preguntas sugeridas por la ia */}
         {roundPhase === 'reviewing' && (
           <SuggestedQuestions
@@ -245,6 +252,12 @@ export default function ConsultationFlow() {
             onContinue={startRound}
             onFinalize={finalizeRound}
           />
+        )}
+
+        {roundError && (
+          <p role="alert" className="text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-lg p-3">
+            {roundError}
+          </p>
         )}
 
         {error && (
