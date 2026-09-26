@@ -226,3 +226,48 @@ Schema:
 ]
 `;
 }
+
+
+// shape minimo que necesitamos de la fila de patient_memory (SELECT pm.* devuelve mas columnas,
+// pero solo estas 5 son las que le interesan al prompt)
+export interface PatientMemoryRow {
+  [key: string]: unknown;
+}
+
+// las columnas JSON de mysql2 a veces llegan ya parseadas como array y a veces como string
+// (mismo patron defensivo que ya se usa en doctor.service.ts para chronic_diseases/allergies)
+function normalizeMemoryArray(value: unknown): string[] {
+
+  if (!value) return [];
+
+  const parsed = typeof value === "string" ? JSON.parse(value) : value;
+
+  return Array.isArray(parsed) ? parsed : [];
+}
+
+
+//funcion pura: recibe la fila de patient_memory (o null) y arma un string legible en prosa
+//para usar en cualquier prompt que necesite el historial del paciente (preguntas sugeridas,
+//chat RAG, preview del email). Devuelve null si no hay memoria o si esta vino vacia.
+export function formatPatientMemoryForPrompt(patientMemory: PatientMemoryRow | null): string | null {
+
+  if (!patientMemory) return null;
+
+  const chronicDiseases = normalizeMemoryArray(patientMemory.chronic_diseases);
+  const allergies = normalizeMemoryArray(patientMemory.allergies);
+  const medications = normalizeMemoryArray(patientMemory.medications);
+  const recurrentSymptoms = normalizeMemoryArray(patientMemory.recurrent_symptoms);
+  const masterSummary = typeof patientMemory.master_summary === "string"
+    ? patientMemory.master_summary.trim()
+    : "";
+
+  const lines: string[] = [];
+
+  if (chronicDiseases.length > 0) lines.push(`Chronic diseases: ${chronicDiseases.join(", ")}`);
+  if (allergies.length > 0) lines.push(`Allergies: ${allergies.join(", ")}`);
+  if (medications.length > 0) lines.push(`Current medications: ${medications.join(", ")}`);
+  if (recurrentSymptoms.length > 0) lines.push(`Recurrent symptoms: ${recurrentSymptoms.join(", ")}`);
+  if (masterSummary) lines.push(`Overall summary: ${masterSummary}`);
+
+  return lines.length > 0 ? lines.join("\n") : null;
+}
