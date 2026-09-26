@@ -1,7 +1,7 @@
-import { getPatientByID, getPatientMemoryService } from '../modules/patient/patient.service';
-import { buildSuggestedQuestionsPrompt } from '../modules/ai/prompt.service';
-import { generateTextAnswer } from '../modules/ai/llm.service';
-import { AppError } from '../errors/appError';
+import { getPatientByID, getPatientMemoryService } from '../patient/patient.service';
+import { buildSuggestedQuestionsPrompt, formatPatientMemoryForPrompt } from '../ai/prompt.service';
+import { generateTextAnswer } from '../ai/llm.service';
+import { AppError } from '../../errors/appError';
 
 
 export async function generateSuggestedQuestionsService(transcript: string, patient_id: number, doctor_id: number) {
@@ -10,7 +10,7 @@ export async function generateSuggestedQuestionsService(transcript: string, pati
 
     const patientMemory = await getPatientMemoryService(patient_id, doctor_id);
 
-    const prompt = buildSuggestedQuestionsPrompt(transcript, patientMemory?.memory || null);
+    const prompt = buildSuggestedQuestionsPrompt(transcript, formatPatientMemoryForPrompt(patientMemory));
 
     const llmResponse = await generateTextAnswer(prompt);
 

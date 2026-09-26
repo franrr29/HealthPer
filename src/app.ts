@@ -12,7 +12,7 @@ import consultationRouter from "./modules/consultation/consultation.routes";
 import doctorRouter from "./modules/doctor/doctor.routes";
 import { env } from "./config/env";
 import emailRouter from "./modules/email/email.routes";
-import suggestedQuestionsRouter from "./questions/suggestedQuestions.routes";
+import suggestedQuestionsRouter from "./modules/questions/suggestedQuestions.routes";
 
 
 const app = express();
