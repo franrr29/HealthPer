@@ -2,7 +2,7 @@
 
 import { chunkText } from "./chunking.service";
 import { createEmbeddings } from "./embedding.service";
-import { saveChunksAndEmbeddings } from "../consultation/consultationChunks.repositories";
+import { saveChunksAndEmbeddings } from "../consultation/consultationChunks.repository";
 
 
 //Funcion que reciebe el texto de la consult, divide chunks, crea embeddings y guarda en la base de datos 

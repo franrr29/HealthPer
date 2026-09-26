@@ -72,7 +72,7 @@ export async function getConsultation(req: Request, res: Response, next: NextFun
 
     const consultation = await getConsultationByIdService(consultIDs.id,doctor_id);
 
-    if (!consultation || consultation.length === 0) {
+    if (!consultation) {
 
       return res.status(404).json({
 
