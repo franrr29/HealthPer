@@ -1,8 +1,10 @@
+import type { PoolConnection } from "mysql2/promise";
 import { conexionDB } from "../../config/db";
 
 // Guarda los chunks y sus embeddings en la base de datos.
 export async function saveChunksAndEmbeddings(patient_id: number,consultation_id: number,
-        chunks: string[],embeddings: number[][]
+        chunks: string[],embeddings: number[][],
+        connection?: PoolConnection
 ): Promise<void> {
 
         // Prepara los valores para el INSERT masivo.
@@ -22,7 +24,7 @@ export async function saveChunksAndEmbeddings(patient_id: number,consultation_id
          `;
          
          
-         await conexionDB.query(sql, [values]);
+         await (connection ?? conexionDB).query(sql, [values]);
 }
 
 

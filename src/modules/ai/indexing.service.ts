@@ -1,22 +1,38 @@
-//ChunkText, embedding y repositorioe separados pero aca coordino funciones para que se haga ordenado y orquesta todos
-
+import type { PoolConnection } from "mysql2/promise";
 import { chunkText } from "./chunking.service";
 import { createEmbeddings } from "./embedding.service";
 import { saveChunksAndEmbeddings } from "../consultation/consultationChunks.repository";
 
+export interface ConsultationIndex {
+    chunks: string[];
+    embeddings: number[][];
+}
 
-//Funcion que reciebe el texto de la consult, divide chunks, crea embeddings y guarda en la base de datos 
+// calls the embedding api, so callers should run it outside any open transaction
+export async function buildConsultationIndex(text: string): Promise<ConsultationIndex | null> {
+
+    if (!text || text.trim() === "") return null;
+
+    const chunks = await chunkText(text);
+    const embeddings = await createEmbeddings(chunks);
+
+    return { chunks, embeddings };
+}
+
+export async function saveConsultationIndex(
+    patient_id: number,
+    consultation_id: number,
+    index: ConsultationIndex,
+    connection?: PoolConnection
+): Promise<void> {
+    await saveChunksAndEmbeddings(patient_id, consultation_id, index.chunks, index.embeddings, connection);
+}
 
 export async function indexConsultation(patient_id: number, consultation_id: number, text: string): Promise<void> {
 
-    if (!text || text.trim() === "") return;
+    const index = await buildConsultationIndex(text);
 
-    const chunks = await chunkText(text);
-
-    const embeddings = await createEmbeddings(chunks);
-
-    await saveChunksAndEmbeddings(patient_id, consultation_id, chunks, embeddings);
-
-
-
+    if (index) {
+        await saveConsultationIndex(patient_id, consultation_id, index);
+    }
 }

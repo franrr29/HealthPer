@@ -4,6 +4,7 @@ import { patientMemorySchema, PatientMemory } from "../../schemas/schema.patient
 import { ConsultationSummary } from "../../schemas/schema.llmAnswer";
 import { parseJsonArray } from "../../utils/json";
 import { getLLMProvider } from "./llm.factory";
+import type { PoolConnection } from "mysql2/promise";
 import type { PatientMemoryRow, UpsertPatientMemoryDTO } from "../../types/patientMemory.types";
 
 function toPatientMemory(row: PatientMemoryRow): PatientMemory {
@@ -26,7 +27,8 @@ function toUpsertDTO(memory: PatientMemory): UpsertPatientMemoryDTO {
     };
 }
 
-export async function updatePatientMemoryService(
+// calls the llm, so callers should run it outside any open transaction
+export async function buildUpdatedPatientMemory(
     patient_id: number,
     new_summary: ConsultationSummary
 ): Promise<PatientMemory> {
@@ -36,14 +38,21 @@ export async function updatePatientMemoryService(
 
     const userPrompt = buildMemoryPrompt(currentMemory, new_summary);
 
-    const newMemory = await getLLMProvider().generateJSON(userPrompt, MEMORY_SYSTEM_PROMPT, patientMemorySchema);
-    const memoryData = toUpsertDTO(newMemory);
+    return getLLMProvider().generateJSON(userPrompt, MEMORY_SYSTEM_PROMPT, patientMemorySchema);
+}
+
+export async function savePatientMemory(
+    patient_id: number,
+    memory: PatientMemory,
+    connection?: PoolConnection
+): Promise<void> {
+
+    const existingRow = await memoryRepository.getByPatientId(patient_id, connection);
+    const memoryData = toUpsertDTO(memory);
 
     if (existingRow) {
-        await memoryRepository.update(patient_id, memoryData);
+        await memoryRepository.update(patient_id, memoryData, connection);
     } else {
-        await memoryRepository.create(patient_id, memoryData);
+        await memoryRepository.create(patient_id, memoryData, connection);
     }
-
-    return newMemory;
 }
