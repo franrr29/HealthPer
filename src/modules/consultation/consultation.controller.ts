@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { createConsultation as createConsultationService, getConsultationByIdService, allConsultations, 
-  patchFields, summarizeConsultation, editConsultationSummary, signConsultationService, getPendingConsultationsService, appendTranscript } from "./consultation.service";
+  patchFields, summarizeConsultation, editConsultationSummary, signConsultationService, getPendingConsultationsService, transcribeConsultationAudio } from "./consultation.service";
 import { schemaConsult, schemaConsultParams, schemaConsultPatch } from "../../schemas/schema.consultation";
-import { transcribeAudio } from "../ai/whisper.service";
 
 
 
@@ -219,7 +218,7 @@ export async function transcribeConsultation(req: Request, res: Response, next: 
     }
 
 
-    const sendAudio = await transcribeAudio(audioBuffer, req.file?.mimetype);
+    const sendAudio = await transcribeConsultationAudio(consultation_id, doctor_id, audioBuffer, req.file?.mimetype);
 
 
     if (!sendAudio) {
@@ -230,8 +229,6 @@ export async function transcribeConsultation(req: Request, res: Response, next: 
 
       });
     }
-
-    await appendTranscript(consultation_id, doctor_id, sendAudio);
 
     return res.status(200).json({
 

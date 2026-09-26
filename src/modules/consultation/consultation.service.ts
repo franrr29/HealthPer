@@ -1,8 +1,8 @@
 import { generateConsultationSummary } from "../ai/llm.service";
 import { ConflictError, NotFoundError, ValidationError } from "../../errors";
-import { logger } from "../../config/logger";
-import { updatePatientMemoryService } from "../ai/memory.service";
-import { indexConsultation } from "../ai/indexing.service";
+import { buildUpdatedPatientMemory, savePatientMemory } from "../ai/memory.service";
+import { buildConsultationIndex, saveConsultationIndex } from "../ai/indexing.service";
+import { transcribeAudio } from "../ai/whisper.service";
 import { consultationSummarySchema, ConsultationSummary } from "../../schemas/schema.llmAnswer";
 import * as patientRepository from "../patient/patient.repository";
 import * as consultationRepository from "./consultation.repository";
@@ -16,7 +16,27 @@ import type {
 } from "../../types/consultation.types";
 
 function toConsultationSummary(value: NonNullable<ConsultationJson>): ConsultationSummary {
-  return consultationSummarySchema.parse(typeof value === "string" ? JSON.parse(value) : value);
+  try {
+    return consultationSummarySchema.parse(typeof value === "string" ? JSON.parse(value) : value);
+  } catch {
+    throw new ValidationError("Consultation summary has an invalid structure");
+  }
+}
+
+async function ensureNotSigned(
+  consultation_id: number,
+  doctor_id: number,
+  message: string
+): Promise<void> {
+  const status = await consultationRepository.getStatusById(consultation_id, doctor_id);
+
+  if (!status) {
+    throw new NotFoundError("Consultation not found");
+  }
+
+  if (status === "signed") {
+    throw new ConflictError(message);
+  }
 }
 
 export async function createConsultation(
@@ -61,6 +81,8 @@ export async function patchFields(
   doctor_id: number,
   fields: UpdateConsultationDTO
 ): Promise<{ updated: true } | null> {
+  await ensureNotSigned(consultation_id, doctor_id, "Cannot modify a signed consultation");
+
   const isUpdated = await consultationRepository.updateFields(consultation_id, doctor_id, fields);
 
   if (!isUpdated) {
@@ -78,14 +100,34 @@ export async function appendTranscript(
   return consultationRepository.appendTranscript(consultation_id, doctor_id, newText);
 }
 
+export async function transcribeConsultationAudio(
+  consultation_id: number,
+  doctor_id: number,
+  audioBuffer: Buffer,
+  mimetype?: string
+): Promise<string> {
+  // checked before calling whisper so a signed or foreign consultation never spends quota
+  await ensureNotSigned(consultation_id, doctor_id, "Cannot transcribe into a signed consultation");
+
+  const transcription = await transcribeAudio(audioBuffer, mimetype);
+
+  if (transcription) {
+    await appendTranscript(consultation_id, doctor_id, transcription);
+  }
+
+  return transcription;
+}
+
 export async function summarizeConsultation(
   consultation_id: number,
   doctor_id: number
-): Promise<ConsultationSummary | null> {
+): Promise<ConsultationSummary> {
+  await ensureNotSigned(consultation_id, doctor_id, "Cannot re-summarize a signed consultation");
+
   const consultation = await getConsultationByIdService(consultation_id, doctor_id);
 
   if (!consultation) {
-    return null;
+    throw new NotFoundError("Consultation not found");
   }
 
   if (!consultation.transcript) {
@@ -101,7 +143,7 @@ export async function summarizeConsultation(
   );
 
   if (!isSaved) {
-    return null;
+    throw new ConflictError("Cannot re-summarize a signed consultation");
   }
 
   return summary;
@@ -111,14 +153,14 @@ export async function editConsultationSummary(
   consultation_id: number,
   doctor_id: number,
   edited_summary: string
-): Promise<{ consultation_id: number; edited_summary: string } | null> {
-  const consultation = await getConsultationByIdService(consultation_id, doctor_id);
+): Promise<{ consultation_id: number; edited_summary: string }> {
+  await ensureNotSigned(consultation_id, doctor_id, "Cannot edit a signed consultation summary");
 
-  if (!consultation) {
-    return null;
+  const isSaved = await consultationRepository.updateEditedSummary(consultation_id, doctor_id, edited_summary);
+
+  if (!isSaved) {
+    throw new ConflictError("Cannot edit a signed consultation summary");
   }
-
-  await consultationRepository.updateEditedSummary(consultation_id, doctor_id, edited_summary);
 
   return { consultation_id, edited_summary };
 }
@@ -127,47 +169,51 @@ export async function signConsultationService(
   consultation_id: number,
   doctor_id: number
 ): Promise<SignConsultationOutcome> {
-  const consulta = await consultationRepository.getForSigning(consultation_id, doctor_id);
+  await ensureNotSigned(consultation_id, doctor_id, "Consultation is already signed");
 
-  if (!consulta) {
+  const consultation = await consultationRepository.getForSigning(consultation_id, doctor_id);
+
+  if (!consultation) {
     throw new NotFoundError("Consultation not found");
   }
 
-  if (consulta.status === "signed") {
-    throw new ConflictError("Consultation is already signed");
-  }
+  // the doctor's correction wins over the ai draft
+  const summaryToUse = consultation.edited_summary ?? consultation.ai_summary;
 
-  if (!consulta.ai_summary) {
+  if (!summaryToUse) {
     throw new ValidationError("AI summary is required to sign the consultation");
   }
 
-  await consultationRepository.sign(consultation_id, doctor_id);
+  // the slow external calls run first so no db connection or row lock is held while waiting on them;
+  // if any of them fails nothing has been written and the consultation stays unsigned
+  const updatedMemory = await buildUpdatedPatientMemory(
+    consultation.patient_id,
+    toConsultationSummary(summaryToUse)
+  );
+  const consultationIndex = await buildConsultationIndex(consultation.transcript ?? "");
 
-  const signedConsultation = await consultationRepository.getSignedAt(consultation_id, doctor_id);
+  const signedConsultation = await consultationRepository.signWithTransaction(
+    consultation_id,
+    doctor_id,
+    async (connection) => {
+      await savePatientMemory(consultation.patient_id, updatedMemory, connection);
 
-  let memoryUpdated = true;
+      if (consultationIndex) {
+        await saveConsultationIndex(consultation.patient_id, consultation_id, consultationIndex, connection);
+      }
+    }
+  );
 
-  try {
-    await updatePatientMemoryService(consulta.patient_id, toConsultationSummary(consulta.ai_summary));
-  } catch (error) {
-    memoryUpdated = false;
-    logger.error(`Failed to update patient memory after signing consultation ${consultation_id}: ${(error as Error).message}`);
-  }
-
-  // signing must not depend on memory update or indexing, so both failures are only logged
-  try {
-    await indexConsultation(consulta.patient_id, consultation_id, consulta.transcript ?? "");
-  } catch (error) {
-    logger.error(`Failed to index consultation ${consultation_id}: ${(error as Error).message}`);
+  // nothing was updated, so another request signed it between the check and the write
+  if (!signedConsultation) {
+    throw new ConflictError("Consultation is already signed");
   }
 
   return {
-    message: memoryUpdated
-      ? "Consultation signed successfully"
-      : "Consultation signed successfully, but patient memory update is pending",
+    message: "Consultation signed successfully",
     consultation_id,
     status: "signed",
-    signed_at: signedConsultation?.signed_at ?? null,
+    signed_at: signedConsultation.signed_at,
   };
 }
 

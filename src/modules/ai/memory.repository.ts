@@ -1,11 +1,14 @@
-import { ResultSetHeader, RowDataPacket } from "mysql2/promise";
+import { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import { conexionDB } from "../../config/db";
 import type { PatientMemoryRow, UpsertPatientMemoryDTO } from "../../types/patientMemory.types";
 
 type PatientMemoryQueryRow = PatientMemoryRow & RowDataPacket;
 
-export async function getByPatientId(patientId: number): Promise<PatientMemoryRow | null> {
-  const [rows] = await conexionDB.query<PatientMemoryQueryRow[]>(
+export async function getByPatientId(
+  patientId: number,
+  connection?: PoolConnection
+): Promise<PatientMemoryRow | null> {
+  const [rows] = await (connection ?? conexionDB).query<PatientMemoryQueryRow[]>(
     `SELECT patient_id, chronic_diseases, allergies, medications, recurrent_symptoms, master_summary
      FROM patient_memory
      WHERE patient_id = ?`,
@@ -15,8 +18,12 @@ export async function getByPatientId(patientId: number): Promise<PatientMemoryRo
   return rows[0] ?? null;
 }
 
-export async function create(patientId: number, data: UpsertPatientMemoryDTO): Promise<void> {
-  await conexionDB.query<ResultSetHeader>(
+export async function create(
+  patientId: number,
+  data: UpsertPatientMemoryDTO,
+  connection?: PoolConnection
+): Promise<void> {
+  await (connection ?? conexionDB).query<ResultSetHeader>(
     `INSERT INTO patient_memory
      (patient_id, chronic_diseases, allergies, medications, recurrent_symptoms, master_summary)
      VALUES (?, ?, ?, ?, ?, ?)`,
@@ -31,8 +38,12 @@ export async function create(patientId: number, data: UpsertPatientMemoryDTO): P
   );
 }
 
-export async function update(patientId: number, data: UpsertPatientMemoryDTO): Promise<boolean> {
-  const [result] = await conexionDB.query<ResultSetHeader>(
+export async function update(
+  patientId: number,
+  data: UpsertPatientMemoryDTO,
+  connection?: PoolConnection
+): Promise<boolean> {
+  const [result] = await (connection ?? conexionDB).query<ResultSetHeader>(
     `UPDATE patient_memory
      SET chronic_diseases = ?,
          allergies = ?,

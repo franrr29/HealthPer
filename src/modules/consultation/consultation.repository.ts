@@ -1,9 +1,10 @@
-import { ResultSetHeader, RowDataPacket } from "mysql2/promise";
-import { conexionDB } from "../../config/db";
+import { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
+import { conexionDB, withTransaction } from "../../config/db";
 import type {
   Consultation,
   ConsultationForEmail,
   ConsultationForSigning,
+  ConsultationStatus,
   CreateConsultationDTO,
   PendingConsultation,
   SignedConsultationResult,
@@ -15,12 +16,15 @@ type ConsultationForSigningRow = ConsultationForSigning & RowDataPacket;
 type ConsultationForEmailRow = ConsultationForEmail & RowDataPacket;
 type PendingConsultationRow = PendingConsultation & RowDataPacket;
 type SignedConsultationRow = SignedConsultationResult & RowDataPacket;
+type ConsultationStatusRow = { status: ConsultationStatus } & RowDataPacket;
 
 const UPDATABLE_COLUMNS = [
   "transcript",
   "edited_summary",
   "status",
 ] as const satisfies readonly (keyof UpdateConsultationDTO)[];
+
+// every write below also refuses signed rows, so a concurrent signature can't be overwritten
 
 export async function create(
   data: CreateConsultationDTO,
@@ -45,6 +49,18 @@ export async function getByIdAndDoctorId(
   );
 
   return rows[0] ?? null;
+}
+
+export async function getStatusById(
+  consultationId: number,
+  doctorId: number
+): Promise<ConsultationStatus | null> {
+  const [rows] = await conexionDB.query<ConsultationStatusRow[]>(
+    "SELECT status FROM consultations WHERE id = ? AND doctor_id = ?",
+    [consultationId, doctorId]
+  );
+
+  return rows[0]?.status ?? null;
 }
 
 // ownership is enforced through the patients join
@@ -78,7 +94,7 @@ export async function updateFields(
   const values = columns.map((column) => data[column]);
 
   const [result] = await conexionDB.query<ResultSetHeader>(
-    `UPDATE consultations SET ${setClause} WHERE id = ? AND doctor_id = ?`,
+    `UPDATE consultations SET ${setClause} WHERE id = ? AND doctor_id = ? AND status != 'signed'`,
     [...values, consultationId, doctorId]
   );
 
@@ -93,7 +109,7 @@ export async function appendTranscript(
   const [result] = await conexionDB.query<ResultSetHeader>(
     `UPDATE consultations
      SET transcript = CONCAT(COALESCE(transcript, ''), ' ', ?)
-     WHERE id = ? AND doctor_id = ?`,
+     WHERE id = ? AND doctor_id = ? AND status != 'signed'`,
     [text, consultationId, doctorId]
   );
 
@@ -107,7 +123,7 @@ export async function updateAiSummary(
   summary: string
 ): Promise<boolean> {
   const [result] = await conexionDB.query<ResultSetHeader>(
-    "UPDATE consultations SET ai_summary = ?, status = 'reviewed' WHERE id = ? AND doctor_id = ?",
+    "UPDATE consultations SET ai_summary = ?, status = 'reviewed' WHERE id = ? AND doctor_id = ? AND status != 'signed'",
     [summary, consultationId, doctorId]
   );
 
@@ -120,7 +136,7 @@ export async function updateEditedSummary(
   summary: string
 ): Promise<boolean> {
   const [result] = await conexionDB.query<ResultSetHeader>(
-    "UPDATE consultations SET edited_summary = ? WHERE id = ? AND doctor_id = ?",
+    "UPDATE consultations SET edited_summary = ? WHERE id = ? AND doctor_id = ? AND status != 'signed'",
     [summary, consultationId, doctorId]
   );
 
@@ -132,7 +148,7 @@ export async function getForSigning(
   doctorId: number
 ): Promise<ConsultationForSigning | null> {
   const [rows] = await conexionDB.query<ConsultationForSigningRow[]>(
-    `SELECT id, ai_summary, patient_id, status, transcript
+    `SELECT id, ai_summary, edited_summary, patient_id, status, transcript
      FROM consultations
      WHERE id = ? AND doctor_id = ?`,
     [consultationId, doctorId]
@@ -143,10 +159,11 @@ export async function getForSigning(
 
 export async function sign(
   consultationId: number,
-  doctorId: number
+  doctorId: number,
+  connection?: PoolConnection
 ): Promise<boolean> {
-  const [result] = await conexionDB.query<ResultSetHeader>(
-    "UPDATE consultations SET status = 'signed', signed_at = NOW() WHERE id = ? AND doctor_id = ?",
+  const [result] = await (connection ?? conexionDB).query<ResultSetHeader>(
+    "UPDATE consultations SET status = 'signed', signed_at = NOW() WHERE id = ? AND doctor_id = ? AND status != 'signed'",
     [consultationId, doctorId]
   );
 
@@ -156,14 +173,35 @@ export async function sign(
 // read back from mysql so the timestamp comes from the db clock, not node's
 export async function getSignedAt(
   consultationId: number,
-  doctorId: number
+  doctorId: number,
+  connection?: PoolConnection
 ): Promise<SignedConsultationResult | null> {
-  const [rows] = await conexionDB.query<SignedConsultationRow[]>(
+  const [rows] = await (connection ?? conexionDB).query<SignedConsultationRow[]>(
     "SELECT signed_at FROM consultations WHERE id = ? AND doctor_id = ?",
     [consultationId, doctorId]
   );
 
   return rows[0] ?? null;
+}
+
+// the signature and everything derived from it commit together or not at all;
+// returns null when the consultation was already signed or doesn't belong to the doctor
+export async function signWithTransaction(
+  consultationId: number,
+  doctorId: number,
+  saveDerivedData: (connection: PoolConnection) => Promise<void>
+): Promise<SignedConsultationResult | null> {
+  return withTransaction(async (connection) => {
+    const isSigned = await sign(consultationId, doctorId, connection);
+
+    if (!isSigned) {
+      return null;
+    }
+
+    await saveDerivedData(connection);
+
+    return getSignedAt(consultationId, doctorId, connection);
+  });
 }
 
 export async function getPendingByDoctorId(

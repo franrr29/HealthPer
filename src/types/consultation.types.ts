@@ -24,12 +24,12 @@ export interface CreateConsultationDTO {
 export interface UpdateConsultationDTO {
   transcript?: string;
   edited_summary?: string;
-  status?: ConsultationStatus;
+  status?: Exclude<ConsultationStatus, "signed">;
 }
 
 export type ConsultationForSigning = Pick<
   Consultation,
-  "id" | "patient_id" | "ai_summary" | "status" | "transcript"
+  "id" | "patient_id" | "ai_summary" | "edited_summary" | "status" | "transcript"
 >;
 
 export type ConsultationWithPatient = Pick<

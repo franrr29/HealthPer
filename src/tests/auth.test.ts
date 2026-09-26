@@ -1,175 +1,166 @@
 import request from "supertest";
 import app from "../app";
 import { conexionDB } from "../config/db";
+import { createTestDoctor, deleteTestDoctors, TEST_PASSWORD, TestDoctor } from "./helpers/auth.helper";
 
+const cookieNames = (cookies: string[]) => cookies.map((cookie) => cookie.split("=")[0]);
 
-// Testear rutas de autenticación
 describe("Auth API", () => {
 
+    let doctor: TestDoctor;
+    const createdDoctorIds: number[] = [];
 
-    // corre antes de todos los tests del describe
     beforeAll(async () => {
-
-        await conexionDB.execute(
-            "DELETE FROM doctors WHERE email = ?",
-            ["doctor@test.com"]
-        );
-
+        doctor = await createTestDoctor(app, "auth");
+        createdDoctorIds.push(doctor.id);
     });
 
-
-
-    // corre despues de todos los tests del describe
     afterAll(async () => {
-
+        await deleteTestDoctors(createdDoctorIds);
         await conexionDB.end();
-
     });
 
+    describe("POST /auth/register", () => {
 
+        test("registers a doctor", async () => {
+            const email = `auth.register.${Date.now()}@test.com`;
 
-    // Testear registrar un doctor
-    test("must register a doctor", async () => {
+            const res = await request(app)
+                .post("/auth/register")
+                .send({ name: "Doctor Register", email, password: TEST_PASSWORD });
 
+            expect(res.status).toBe(201);
+            expect(res.body.success).toBe(true);
+            expect(res.body.data.insertId).toEqual(expect.any(Number));
 
-        const res = await request(app)
-            .post("/auth/register")
-            .send({
-                name: "Doctor Test",
-                email: "doctor@test.com",
-                password: "123456"
-            });
+            createdDoctorIds.push(res.body.data.insertId);
+        });
 
+        test("409 rejects an email that is already registered", async () => {
+            const res = await request(app)
+                .post("/auth/register")
+                .send({ name: "Duplicado", email: doctor.email, password: TEST_PASSWORD });
 
-        expect(res.status)
-            .toBe(201);
+            expect(res.status).toBe(409);
+            expect(res.body).toEqual({ success: false, message: "Doctor already exists" });
+        });
 
+        test("400 rejects invalid data with the validation messages", async () => {
+            const res = await request(app)
+                .post("/auth/register")
+                .send({ name: "Sin email valido", email: "no-es-un-email", password: "123" });
 
-        expect(res.body.success)
-            .toBe(true);
-
-
+            expect(res.status).toBe(400);
+            expect(res.body.success).toBe(false);
+            expect(res.body.message).toContain("email");
+            expect(res.body.message).toContain("password");
+        });
     });
 
+    describe("POST /auth/login", () => {
 
+        test("sets httpOnly access and refresh cookies and no token in the body", async () => {
+            const res = await request(app)
+                .post("/auth/login")
+                .send({ email: doctor.email, password: doctor.password });
 
-    // Testear loguear un doctor
-    test("Must login a doctor", async () => {
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBe(true);
+            expect(res.body.data.email).toBe(doctor.email);
+            expect(res.body.data.password_hash).toBeUndefined();
+            expect(res.body.data.token).toBeUndefined();
 
+            const cookies = res.headers["set-cookie"] as unknown as string[];
 
-        const res = await request(app)
-            .post("/auth/login")
-            .send({
-                email: "doctor@test.com",
-                password: "123456"
-            });
+            expect(cookieNames(cookies)).toEqual(expect.arrayContaining(["accessToken", "refreshToken"]));
+            cookies.forEach((cookie) => expect(cookie).toContain("HttpOnly"));
+        });
 
+        test("401 rejects a wrong password", async () => {
+            const res = await request(app)
+                .post("/auth/login")
+                .send({ email: doctor.email, password: "wrongpassword" });
 
-        expect(res.status)
-            .toBe(200);
+            expect(res.status).toBe(401);
+            expect(res.body).toEqual({ success: false, message: "Invalid credentials" });
+        });
 
+        test("401 answers the same for an email that does not exist", async () => {
+            const res = await request(app)
+                .post("/auth/login")
+                .send({ email: "noexiste.123@test.com", password: TEST_PASSWORD });
 
-        expect(res.body.success)
-            .toBe(true);
-
-
-        expect(res.body.data.token)
-            .toBeDefined();
-
-
+            expect(res.status).toBe(401);
+            expect(res.body).toEqual({ success: false, message: "Invalid credentials" });
+        });
     });
 
+    describe("protected routes", () => {
 
+        test("401 without an access token cookie", async () => {
+            const res = await request(app).get("/patients");
 
-    // Testear doctor con credenciales incorrectas
-    test("Must not login a doctor with incorrect credentials", async () => {
+            expect(res.status).toBe(401);
+            expect(res.body).toEqual({ success: false, message: "Access token not provided" });
+        });
 
+        test("401 with an invalid access token cookie", async () => {
+            const res = await request(app)
+                .get("/patients")
+                .set("Cookie", ["accessToken=tokenInventado123"]);
 
-        const res = await request(app)
-            .post("/auth/login")
-            .send({
-                email: "doctor@test.com",
-                password: "wrongpassword"
-            });
+            expect(res.status).toBe(401);
+            expect(res.body).toEqual({ success: false, message: "Invalid or expired token" });
+        });
 
+        test("200 with the cookies of a logged in doctor", async () => {
+            const res = await doctor.agent.get("/doctor/me");
 
-        expect(res.status)
-            .toBe(401);
-
-
-        expect(res.body.success)
-            .toBe(false);
-
-
+            expect(res.status).toBe(200);
+            expect(res.body.data.email).toBe(doctor.email);
+        });
     });
 
+    describe("POST /auth/refresh", () => {
 
+        test("issues a new access token cookie from the refresh cookie", async () => {
+            const res = await doctor.agent.post("/auth/refresh");
 
-    // Testear login con usuario inexistente
-    test("Must not login a doctor that does not exist", async () => {
+            expect(res.status).toBe(200);
 
+            const cookies = res.headers["set-cookie"] as unknown as string[];
 
-        const res = await request(app)
-            .post("/auth/login")
-            .send({
-                email: "noexiste123_1..s@test.com",
-                password: "123456"
-            });
+            expect(cookieNames(cookies)).toContain("accessToken");
+        });
 
+        test("401 without a refresh cookie", async () => {
+            const res = await request(app).post("/auth/refresh");
 
-        expect(res.status)
-            .toBe(401);
+            expect(res.status).toBe(401);
+            expect(res.body).toEqual({ success: false, message: "Refresh token not provided" });
+        });
 
+        test("401 with an invalid refresh cookie", async () => {
+            const res = await request(app)
+                .post("/auth/refresh")
+                .set("Cookie", ["refreshToken=tokenInventado123"]);
 
-        expect(res.body.success)
-            .toBe(false);
-
-
+            expect(res.status).toBe(401);
+            expect(res.body).toEqual({ success: false, message: "Invalid or expired refresh token" });
+        });
     });
 
+    describe("POST /auth/logout", () => {
 
+        test("clears both cookies", async () => {
+            const res = await request(app).post("/auth/logout");
 
-    // Testear sin token de autenticacion
-    test("Must not access protected route without token", async () => {
+            expect(res.status).toBe(200);
 
+            const cookies = res.headers["set-cookie"] as unknown as string[];
 
-        const res = await request(app)
-            .get("/patients/1/consultations");
-
-
-        expect(res.status)
-            .toBe(401);
-
-
-        expect(res.body.success)
-            .toBe(false);
-
-
+            expect(cookieNames(cookies)).toEqual(expect.arrayContaining(["accessToken", "refreshToken"]));
+            cookies.forEach((cookie) => expect(cookie).toMatch(/Expires=Thu, 01 Jan 1970/));
+        });
     });
-
-
-
-    // Testear token invalido
-    test("Must not access protected route with invalid token", async () => {
-
-
-        const res = await request(app)
-            .get("/patients/1/consultations")
-            .set(
-                "Authorization",
-                "Bearer tokenInventado123"
-            );
-
-
-        expect(res.status)
-            .toBe(401);
-
-
-        expect(res.body.message)
-            .toBe("Invalid or expired token");
-
-
-    });
-
-
 });

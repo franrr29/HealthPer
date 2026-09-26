@@ -20,7 +20,8 @@ export const schemaConsultPatch = z.object({
   transcript: z.string().trim().min(1).optional(),
   edited_summary: z.string().trim().min(1).optional(),
 
-  status: z.enum(["draft", "reviewed", "signed"]).optional()
+  // "signed" is set only by the sign flow, never by a direct patch
+  status: z.enum(["draft", "reviewed"]).optional()
 
 }).refine(data => Object.keys(data).length > 0, {
   message: "At least one field is required"

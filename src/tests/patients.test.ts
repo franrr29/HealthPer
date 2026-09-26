@@ -1,295 +1,111 @@
 import request from "supertest";
 import app from "../app";
 import { conexionDB } from "../config/db";
-import { getAuthToken } from "./helpers/auth.helper";
-
+import { createTestDoctor, deleteTestDoctors, TestDoctor } from "./helpers/auth.helper";
 
 describe("Patients API", () => {
 
-    let token: string;
-    let doctor2Token: string;
+    let doctor: TestDoctor;
+    let otherDoctor: TestDoctor;
     let patientId: number;
-    let doctor2PatientId: number;
-
+    let otherDoctorPatientId: number;
 
     beforeAll(async () => {
+        doctor = await createTestDoctor(app, "patients");
+        otherDoctor = await createTestDoctor(app, "patients.other");
 
-
-        // Limpieza
-        await conexionDB.execute(
-            "DELETE FROM patients"
-        );
-
-
-        await conexionDB.execute(
-            "DELETE FROM doctors WHERE email IN (?,?)",
-            [
-                "doctor@test.com",
-                "doctor2@test.com"
-            ]
-        );
-
-
-
-        // Doctor principal
-        await request(app)
-            .post("/auth/register")
-            .send({
-
-                name: "Doctor Test",
-                email: "doctor@test.com",
-                password: "123456"
-
-            });
-
-
-
-        token = await getAuthToken(app);
-
-
-
-        // Segundo doctor para probar IDOR
-        await request(app)
-            .post("/auth/register")
-            .send({
-
-                name: "Doctor Test 2",
-                email: "doctor2@test.com",
-                password: "123456"
-
-            });
-
-
-
-        const loginDoctor2 = await request(app)
-            .post("/auth/login")
-            .send({
-
-                email: "doctor2@test.com",
-                password: "123456"
-
-            });
-
-
-
-        doctor2Token = loginDoctor2.body.data.token;
-
-
-
-        // Paciente privado doctor2
-        const patientRes = await request(app)
+        const patientRes = await otherDoctor.agent
             .post("/patients")
-            .set("Authorization", `Bearer ${doctor2Token}`)
-            .send({
+            .send({ name: "Paciente Doctor2" });
 
-                name: "Paciente Doctor2"
-
-            });
-
-
-
-        doctor2PatientId = patientRes.body.patient.id;
-
-
+        otherDoctorPatientId = patientRes.body.patient.id;
     });
-
-
 
     afterAll(async () => {
-
+        await deleteTestDoctors([doctor.id, otherDoctor.id]);
         await conexionDB.end();
-
     });
 
-
-
-
-    // Crea un paciente nuevo con datos validos y guarda su id para los tests siguientes
-    test("Must create a patient", async () => {
-
-
-        const res = await request(app)
+    test("creates a patient and returns the stored record", async () => {
+        const res = await doctor.agent
             .post("/patients")
-            .set("Authorization", `Bearer ${token}`)
-            .send({
+            .send({ name: "Paciente Test" });
 
-                name: "Paciente Test"
-
-            });
-
-
-
-        expect(res.status)
-            .toBe(201);
-
-
-
-        expect(res.body.patient.name)
-            .toBe("Paciente Test");
-
-
+        expect(res.status).toBe(201);
+        expect(res.body.patient.name).toBe("Paciente Test");
+        expect(res.body.patient.doctor_id).toBe(doctor.id);
 
         patientId = res.body.patient.id;
-
-
     });
 
+    test("lists only the patients of the logged in doctor", async () => {
+        const res = await doctor.agent.get("/patients");
 
-    // Lista todos los pacientes del doctor logueado y verifica que devuelva un array
-    test("Must list doctor's patients", async () => {
-
-
-        const res = await request(app)
-            .get("/patients")
-            .set("Authorization", `Bearer ${token}`);
-
-
-
-        expect(res.status)
-            .toBe(200);
-
-
-
-        expect(Array.isArray(res.body.data))
-            .toBe(true);
-
-
+        expect(res.status).toBe(200);
+        expect(Array.isArray(res.body.data)).toBe(true);
+        expect(res.body.data.every((patient: { doctor_id: number }) => patient.doctor_id === doctor.id)).toBe(true);
     });
 
+    test("gets a patient by id", async () => {
+        const res = await doctor.agent.get(`/patients/${patientId}`);
 
-
-    // Busca el paciente recien creado por su id y confirma que sea el mismo
-    test("Must get patient by ID", async () => {
-
-
-        const res = await request(app)
-            .get(`/patients/${patientId}`)
-            .set("Authorization", `Bearer ${token}`);
-
-
-
-        expect(res.status)
-            .toBe(200);
-
-
-
-        expect(res.body.data.id)
-            .toBe(patientId);
-
-
+        expect(res.status).toBe(200);
+        expect(res.body.data.id).toBe(patientId);
     });
 
-
-
-    // Actualiza el nombre del paciente propio y verifica el mensaje de exito
-    test("Must update patient", async () => {
-
-
-        const res = await request(app)
+    test("updates a patient", async () => {
+        const res = await doctor.agent
             .patch(`/patients/${patientId}`)
-            .set("Authorization", `Bearer ${token}`)
-            .send({
+            .send({ name: "Paciente Actualizado" });
 
-                name: "Paciente Actualizado"
-
-            });
-
-
-
-        expect(res.status)
-            .toBe(200);
-
-
-
-        expect(res.body.message)
-            .toBe("Patient information updated succesfully");
-
-
+        expect(res.status).toBe(200);
+        expect(res.body.message).toBe("Patient information updated succesfully");
     });
 
+    test("deletes a patient", async () => {
+        const res = await doctor.agent.delete(`/patients/${patientId}`);
 
-
-
-    // Elimina el paciente propio y verifica el mensaje de confirmacion
-    test("Must delete patient", async () => {
-
-
-        const res = await request(app)
-            .delete(`/patients/${patientId}`)
-            .set("Authorization", `Bearer ${token}`);
-
-
-
-        expect(res.status)
-            .toBe(200);
-
-
-
-        expect(res.body.message)
-            .toBe("Patient information deleted");
-
-
+        expect(res.status).toBe(200);
+        expect(res.body.message).toBe("Patient information deleted");
     });
 
-
-
-    // Intenta crear un paciente sin token y espera que el middleware lo rechace
-    test("Must reject request without token", async () => {
-
-
+    test("401 rejects a request without cookies", async () => {
         const res = await request(app)
             .post("/patients")
-            .send({
+            .send({ name: "No Token" });
 
-                name: "No Token"
-
-            });
-
-
-
-        expect(res.status)
-            .toBe(401);
-
-
+        expect(res.status).toBe(401);
+        expect(res.body.success).toBe(false);
     });
 
-
-    // Intenta crear un paciente sin el campo name y espera 400 por validacion de Zod
-    test("Must reject invalid patient data", async () => {
-
-
-        const res = await request(app)
+    test("400 rejects invalid patient data", async () => {
+        const res = await doctor.agent
             .post("/patients")
-            .set("Authorization", `Bearer ${token}`)
-            .send({
+            .send({});
 
-            });
-
-
-
-        expect(res.status)
-            .toBe(400);
-
-
+        expect(res.status).toBe(400);
+        expect(res.body.success).toBe(false);
     });
 
+    test("404 prevents IDOR: a doctor cannot read another doctor patient", async () => {
+        const res = await doctor.agent.get(`/patients/${otherDoctorPatientId}`);
 
-    // Intenta acceder con el token del doctor principal a un paciente del doctor2 y espera 404
-    test("Must prevent IDOR - doctor cannot access another doctor's patient", async () => {
-
-
-        const res = await request(app)
-            .get(`/patients/${doctor2PatientId}`)
-            .set("Authorization", `Bearer ${token}`);
-
-
-
-        expect(res.status)
-            .toBe(404);
-
-
+        expect(res.status).toBe(404);
+        expect(res.body).toEqual({ success: false, message: "Patient not found" });
     });
 
+    test("does not let a doctor update or delete another doctor patient", async () => {
+        const patchRes = await doctor.agent
+            .patch(`/patients/${otherDoctorPatientId}`)
+            .send({ name: "Hackeado" });
 
+        const deleteRes = await doctor.agent.delete(`/patients/${otherDoctorPatientId}`);
 
+        expect(patchRes.status).toBe(404);
+        expect(deleteRes.status).toBe(404);
+
+        const stillThere = await otherDoctor.agent.get(`/patients/${otherDoctorPatientId}`);
+
+        expect(stillThere.body.data.name).toBe("Paciente Doctor2");
+    });
 });
