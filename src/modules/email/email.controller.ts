@@ -16,14 +16,14 @@ export async function previewPatientEmailController(req: Request, res: Response,
 
         if (!consultation) {
 
-            res.status(404).json({ error: 'Consultation not found' });
+            res.status(404).json({ success: false, message: 'Consultation not found' });
 
             return;
         }
 
         if (consultation.status !== 'signed') {
 
-            res.status(400).json({ error: 'Consultation must be signed before sending email' });
+            res.status(400).json({ success: false, message: 'Consultation must be signed before sending email' });
 
             return;
         }
@@ -54,14 +54,14 @@ export async function sendPatientEmailController(req: Request, res: Response, ne
 
         if (!patientEmail?.trim()) {
 
-            res.status(400).json({ error: 'Patient email is required' });
+            res.status(400).json({ success: false, message: 'Patient email is required' });
 
             return;
         }
 
         if (!emailContent?.trim()) {
 
-            res.status(400).json({ error: 'Email content is required' });
+            res.status(400).json({ success: false, message: 'Email content is required' });
 
             return;
         }
@@ -71,13 +71,13 @@ export async function sendPatientEmailController(req: Request, res: Response, ne
 
         if (!consultation) {
 
-            res.status(404).json({ error: 'Consultation not found' });
+            res.status(404).json({ success: false, message: 'Consultation not found' });
             return;
         }
 
         if (consultation.status !== 'signed') {
 
-            res.status(400).json({ error: 'Consultation must be signed before sending email' });
+            res.status(400).json({ success: false, message: 'Consultation must be signed before sending email' });
             return;
         }
 

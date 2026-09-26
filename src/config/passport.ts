@@ -1,3 +1,4 @@
+import { ForbiddenError, ValidationError } from "../errors";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { env } from "./env";
@@ -20,11 +21,11 @@ passport.use(
         const name = profile.displayName;
 
         if (!email) {
-          return done(new Error("Google account does not have an email associated"));
+          return done(new ValidationError("Google account does not have an email associated"));
         }
 
         if (!env.ALLOW_REGISTER) {
-          return done(new Error("Registration is currently disabled"));
+          return done(new ForbiddenError("Registration is currently disabled"));
         }
 
         const existingDoctor = await authRepository.getByEmail(email);

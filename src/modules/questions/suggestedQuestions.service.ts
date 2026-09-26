@@ -1,7 +1,7 @@
 import { getPatientByID, getPatientMemoryService } from '../patient/patient.service';
 import { buildSuggestedQuestionsPrompt, formatPatientMemoryForPrompt } from '../ai/prompt.service';
 import { generateTextAnswer } from '../ai/llm.service';
-import { AppError } from '../../errors/appError';
+import { ExternalServiceError } from '../../errors';
 
 
 export async function generateSuggestedQuestionsService(transcript: string, patient_id: number, doctor_id: number) {
@@ -25,6 +25,6 @@ export async function generateSuggestedQuestionsService(transcript: string, pati
         
     } catch {
 
-        throw new AppError('Failed to parse suggested questions', 500);
+        throw new ExternalServiceError('Failed to parse suggested questions', 'groq');
     }
 }

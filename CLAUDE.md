@@ -104,6 +104,7 @@ Every module must follow this structure. No exceptions.
 - **SQL:** parameterized queries only. Never concatenate user input into SQL strings.
 - **Validation:** every endpoint validates params, query, and body with Zod before reaching the service layer.
 - **Rate limiting:** required on auth routes and on any endpoint that calls external paid APIs (Groq, Gemini, Resend).
+- **Google OAuth password_hash:** accounts created via Google OAuth must store a real bcrypt hash of a random string (not a literal like "oauth_google"). This ensures bcrypt.compare takes constant time regardless of auth method.
 
 ## What NOT to Do
 

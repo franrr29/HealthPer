@@ -1,3 +1,4 @@
+import { ExternalServiceError, ValidationError } from "../../errors";
 import OpenAI from "openai";
 import { env } from "../../config/env";
 import { SUMMARY_SYSTEM_PROMPT, buildSummaryPrompt } from "./prompt.service";
@@ -15,7 +16,7 @@ const groqLLM = new OpenAI({
 export async function generateConsultationSummary(patient_id: number, transcript: string) {
 
     if (!transcript?.trim()) {
-        throw new Error("Transcript is required");
+        throw new ValidationError("Transcript is required");
     }
 
     const prompt = await buildSummaryPrompt(patient_id, transcript);
@@ -42,7 +43,7 @@ export async function generateConsultationSummary(patient_id: number, transcript
     const raw = response.choices[0].message.content;
 
     if (!raw) {
-        throw new Error("LLM returned empty response");
+        throw new ExternalServiceError("LLM returned empty response", "groq");
     }
 
     const parsed = JSON.parse(raw);
@@ -54,7 +55,7 @@ export async function generateConsultationSummary(patient_id: number, transcript
 export async function generateTextAnswer(prompt: string, systemPrompt?: string): Promise<string> {
 
     if (!prompt?.trim()) {
-        throw new Error("Prompt is required");
+        throw new ValidationError("Prompt is required");
     }
 
     const messagesLLM: OpenAI.Chat.ChatCompletionMessageParam[] = [];
@@ -73,7 +74,7 @@ export async function generateTextAnswer(prompt: string, systemPrompt?: string):
     const raw = response.choices[0].message.content;
 
     if (!raw) {
-        throw new Error("LLM returned empty response");
+        throw new ExternalServiceError("LLM returned empty response", "groq");
     }
 
     return raw.trim();

@@ -15,7 +15,7 @@ export async function createConsultation(req: Request,res: Response,next: NextFu
 
     if (!req.user) {
 
-      res.status(401).json({ message: "Unauthorized" });
+      res.status(401).json({ success: false, message: "Unauthorized" });
       return;
 
     }
@@ -32,7 +32,7 @@ export async function createConsultation(req: Request,res: Response,next: NextFu
 
       return res.status(404).json({
 
-        message: "Failed to create consult"
+        success: false, message: "Failed to create consult"
 
       });
     }
@@ -60,7 +60,7 @@ export async function getConsultation(req: Request, res: Response, next: NextFun
 
     if (!req.user) {
 
-      res.status(401).json({ message: "Unauthorized" });
+      res.status(401).json({ success: false, message: "Unauthorized" });
       return;
 
     }
@@ -76,7 +76,7 @@ export async function getConsultation(req: Request, res: Response, next: NextFun
 
       return res.status(404).json({
 
-        message: "No consultations found"
+        success: false, message: "No consultations found"
 
       });
     }
@@ -105,7 +105,7 @@ export async function getAllConsultations(req: Request, res: Response, next: Nex
 
     if (!req.user) {
 
-      res.status(401).json({ message: "Unauthorized" });
+      res.status(401).json({ success: false, message: "Unauthorized" });
       return;
 
     }
@@ -121,7 +121,7 @@ export async function getAllConsultations(req: Request, res: Response, next: Nex
 
       return res.status(404).json({
 
-        message: "Consultations not found"
+        success: false, message: "Consultations not found"
 
       });
     }
@@ -151,7 +151,7 @@ export async function patchConsultation(req: Request, res: Response, next: NextF
 
     if (!req.user) {
 
-      res.status(401).json({ message: "Unauthorized" });
+      res.status(401).json({ success: false, message: "Unauthorized" });
       return;
 
     }
@@ -163,14 +163,14 @@ export async function patchConsultation(req: Request, res: Response, next: NextF
 
     if (Object.keys(fields).length === 0){
 
-       return res.status(400).json({ message: "At least one field is required for update" });
+       return res.status(400).json({ success: false, message: "At least one field is required for update" });
     }
     
     const patchedFields= await patchFields (consultation_id, doctor_id, fields);
 
     if (!patchedFields){
 
-       return res.status(404).json({ message: "Unable to patch patient data"})
+       return res.status(404).json({ success: false, message: "Unable to patch patient data"})
     }
 
     res.status(200).json({
@@ -197,7 +197,7 @@ export async function transcribeConsultation(req: Request, res: Response, next: 
 
     if (!req.user) {
 
-      res.status(401).json({ message: "Unauthorized" });
+      res.status(401).json({ success: false, message: "Unauthorized" });
       return;
 
     }
@@ -213,7 +213,7 @@ export async function transcribeConsultation(req: Request, res: Response, next: 
 
       return res.status(400).json({
 
-        message: "Audio file is required"
+        success: false, message: "Audio file is required"
 
       });
     }
@@ -226,7 +226,7 @@ export async function transcribeConsultation(req: Request, res: Response, next: 
 
       return res.status(500).json({
 
-        message: "Audio transcription failed"
+        success: false, message: "Audio transcription failed"
 
       });
     }
@@ -257,7 +257,7 @@ export async function summarizeConsultationController (req: Request, res: Respon
 
     if (!req.user) {
 
-      res.status(401).json({ message: "Unauthorized" });
+      res.status(401).json({ success: false, message: "Unauthorized" });
       return;
 
     }
@@ -272,7 +272,7 @@ export async function summarizeConsultationController (req: Request, res: Respon
 
       return res.status(404).json({
 
-        message: "Consultation not found or transcript missing"
+        success: false, message: "Consultation not found or transcript missing"
 
       });
     } 
@@ -301,7 +301,7 @@ export async function editSummaryController (req: Request, res: Response, next: 
 
     if (!req.user) {
 
-      res.status(401).json({ message: "Unauthorized" });
+      res.status(401).json({ success: false, message: "Unauthorized" });
       return;
 
     }
@@ -312,13 +312,13 @@ export async function editSummaryController (req: Request, res: Response, next: 
     const { edited_summary } = schemaConsultPatch.parse(req.body);
 
     if (!edited_summary) {
-      return res.status(400).json({ message: "edited_summary is required" });
+      return res.status(400).json({ success: false, message: "edited_summary is required" });
     }
 
     const result = await editConsultationSummary(consultation_id, doctor_id, edited_summary);
 
     if (!result) {
-      return res.status(404).json({ message: "Consultation not found" });
+      return res.status(404).json({ success: false, message: "Consultation not found" });
     }
 
     return res.status(200).json({ 
@@ -341,7 +341,7 @@ export async function signConsultationController(req: Request, res: Response, ne
 
      if (!req.user) {
 
-      res.status(401).json({ message: "Unauthorized" });
+      res.status(401).json({ success: false, message: "Unauthorized" });
       return;
     
     }
@@ -373,7 +373,7 @@ export async function getPendingConsultationsController(req: Request, res: Respo
 
     if (!req.user) {
 
-      res.status(401).json({ message: "Unauthorized" });
+      res.status(401).json({ success: false, message: "Unauthorized" });
 
       return;
   }

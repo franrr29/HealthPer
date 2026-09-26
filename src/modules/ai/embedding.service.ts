@@ -1,3 +1,4 @@
+import { ExternalServiceError } from "../../errors";
 import { GoogleGenAI } from "@google/genai";
 import { env } from "../../config/env";
 
@@ -20,7 +21,7 @@ export async function createEmbeddings(chunks: string[]): Promise<number[][]> {
 });
 
     if (!response.embeddings?.[0]?.values) {
-        throw new Error("embedding response vacio para chunk");
+        throw new ExternalServiceError("Embedding response was empty", "gemini");
 
 }
     embeddings.push(response.embeddings[0].values);

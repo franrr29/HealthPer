@@ -1,3 +1,4 @@
+import { ExternalServiceError } from "../../errors";
 import OpenAI from "openai";
 import { MEMORY_SYSTEM_PROMPT, buildMemoryPrompt } from "./memory.prompt";
 import * as memoryRepository from "./memory.repository";
@@ -54,7 +55,7 @@ export async function updatePatientMemoryService(
     const rawText = response.choices[0].message.content;
 
     if (!rawText) {
-        throw new Error("LLM sent an empty answer to save into database");
+        throw new ExternalServiceError("LLM returned an empty response", "groq");
     }
 
     const newMemory = patientMemorySchema.parse(JSON.parse(rawText));

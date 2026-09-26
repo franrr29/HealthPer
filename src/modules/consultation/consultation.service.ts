@@ -1,5 +1,5 @@
 import { generateConsultationSummary } from "../ai/llm.service";
-import { AppError } from "../../errors/appError";
+import { ConflictError, NotFoundError, ValidationError } from "../../errors";
 import { logger } from "../../config/logger";
 import { updatePatientMemoryService } from "../ai/memory.service";
 import { indexConsultation } from "../ai/indexing.service";
@@ -89,7 +89,7 @@ export async function summarizeConsultation(
   }
 
   if (!consultation.transcript) {
-    throw Error("Transcript is required for summarization");
+    throw new ValidationError("Transcript is required for summarization");
   }
 
   const summary = await generateConsultationSummary(consultation.patient_id, consultation.transcript);
@@ -130,15 +130,15 @@ export async function signConsultationService(
   const consulta = await consultationRepository.getForSigning(consultation_id, doctor_id);
 
   if (!consulta) {
-    throw new AppError("Consultation not found", 404);
+    throw new NotFoundError("Consultation not found");
   }
 
   if (consulta.status === "signed") {
-    throw new AppError("Consultation is already signed", 409);
+    throw new ConflictError("Consultation is already signed");
   }
 
   if (!consulta.ai_summary) {
-    throw new AppError("AI summary is required to sign the consultation", 400);
+    throw new ValidationError("AI summary is required to sign the consultation");
   }
 
   await consultationRepository.sign(consultation_id, doctor_id);
