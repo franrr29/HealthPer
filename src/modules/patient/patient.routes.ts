@@ -1,4 +1,5 @@
 ﻿import { authMiddle } from "../../middleware/auth.middleware";
+import { aiLimiter } from "../../middleware/raterLimiter";
 import { Router } from "express";
 import { getPatients, getPatientByID, createPatient, patchPatient, deletePatient, getPatientMemoryController, askPatientController, getPatientFollowUpController } from "./patient.controller"
 
@@ -9,7 +10,7 @@ router.get("/follow-up", authMiddle, getPatientFollowUpController);
 router.get ("/:id/memory", authMiddle, getPatientMemoryController);
 router.get("/:id", authMiddle, getPatientByID);
 router.post("/", authMiddle, createPatient);
-router.post("/:id/ask", authMiddle, askPatientController);
+router.post("/:id/ask", authMiddle, aiLimiter, askPatientController);
 router.patch("/:id", authMiddle, patchPatient);
 router.delete("/:id", authMiddle, deletePatient);
 
