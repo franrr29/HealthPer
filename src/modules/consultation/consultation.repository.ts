@@ -227,6 +227,7 @@ export async function getForEmail(
   const [rows] = await conexionDB.query<ConsultationForEmailRow[]>(
     `SELECT c.ai_summary, c.edited_summary, c.status,
             p.name AS patient_name,
+            p.email AS patient_email,
             d.name AS doctor_name
      FROM consultations c
      JOIN patients p ON c.patient_id = p.id

@@ -23,10 +23,10 @@ export async function generatePatientEmailContent(patientName: string, doctorNam
 
 
 //envio el mail con resend al paciente:
-export async function sendPatientEmail(patientEmail: string, patientName: string, doctorName: string, aprovedSummary: string): Promise<void> {
+export async function sendPatientEmail(patientEmail: string | null, patientName: string, doctorName: string, aprovedSummary: string): Promise<void> {
 
     if (!patientEmail?.trim()) {
-        throw new ValidationError("Patient email is required");
+        throw new ValidationError("Patient does not have a registered email");
     }
 
     if (!aprovedSummary?.trim()) {

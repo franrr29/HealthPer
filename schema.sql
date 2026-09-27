@@ -35,6 +35,8 @@ CREATE TABLE patients (
 
   national_id  VARCHAR(30),          
 
+  email        VARCHAR(255) UNIQUE,
+
   phone        VARCHAR(30), 
 
   created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 

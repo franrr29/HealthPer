@@ -51,7 +51,7 @@ export async function sendPatientEmailController(req: Request, res: Response, ne
 
         const { id: consultation_id } = schemaEmailParams.parse(req.params);
         const doctor_id = (req as any).user.id;
-        const { patientEmail, emailContent } = schemaSendEmail.parse(req.body);
+        const { emailContent } = schemaSendEmail.parse(req.body);
 
         // verificar que la consulta existe y pertenece al doctor
         const consultation = await getConsultationForEmail(consultation_id, doctor_id);
@@ -68,7 +68,7 @@ export async function sendPatientEmailController(req: Request, res: Response, ne
             return;
         }
 
-        await sendPatientEmail(patientEmail,consultation.patient_name,consultation.doctor_name,emailContent
+        await sendPatientEmail(consultation.patient_email,consultation.patient_name,consultation.doctor_name,emailContent
         );
 
         res.status(200).json({ message: 'Email sent successfully' });

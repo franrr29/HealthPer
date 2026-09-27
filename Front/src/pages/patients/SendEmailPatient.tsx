@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import DOMPurify from 'dompurify';
 import { previewPatientEmail, sendPatientEmail } from '@/services/email.service';
+import { getPatientById } from '@/services/patients.service';
 import type { SendEmailPatientProps } from '@/types/email';
 
 const EMAIL_PREVIEW_SANITIZE_CONFIG = {
@@ -12,11 +14,16 @@ const EMAIL_PREVIEW_SANITIZE_CONFIG = {
 export default function SendEmailPatient({ consultationId, patientId }: SendEmailPatientProps) {
 
     const [step, setStep] = useState<"idle" | "inputEmail" | "loadingPreview" | "preview" | "sending" | "sent">("idle");
-    const [email, setEmail] = useState('');
     const [previewHTML, setPreviewHTML] = useState('');
     const [error, setError] = useState<string | null>(null);
 
     const navigate = useNavigate();
+
+    const { data: patient } = useQuery({
+        queryKey: ["patient", patientId],
+        queryFn: () => getPatientById(patientId),
+        enabled: step === "inputEmail",
+    });
 
     // genera el preview del email llamando al backend
     async function handleGeneratePreview() {
@@ -39,7 +46,7 @@ export default function SendEmailPatient({ consultationId, patientId }: SendEmai
         setStep("sending");
 
         try {
-            await sendPatientEmail(consultationId, email, previewHTML);
+            await sendPatientEmail(consultationId, previewHTML);
             setStep("sent");
             setTimeout(() => navigate(`/patients/${patientId}`), 1500);
         } catch (err) {
@@ -70,16 +77,12 @@ export default function SendEmailPatient({ consultationId, patientId }: SendEmai
 
             {step === "inputEmail" && (
                 <div className="space-y-3">
-                    <input
-                        type="email"
-                        placeholder="Patient email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-navy-elevated"
-                    />
+                    <p className="text-sm text-foreground">
+                        Sending to: <span className="font-bold">{patient?.email || "This patient has no registered email"}</span>
+                    </p>
                     <button
                         onClick={handleGeneratePreview}
-                        disabled={!email.trim()}
+                        disabled={!patient?.email}
                         className="neu-card bg-primary hover:bg-navy-elevated text-white rounded-md px-4 py-2 text-xs font-bold uppercase tracking-wider border border-navy-elevated transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                         Generate preview

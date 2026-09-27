@@ -19,6 +19,7 @@ const UPDATABLE_COLUMNS = [
   "birth_date",
   "gender",
   "national_id",
+  "email",
   "phone",
 ] as const satisfies readonly (keyof UpdatePatientDTO)[];
 
@@ -49,9 +50,9 @@ export async function create(
   doctorId: number
 ): Promise<number> {
   const [result] = await conexionDB.query<ResultSetHeader>(
-    `INSERT INTO patients (name, birth_date, gender, national_id, phone, doctor_id)
-     VALUES (?, ?, ?, ?, ?, ?)`,
-    [data.name, data.birth_date, data.gender, data.national_id, data.phone, doctorId]
+    `INSERT INTO patients (name, birth_date, gender, national_id, email, phone, doctor_id)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [data.name, data.birth_date, data.gender, data.national_id, data.email, data.phone, doctorId]
   );
 
   return result.insertId;

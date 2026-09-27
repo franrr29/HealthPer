@@ -7,6 +7,7 @@ export interface Patient {
   birth_date: Date | null;
   gender: PatientGender | null;
   national_id: string | null;
+  email: string | null;
   phone: string | null;
   created_at: Date;
   updated_at: Date;
@@ -17,6 +18,7 @@ export interface CreatePatientDTO {
   birth_date?: string;
   gender?: PatientGender;
   national_id?: string;
+  email?: string;
   phone?: string;
 }
 

@@ -5,6 +5,7 @@ export const schemaPatient = z.object({
   birth_date: z.string().optional(),
   gender: z.enum(["M", "F", "X", "U"]).optional(),
   national_id: z.string().min(6).max(20).optional(),
+  email: z.string().trim().email("Invalid email address").optional(),
   phone: z.string().min(5).max(20).optional(),
 });
 

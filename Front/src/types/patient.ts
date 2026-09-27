@@ -6,6 +6,7 @@ export type Patient = {
     birth_date: string;
     gender: "M" | "F" | "X" | "U";
     national_id: string;
+    email?: string;
     phone: string;
 }
 

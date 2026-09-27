@@ -41,6 +41,7 @@ export type ConsultationWithPatient = Pick<
 
 export type ConsultationForEmail = ConsultationWithPatient & {
   doctor_name: string;
+  patient_email: string | null;
 };
 
 export interface PendingConsultation {

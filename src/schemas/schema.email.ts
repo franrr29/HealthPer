@@ -5,6 +5,5 @@ export const schemaEmailParams = z.object({
 });
 
 export const schemaSendEmail = z.object({
-  patientEmail: z.string().trim().email("Invalid email address"),
   emailContent: z.string().trim().min(1, "Email content is required")
 });

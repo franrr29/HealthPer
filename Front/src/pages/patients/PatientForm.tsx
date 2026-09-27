@@ -15,6 +15,7 @@ export function PatientForm({ patient }: PatientFormProps) {
   const [birthDate, setBirthDate] = useState(patient?.birth_date || "");
   const [gender, setGender] = useState(patient?.gender || "U");
   const [nationalId, setNationalId] = useState(patient?.national_id || "");
+  const [email, setEmail] = useState(patient?.email || "");
   const [phone, setPhone] = useState(patient?.phone || "");
   const [saved, setSaved] = useState(false);
 
@@ -41,6 +42,7 @@ export function PatientForm({ patient }: PatientFormProps) {
           birth_date: birthDate,
           gender,
           national_id: nationalId,
+          email,
           phone,
         }
       }, {
@@ -61,6 +63,7 @@ export function PatientForm({ patient }: PatientFormProps) {
         birth_date: birthDate,
         gender,
         national_id: nationalId,
+        email,
         phone,
       }, {
         onSuccess: (newPatient) => {
@@ -121,6 +124,17 @@ export function PatientForm({ patient }: PatientFormProps) {
           value={nationalId}
           onChange={(e) => setNationalId(e.target.value)}
           required
+          className={inputClass}
+        />
+      </div>
+
+      <div>
+        <label htmlFor="email" className={labelClass}>Email</label>
+        <input
+          type="email"
+          id="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className={inputClass}
         />
       </div>

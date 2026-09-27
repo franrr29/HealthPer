@@ -11,9 +11,9 @@ export async function previewPatientEmail(consultation_id: number) {
 
 
 // envia el email al paciente con el resumen aprobado
-export async function sendPatientEmail(consultation_id: number, patientEmail: string, emailContent: string) {
+export async function sendPatientEmail(consultation_id: number, emailContent: string) {
 
-    const response = await api.post(`/consultations/${consultation_id}/send-email`, { patientEmail, emailContent });
+    const response = await api.post(`/consultations/${consultation_id}/send-email`, { emailContent });
 
     return response.data;
 }
