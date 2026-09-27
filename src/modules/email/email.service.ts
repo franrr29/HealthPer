@@ -3,6 +3,7 @@ import { buildPatientEmailPrompt, PATIENT_EMAIL_SYSTEM_PROMPT } from '../ai/prom
 import { generateTextAnswer } from '../ai/llm.service';
 import { Resend } from 'resend';
 import { env } from '../../config/env';
+import { escapeHtml, sanitizeSummaryHtml } from '../../utils/escapeHtml';
 
 const resend = new Resend(env.RESEND_API_KEY);
 
@@ -53,7 +54,9 @@ function formatEmailContent(raw: string): string {
 // generar el template del email con estilos inline
 function buildEmailTemplate(patientName: string, doctorName: string, aprovedSummary: string): string {
 
-    const formattedSummary = formatEmailContent(aprovedSummary);
+    const safePatientName = escapeHtml(patientName);
+    const safeDoctorName = escapeHtml(doctorName);
+    const formattedSummary = formatEmailContent(sanitizeSummaryHtml(aprovedSummary));
 
     return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
@@ -62,14 +65,14 @@ function buildEmailTemplate(patientName: string, doctorName: string, aprovedSumm
             <h2 style="margin: 0; color: #2563eb;">HealthPer</h2>
         </div>
 
-        <p style="font-size: 16px;">Hi ${patientName},</p>
-        <p style="font-size: 14px; color: #555;">Please find below the summary of your recent consultation with ${doctorName}:</p>
+        <p style="font-size: 16px;">Hi ${safePatientName},</p>
+        <p style="font-size: 14px; color: #555;">Please find below the summary of your recent consultation with ${safeDoctorName}:</p>
 
         <div style="background: #f9fafb; border-radius: 8px; padding: 16px; margin: 20px 0; font-size: 14px; line-height: 1.6;">
             ${formattedSummary}
         </div>
 
-        <p style="font-size: 14px; color: #555;">Best regards,<br/><strong>${doctorName}</strong></p>
+        <p style="font-size: 14px; color: #555;">Best regards,<br/><strong>${safeDoctorName}</strong></p>
         <p style="font-size: 12px; color: #999; margin-top: 8px;">Sent from HealthPer</p>
 
         <div style="border-top: 1px solid #e5e7eb; margin-top: 24px; padding-top: 12px;">

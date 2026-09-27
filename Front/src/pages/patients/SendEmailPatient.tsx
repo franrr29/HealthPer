@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DOMPurify from 'dompurify';
 import { previewPatientEmail, sendPatientEmail } from '@/services/email.service';
 import type { SendEmailPatientProps } from '@/types/email';
+
+const EMAIL_PREVIEW_SANITIZE_CONFIG = {
+    ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'span'],
+    ALLOWED_ATTR: [] as string[],
+};
 
 export default function SendEmailPatient({ consultationId, patientId }: SendEmailPatientProps) {
 
@@ -91,7 +97,7 @@ export default function SendEmailPatient({ consultationId, patientId }: SendEmai
             {step === "preview" && (
                 <div className="space-y-4">
                     <div className="rounded-lg border border-border bg-white p-4 shadow-sm"
-                         dangerouslySetInnerHTML={{ __html: previewHTML }}
+                         dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(previewHTML, EMAIL_PREVIEW_SANITIZE_CONFIG) }}
                     />
                     <div className="flex gap-3">
                         <button
