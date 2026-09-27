@@ -3,7 +3,7 @@ import { useAudioRecorder } from './useAudioRecorder';
 import api from '../../services/api';
 import type { SuggestedQuestion } from '@/types/suggestedQuestions';
 
-type RoundPhase = 'idle' | 'recording' | 'analyzing' | 'finalizing' | 'reviewing' | 'done';
+export type RoundPhase = 'idle' | 'recording' | 'analyzing' | 'finalizing' | 'reviewing' | 'done';
 
 const TRANSCRIPTION_ERROR = 'Failed to process audio. Try again.';
 const SUGGESTED_QUESTIONS_ERROR = 'Audio transcribed, but the suggested questions could not be loaded.';
