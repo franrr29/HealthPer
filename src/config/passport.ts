@@ -1,11 +1,13 @@
-import { ForbiddenError, ValidationError } from "../errors";
+import crypto from "crypto";
+import bcrypt from "bcrypt";
+import { ForbiddenError, UnauthorizedError, ValidationError } from "../errors";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { env } from "./env";
 import * as authRepository from "../modules/auth/auth.repository";
 import * as doctorRepository from "../modules/doctor/doctor.repository";
 
-const OAUTH_PASSWORD_HASH = "oauth_google";
+const SALT_ROUNDS = 12;
 
 passport.use(
   new GoogleStrategy(
@@ -17,15 +19,16 @@ passport.use(
 
     async (accessToken, refreshToken, profile, done) => {
       try {
-        const email = profile.emails?.[0].value;
+        const primaryEmail = profile.emails?.[0];
+        const email = primaryEmail?.value;
         const name = profile.displayName;
 
         if (!email) {
           return done(new ValidationError("Google account does not have an email associated"));
         }
 
-        if (!env.ALLOW_REGISTER) {
-          return done(new ForbiddenError("Registration is currently disabled"));
+        if (!primaryEmail?.verified) {
+          return done(new UnauthorizedError("Google email is not verified"));
         }
 
         const existingDoctor = await authRepository.getByEmail(email);
@@ -38,10 +41,17 @@ passport.use(
           });
         }
 
+        if (!env.ALLOW_REGISTER) {
+          return done(new ForbiddenError("Registration is currently disabled"));
+        }
+
+        const randomPassword = crypto.randomBytes(32).toString("hex");
+        const passwordHash = await bcrypt.hash(randomPassword, SALT_ROUNDS);
+
         const newDoctorId = await authRepository.create({
           name,
           email,
-          password_hash: OAUTH_PASSWORD_HASH,
+          password_hash: passwordHash,
         });
 
         const newDoctor = await doctorRepository.getById(newDoctorId);

@@ -22,3 +22,10 @@ export const clearCookieOptions = {
     secure: isProd,
     sameSite: (isProd ? "none" : "lax") as "none" | "lax",
 };
+
+export const oauthStateCookieOptions = {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: "lax" as const,
+    maxAge: 5 * 60 * 1000,
+};
