@@ -16,6 +16,7 @@ export const serverSchema = z.object({
   DB_USER: z.string(),
   DB_PASSWORD: z.string().min(5),
   DB_NAME: z.string(),
+  DB_CA_CERT: z.string().optional(),
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
   GROQ_API_KEY: z.string().min(10),
@@ -36,6 +37,9 @@ export const serverSchema = z.object({
   // Resend API Key
   RESEND_API_KEY: z.string().min(10),
 
+}).refine((data) => data.NODE_ENV !== "production" || Boolean(data.DB_CA_CERT), {
+  message: "DB_CA_CERT is required in production",
+  path: ["DB_CA_CERT"],
 });
 
 export const env = serverSchema.parse(process.env);

@@ -8,7 +8,7 @@ export const conexionDB = mysql2.createPool({
     user: env.DB_USER,
     password: env.DB_PASSWORD,
     database: env.DB_NAME,
-    ssl: env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined
+    ssl: env.NODE_ENV === 'production' ? { rejectUnauthorized: true, ca: env.DB_CA_CERT } : undefined
 })
 
 export async function withTransaction<T>(work: (connection: PoolConnection) => Promise<T>): Promise<T> {
