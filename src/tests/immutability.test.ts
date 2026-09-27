@@ -181,7 +181,7 @@ describe("signed consultations are immutable", () => {
     });
 
     test("401 rejects these routes without cookies", async () => {
-        const res = await request(app).patch(`/consultations/${signedId}`).send({ transcript: "x" });
+        const res = await request(app).patch(`/consultations/${signedId}`).set("X-Requested-With", "XMLHttpRequest").send({ transcript: "x" });
 
         expect(res.status).toBe(401);
     });

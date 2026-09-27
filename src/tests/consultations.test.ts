@@ -178,7 +178,7 @@ describe("POST /consultations/:id/sign", () => {
     });
 
     test("401 without cookies", async () => {
-        const res = await request(app).post("/consultations/1/sign");
+        const res = await request(app).post("/consultations/1/sign").set("X-Requested-With", "XMLHttpRequest");
 
         expect(res.status).toBe(401);
     });

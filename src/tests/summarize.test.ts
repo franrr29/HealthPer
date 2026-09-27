@@ -59,7 +59,7 @@ describe("POST /consultations/:id/summarize", () => {
     });
 
     test("401 rejects a request without cookies", async () => {
-        const res = await request(app).post(`/consultations/${consultationWithTranscript}/summarize`);
+        const res = await request(app).post(`/consultations/${consultationWithTranscript}/summarize`).set("X-Requested-With", "XMLHttpRequest");
 
         expect(res.status).toBe(401);
     });

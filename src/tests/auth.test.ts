@@ -27,6 +27,7 @@ describe("Auth API", () => {
 
             const res = await request(app)
                 .post("/auth/register")
+                .set("X-Requested-With", "XMLHttpRequest")
                 .send({ name: "Doctor Register", email, password: TEST_PASSWORD });
 
             expect(res.status).toBe(201);
@@ -39,6 +40,7 @@ describe("Auth API", () => {
         test("409 rejects an email that is already registered", async () => {
             const res = await request(app)
                 .post("/auth/register")
+                .set("X-Requested-With", "XMLHttpRequest")
                 .send({ name: "Duplicado", email: doctor.email, password: TEST_PASSWORD });
 
             expect(res.status).toBe(409);
@@ -48,6 +50,7 @@ describe("Auth API", () => {
         test("400 rejects invalid data with the validation messages", async () => {
             const res = await request(app)
                 .post("/auth/register")
+                .set("X-Requested-With", "XMLHttpRequest")
                 .send({ name: "Sin email valido", email: "no-es-un-email", password: "123" });
 
             expect(res.status).toBe(400);
@@ -62,6 +65,7 @@ describe("Auth API", () => {
         test("sets httpOnly access and refresh cookies and no token in the body", async () => {
             const res = await request(app)
                 .post("/auth/login")
+                .set("X-Requested-With", "XMLHttpRequest")
                 .send({ email: doctor.email, password: doctor.password });
 
             expect(res.status).toBe(200);
@@ -79,6 +83,7 @@ describe("Auth API", () => {
         test("401 rejects a wrong password", async () => {
             const res = await request(app)
                 .post("/auth/login")
+                .set("X-Requested-With", "XMLHttpRequest")
                 .send({ email: doctor.email, password: "wrongpassword" });
 
             expect(res.status).toBe(401);
@@ -88,6 +93,7 @@ describe("Auth API", () => {
         test("401 answers the same for an email that does not exist", async () => {
             const res = await request(app)
                 .post("/auth/login")
+                .set("X-Requested-With", "XMLHttpRequest")
                 .send({ email: "noexiste.123@test.com", password: TEST_PASSWORD });
 
             expect(res.status).toBe(401);
@@ -134,7 +140,7 @@ describe("Auth API", () => {
         });
 
         test("401 without a refresh cookie", async () => {
-            const res = await request(app).post("/auth/refresh");
+            const res = await request(app).post("/auth/refresh").set("X-Requested-With", "XMLHttpRequest");
 
             expect(res.status).toBe(401);
             expect(res.body).toEqual({ success: false, message: "Refresh token not provided" });
@@ -143,6 +149,7 @@ describe("Auth API", () => {
         test("401 with an invalid refresh cookie", async () => {
             const res = await request(app)
                 .post("/auth/refresh")
+                .set("X-Requested-With", "XMLHttpRequest")
                 .set("Cookie", ["refreshToken=tokenInventado123"]);
 
             expect(res.status).toBe(401);
@@ -153,7 +160,7 @@ describe("Auth API", () => {
     describe("POST /auth/logout", () => {
 
         test("clears both cookies", async () => {
-            const res = await request(app).post("/auth/logout");
+            const res = await request(app).post("/auth/logout").set("X-Requested-With", "XMLHttpRequest");
 
             expect(res.status).toBe(200);
 

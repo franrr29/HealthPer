@@ -7,6 +7,7 @@ import authRouter from "./modules/auth/auth.routes";
 import passport from "passport";
 import googleAuthRouter from "./modules/auth/auth.google.routes";
 import { errorHandler } from "./middleware/errorHandler";
+import { csrfProtection } from "./middleware/csrfProtection";
 import patientRouter from "./modules/patient/patient.routes";
 import consultationRouter from "./modules/consultation/consultation.routes";
 import doctorRouter from "./modules/doctor/doctor.routes";
@@ -28,6 +29,7 @@ app.use(cors({
   origin: env.FRONTEND_URL,
   credentials: true
 }));
+app.use(csrfProtection);
 app.use(passport.initialize());
 
 // Health check

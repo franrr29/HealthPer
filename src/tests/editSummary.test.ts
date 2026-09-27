@@ -30,6 +30,7 @@ describe("PATCH /consultations/:id", () => {
     test("401 rejects a request without cookies", async () => {
         const res = await request(app)
             .patch(`/consultations/${consultationId}`)
+            .set("X-Requested-With", "XMLHttpRequest")
             .send({ edited_summary: "nuevo resumen" });
 
         expect(res.status).toBe(401);

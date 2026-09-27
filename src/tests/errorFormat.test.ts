@@ -26,9 +26,9 @@ describe("error response format", () => {
         ["unknown route", 404, () => request(app).get("/route-that-does-not-exist")],
         ["missing access token", 401, () => request(app).get("/patients")],
         ["invalid access token", 401, () => request(app).get("/patients").set("Cookie", ["accessToken=invalid"])],
-        ["invalid refresh token", 401, () => request(app).post("/auth/refresh").set("Cookie", ["refreshToken=invalid"])],
-        ["wrong credentials", 401, () => request(app).post("/auth/login").send({ email: "nadie@test.com", password: "123456" })],
-        ["zod validation on register", 400, () => request(app).post("/auth/register").send({ name: "" })],
+        ["invalid refresh token", 401, () => request(app).post("/auth/refresh").set("X-Requested-With", "XMLHttpRequest").set("Cookie", ["refreshToken=invalid"])],
+        ["wrong credentials", 401, () => request(app).post("/auth/login").set("X-Requested-With", "XMLHttpRequest").send({ email: "nadie@test.com", password: "123456" })],
+        ["zod validation on register", 400, () => request(app).post("/auth/register").set("X-Requested-With", "XMLHttpRequest").send({ name: "" })],
         ["zod validation on patient", 400, () => doctor.agent.post("/patients").send({})],
         ["zod validation on consultation status", 400, () => doctor.agent.patch(`/consultations/${unsignedConsultationId}`).send({ status: "signed" })],
         ["patient not found", 404, () => doctor.agent.get("/patients/999999999")],
@@ -54,6 +54,7 @@ describe("error response format", () => {
     test("duplicate registration -> 409", async () => {
         const res = await request(app)
             .post("/auth/register")
+            .set("X-Requested-With", "XMLHttpRequest")
             .send({ name: "Duplicado", email: doctor.email, password: doctor.password });
 
         expect(res.status).toBe(409);

@@ -19,6 +19,7 @@ export async function createTestDoctor(app: Express, label = "doctor"): Promise<
 
     const registerRes = await request(app)
         .post("/auth/register")
+        .set("X-Requested-With", "XMLHttpRequest")
         .send({ name: `Test ${label}`, email, password: TEST_PASSWORD });
 
     if (registerRes.status !== 201) {
@@ -26,7 +27,7 @@ export async function createTestDoctor(app: Express, label = "doctor"): Promise<
     }
 
     // the agent keeps the httpOnly cookies from the login response for every later request
-    const agent = request.agent(app);
+    const agent = request.agent(app).set("X-Requested-With", "XMLHttpRequest");
 
     const loginRes = await agent
         .post("/auth/login")

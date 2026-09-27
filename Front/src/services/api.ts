@@ -3,10 +3,10 @@ import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 
 const baseURL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
-const api = axios.create({ baseURL, withCredentials: true });
+const api = axios.create({ baseURL, withCredentials: true, headers: { "X-Requested-With": "XMLHttpRequest" } });
 
 // no interceptors here, so a failed refresh can never trigger another refresh
-const refreshClient = axios.create({ baseURL, withCredentials: true });
+const refreshClient = axios.create({ baseURL, withCredentials: true, headers: { "X-Requested-With": "XMLHttpRequest" } });
 
 // a 401 on these means bad credentials, not an expired token
 const AUTH_ROUTES_WITHOUT_REFRESH = ["auth/login", "auth/register", "auth/try-demo"];

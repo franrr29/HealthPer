@@ -72,6 +72,7 @@ describe("Patients API", () => {
     test("401 rejects a request without cookies", async () => {
         const res = await request(app)
             .post("/patients")
+            .set("X-Requested-With", "XMLHttpRequest")
             .send({ name: "No Token" });
 
         expect(res.status).toBe(401);
