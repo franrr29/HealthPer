@@ -16,7 +16,7 @@ async function registerDoc(name: string, email: string, password: string): Promi
 
   const insertId = await authRepository.create({ name, email, password_hash: passwordHash });
 
-  logger.info(`Doctor registered successfully | Name: ${name} | Email: ${email}`);
+  logger.info(`Doctor registered successfully | Doctor ID: ${insertId}`);
 
   return { insertId };
 }

@@ -34,7 +34,7 @@ async function tryDemoService(): Promise<AuthResult> {
     throw new NotFoundError("Demo user not found");
   }
 
-  logger.info(`Demo user logged successfully | Email: ${doctor.email}`);
+  logger.info(`Demo user logged successfully | Doctor ID: ${doctor.id}`);
 
   return buildAuthResult(doctor);
 }
@@ -53,7 +53,7 @@ async function loginUser(email: string, password: string): Promise<AuthResult> {
     throw new UnauthorizedError("Invalid credentials");
   }
 
-  logger.info(`Doctor logged successfully | Email: ${email}`);
+  logger.info(`Doctor logged successfully | Doctor ID: ${doctor.id}`);
 
   return buildAuthResult(doctor);
 }
