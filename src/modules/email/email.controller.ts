@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { generatePatientEmailContent, sendPatientEmail } from './email.service';
 import { getConsultationForEmail } from '../consultation/consultation.service';
+import { schemaEmailParams, schemaSendEmail } from '../../schemas/schema.email';
 
 
 // preview del email para el paciente
@@ -8,7 +9,7 @@ export async function previewPatientEmailController(req: Request, res: Response,
 
     try {
 
-        const consultation_id = Number(req.params.id);
+        const { id: consultation_id } = schemaEmailParams.parse(req.params);
         const doctor_id = (req as any).user.id;
 
         // verificar que la consulta existe y pertenece al doctor
@@ -48,23 +49,9 @@ export async function sendPatientEmailController(req: Request, res: Response, ne
 
     try {
 
-        const consultation_id = Number(req.params.id);
+        const { id: consultation_id } = schemaEmailParams.parse(req.params);
         const doctor_id = (req as any).user.id;
-        const { patientEmail, emailContent } = req.body;
-
-        if (!patientEmail?.trim()) {
-
-            res.status(400).json({ success: false, message: 'Patient email is required' });
-
-            return;
-        }
-
-        if (!emailContent?.trim()) {
-
-            res.status(400).json({ success: false, message: 'Email content is required' });
-
-            return;
-        }
+        const { patientEmail, emailContent } = schemaSendEmail.parse(req.body);
 
         // verificar que la consulta existe y pertenece al doctor
         const consultation = await getConsultationForEmail(consultation_id, doctor_id);

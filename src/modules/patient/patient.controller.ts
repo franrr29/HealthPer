@@ -1,7 +1,7 @@
 //Recibe info de patient.routes y envia a patient.service data:
 import { NextFunction, RequestHandler, Request, Response } from "express";
 import * as patientService from "./patient.service";
-import { schemaPatient } from "../../schemas/schema.patient";
+import { schemaPatient, schemaPatientParams, schemaPatientAsk } from "../../schemas/schema.patient";
 
 
 //Get para todos los pacientes:
@@ -53,7 +53,7 @@ export const getPatientByID: RequestHandler = async (req, res, next): Promise<vo
 
 
         const { id: doctor_id } = req.user;
-        const id = Number(req.params.id);
+        const { id } = schemaPatientParams.parse(req.params);
         
         const patientInfo = await patientService.getPatientByID(doctor_id, id)
         
@@ -138,7 +138,7 @@ export const patchPatient: RequestHandler = async (req, res, next): Promise<void
 
 
         const { id: doctor_id }= req.user;
-        const id = req.params.id as string;
+        const { id } = schemaPatientParams.parse(req.params);
         const dataValidated= schemaPatient.partial().parse (req.body)
 
 
@@ -151,7 +151,7 @@ export const patchPatient: RequestHandler = async (req, res, next): Promise<void
         }
 
 
-        const updateInfo= await patientService.updatePatient (id, doctor_id, dataValidated);
+        const updateInfo= await patientService.updatePatient (String(id), doctor_id, dataValidated);
         
         if (!updateInfo) {
 
@@ -189,9 +189,9 @@ export const deletePatient: RequestHandler = async (req, res, next): Promise<voi
 
         
         const { id: doctor_id }= req.user;
-        const id = req.params.id as string;
+        const { id } = schemaPatientParams.parse(req.params);
 
-        const deleteInfo= await patientService.deletePatient (id, doctor_id);
+        const deleteInfo= await patientService.deletePatient (String(id), doctor_id);
 
         if (!deleteInfo){
 
@@ -228,7 +228,7 @@ export const getPatientMemoryController: RequestHandler = async (req, res, next)
         
 
         const { id: doctor_id } = req.user;
-        const patient_id = Number(req.params.id);
+        const { id: patient_id } = schemaPatientParams.parse(req.params);
 
 
         const memory = await patientService.getPatientMemoryService(patient_id, doctor_id);
@@ -272,21 +272,8 @@ export const askPatientController: RequestHandler = async (req, res, next): Prom
 
 
         const { id: doctor_id } = req.user;
-        const patient_id = Number(req.params.id);
-        const question = req.body.question;
-
-
-        if (Number.isNaN(patient_id)) {
-
-            res.status(400).json({ success: false, message: "Invalid patient id" });
-            return;
-        }
-
-        if (!question || question.trim().length === 0) {
-
-            res.status(400).json({ success: false, message: "Question is required" });
-            return;
-        }
+        const { id: patient_id } = schemaPatientParams.parse(req.params);
+        const { question } = schemaPatientAsk.parse(req.body);
 
 
         const answer = await patientService.askPatientMemoryService(patient_id, doctor_id, question);

@@ -8,4 +8,12 @@ export const schemaPatient = z.object({
   phone: z.string().min(5).max(20).optional(),
 });
 
+export const schemaPatientParams = z.object({
+  id: z.coerce.number().int().positive()
+});
+
+export const schemaPatientAsk = z.object({
+  question: z.string().trim().min(1, "Question is required")
+});
+
 export type Patient = z.infer<typeof schemaPatient>;
