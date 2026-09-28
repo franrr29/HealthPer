@@ -1,0 +1,1 @@
+Healthper transcribes the consultation live, and the doctor can pause it, ask a question mid-visit, and get an answer grounded in that same transcript and patient history — then pick recording back up without losing a beat.

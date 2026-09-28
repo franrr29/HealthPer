@@ -150,6 +150,26 @@
   --color-bp-accent-300: #b5d9fd;
   --color-bp-accent-700: #416180;
   --color-bp-accent-900: #1d2d3d;
+
+  /* paleta "clinical" del rediseno Healthper (Welcome) -- reemplaza el
+     lenguaje visual "blueprint" de arriba con prefijo hp-, misma logica
+     de namespacing para no pisar los tokens semanticos de shadcn. */
+  --color-hp-paper: #fbfcfe;
+  --color-hp-paper-2: #f4f6fa;
+  --color-hp-ink: #0f1a2b;
+  --color-hp-ink-2: #4a5568;
+  --color-hp-ink-3: #8a95a5;
+  --color-hp-hair: #e4e9f0;
+  --color-hp-hair-strong: #ced5df;
+  --color-hp-clinic: #1e5aa8;
+  --color-hp-clinic-light: #94bce3;
+  --color-hp-clinic-soft: #eaf1fa;
+  --color-hp-clinic-deep: #0e3a75;
+  --color-hp-clinic-ink: #0a2547;
+
+  --shadow-hp-sm: 0 1px 2px rgba(15, 26, 43, 0.04), 0 1px 3px rgba(15, 26, 43, 0.03);
+  --shadow-hp-md: 0 2px 6px rgba(15, 26, 43, 0.05), 0 8px 24px rgba(15, 26, 43, 0.06);
+  --shadow-hp-lg: 0 4px 10px rgba(15, 26, 43, 0.06), 0 24px 60px rgba(15, 26, 43, 0.1);
 }
 
 /*

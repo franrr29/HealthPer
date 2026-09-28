@@ -12,30 +12,36 @@ const NAV_LINKS = [
   { href: "#metrics", label: "Benchmarks" },
 ];
 
+function BrandMark() {
+  return (
+    <span className="relative inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-hp-clinic to-hp-clinic-deep shadow-hp-sm">
+      <span className="text-sm font-bold leading-none text-white">✦</span>
+    </span>
+  );
+}
+
 export function WelcomeNavbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <>
-      <nav className="sticky top-0 z-30 border-b border-bp-divider bg-bp-bg/92 backdrop-blur-md md:backdrop-blur-none">
+      <nav className="sticky top-0 z-30 border-b border-hp-hair bg-hp-paper/88 backdrop-blur-md">
         <div className="mx-auto grid max-w-[1360px] grid-cols-[auto_1fr_auto] items-center gap-8 px-6 py-3.5 sm:px-8">
-          <a href="#top" className="flex shrink-0 items-center gap-3 font-display text-base font-bold uppercase tracking-[0.08em]">
-            <span className="relative inline-block h-[24px] w-[24px] border border-bp-text/75 bg-bp-bg">
-              <span className="absolute inset-[3px] bg-bp-accent" />
-            </span>
+          <a href="#top" className="flex shrink-0 items-center gap-3 text-base font-bold uppercase tracking-[0.08em]">
+            <BrandMark />
             <span className="flex items-center gap-3">
               <span>Healthper</span>
-              <span className="hidden h-4 w-px bg-bp-divider md:block" />
-              <span className="hidden font-mono text-[10px] font-medium tracking-[0.18em] text-bp-text/42 md:block">Clinical AI Portfolio</span>
+              <span className="hidden h-4 w-px bg-hp-hair-strong md:block" />
+              <span className="hidden font-mono text-[10px] font-medium tracking-[0.18em] text-hp-ink-3 md:block">Clinical AI Portfolio</span>
             </span>
           </a>
 
-          <div className="hidden items-center justify-center gap-2 sm:flex">
+          <div className="hidden items-center justify-center gap-1 sm:flex">
             {NAV_LINKS.map((l) => (
               <a
                 key={l.href}
                 href={l.href}
-                className="rounded-full border border-transparent px-4 py-2 font-display text-sm font-medium uppercase tracking-[0.08em] text-bp-text/72 transition-colors hover:border-bp-divider hover:bg-bp-neutral-100 hover:text-bp-text"
+                className="rounded-full px-4 py-2 text-sm font-medium uppercase tracking-[0.08em] text-hp-ink-2 transition-colors hover:bg-hp-clinic-soft hover:text-hp-clinic-deep"
               >
                 {l.label}
               </a>
@@ -45,7 +51,7 @@ export function WelcomeNavbar() {
           <div className="flex shrink-0 items-center justify-self-end">
             <Link
               to="/login"
-              className="hidden items-center gap-2.5 rounded-full border border-bp-accent/35 bg-bp-accent px-4.5 py-2.5 font-display text-[13px] font-semibold uppercase tracking-wide text-bp-bg shadow-[0_10px_24px_rgba(46,107,235,0.18)] transition-colors hover:bg-bp-accent-700 sm:inline-flex"
+              className="hidden items-center gap-2.5 rounded-full bg-hp-clinic px-4.5 py-2.5 text-[13px] font-semibold uppercase tracking-wide text-white shadow-hp-sm transition-all hover:-translate-y-px hover:bg-hp-clinic-deep hover:shadow-hp-md sm:inline-flex"
             >
               Recruiter Preview
               <ArrowRight className="h-3.5 w-3.5" />
@@ -56,7 +62,7 @@ export function WelcomeNavbar() {
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen((v) => !v)}
-              className="-mr-2 flex h-11 w-11 items-center justify-center sm:hidden"
+              className="-mr-2 flex h-11 w-11 items-center justify-center text-hp-ink sm:hidden"
             >
               {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -75,38 +81,36 @@ export function WelcomeNavbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-[rgba(10,14,30,0.35)] backdrop-blur-sm sm:hidden"
+              className="fixed inset-0 z-40 bg-[rgba(10,37,71,0.35)] backdrop-blur-sm sm:hidden"
             />
             <motion.div
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ duration: 0.3, ease: EASE }}
-              className="fixed left-0 top-0 z-50 flex max-h-[calc(100vh-2rem)] w-[85%] max-w-[360px] flex-col overflow-hidden rounded-r-[28px] border-r border-bp-divider bg-bp-bg px-6 py-8 shadow-[16px_0_50px_rgba(0,0,0,0.25)] sm:hidden"
+              className="fixed left-0 top-0 z-50 flex max-h-[calc(100vh-2rem)] w-[85%] max-w-[360px] flex-col overflow-hidden rounded-r-[28px] border-r border-hp-hair bg-hp-paper px-6 py-8 shadow-hp-lg sm:hidden"
             >
               <button
                 type="button"
                 aria-label="Close menu"
                 onClick={() => setMenuOpen(false)}
-                className="absolute right-5 top-6 z-10 p-1 text-bp-text/55 transition-colors hover:text-bp-text"
+                className="absolute right-5 top-6 z-10 p-1 text-hp-ink-3 transition-colors hover:text-hp-ink"
               >
                 <X className="h-4 w-4" aria-hidden="true" />
               </button>
 
               <a href="#top" onClick={() => setMenuOpen(false)} className="mb-8 flex w-fit items-center gap-3 pr-10">
-                <span className="relative inline-block h-[24px] w-[24px] border border-bp-text/75 bg-bp-bg">
-                  <span className="absolute inset-[3px] bg-bp-accent" />
-                </span>
-                <span className="font-display text-base font-bold uppercase tracking-[0.08em]">Healthper</span>
+                <BrandMark />
+                <span className="text-base font-bold uppercase tracking-[0.08em]">Healthper</span>
               </a>
 
-              <div className="flex flex-col divide-y divide-bp-divider">
+              <div className="flex flex-col divide-y divide-hp-hair">
                 {NAV_LINKS.map((l) => (
                   <a
                     key={l.href}
                     href={l.href}
                     onClick={() => setMenuOpen(false)}
-                    className="py-3.5 font-display text-sm font-medium uppercase tracking-[0.08em]"
+                    className="py-3.5 text-sm font-medium uppercase tracking-[0.08em] text-hp-ink"
                   >
                     {l.label}
                   </a>
@@ -114,7 +118,7 @@ export function WelcomeNavbar() {
                 <Link
                   to="/login"
                   onClick={() => setMenuOpen(false)}
-                  className="mt-6 flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-full border border-bp-accent bg-bp-accent px-4 py-3.5 text-center font-display text-[13px] font-semibold uppercase tracking-[0.06em] text-bp-bg"
+                  className="mt-6 flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-hp-clinic px-4 py-3.5 text-center text-[13px] font-semibold uppercase tracking-[0.06em] text-white shadow-hp-sm"
                 >
                   Recruiter Preview <ArrowRight className="h-3.5 w-3.5" />
                 </Link>

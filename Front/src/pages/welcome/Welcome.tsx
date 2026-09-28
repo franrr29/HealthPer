@@ -4,9 +4,10 @@ import { WelcomeSections } from "./WelcomeSections";
 import { WelcomeNavbar } from "./WelcomeNavbar";
 import { WelcomeFooter } from "./WelcomeFooter";
 
-// estilos compartidos por todo el rediseno "Industry" (blueprint): grilla de fondo,
-// marcas de mira, duotono de fotos, marquee, cursor de tipeo -- una sola hoja para
-// que el hero y las secciones (en otros archivos) usen las mismas clases .iw-*.
+// estilos compartidos por el rediseno "Industry" (blueprint) anterior: grilla de
+// fondo, marcas de mira, duotono de fotos, marquee, cursor de tipeo. BlueprintGrid,
+// Crosshair y Kicker de aqui abajo siguen en uso fuera de Welcome (Login, AppLayout),
+// asi que esta hoja se mantiene intacta aunque las secciones de Welcome ya no la usen.
 const IW_STYLES = `
   .iw-grid {
     background-image:
@@ -44,6 +45,33 @@ const IW_STYLES = `
   @keyframes iw-blink { 50% { opacity: 0; } }
 `;
 
+// estilos del rediseno "clinical" (Healthper) actual: fondo atmosferico del hero,
+// duotono de fotos, marquee, wave bars, cursor de tipeo -- usados por el hero y las
+// secciones de Welcome (en otros archivos) via las clases .hp-*.
+const HP_STYLES = `
+  .hp-duo { position: relative; overflow: hidden; }
+  .hp-duo img { display: block; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.02); }
+  .hp-duo::after { content: ""; position: absolute; inset: 0; background: var(--color-hp-clinic); mix-blend-mode: color; opacity: .55; pointer-events: none; }
+  .hp-duo::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, color-mix(in srgb, var(--color-hp-clinic-ink) 65%, transparent)); z-index: 1; pointer-events: none; }
+
+  .hp-card { transition: transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s; }
+  .hp-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hp-lg); }
+
+  .hp-marquee { animation: hp-marquee-scroll 44s linear infinite; }
+  @keyframes hp-marquee-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  .hp-wave-bar { animation-name: hp-wave; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+  @keyframes hp-wave { 0%, 100% { height: 12%; opacity: .5; } 50% { height: 100%; opacity: 1; } }
+
+  .hp-caret::after { content: "\\258c"; margin-left: 2px; color: var(--color-hp-clinic); animation: hp-blink 1s steps(1) infinite; }
+  @keyframes hp-blink { 50% { opacity: 0; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hp-marquee, .hp-wave-bar, .hp-caret::after { animation: none; }
+  }
+`;
+
+// usado por Login y AppLayout -- no tocar sin revisar esos dos usos.
 export function BlueprintGrid({ dark, className = "" }: { dark?: boolean; className?: string }) {
   return (
     <div
@@ -53,6 +81,7 @@ export function BlueprintGrid({ dark, className = "" }: { dark?: boolean; classN
   );
 }
 
+// usado por Login -- no tocar sin revisar ese uso.
 export function Crosshair({ className = "" }: { className?: string }) {
   return <span aria-hidden="true" className={`iw-crosshair absolute ${className}`} />;
 }
@@ -77,6 +106,7 @@ export function PlateCorners({ dark }: { dark?: boolean }) {
   );
 }
 
+// usado por Login -- no tocar sin revisar ese uso.
 export function Kicker({ children, dark, className = "" }: { children: React.ReactNode; dark?: boolean; className?: string }) {
   return (
     <div
@@ -85,6 +115,21 @@ export function Kicker({ children, dark, className = "" }: { children: React.Rea
       } ${className}`}
     >
       <span className={`h-px w-6 ${dark ? "bg-white/60" : "bg-bp-text/60"}`} />
+      {children}
+    </div>
+  );
+}
+
+// kicker "clinical" para las secciones de Welcome -- separado de Kicker porque
+// Kicker sigue en uso (con el estilo blueprint) en Login.
+export function SectionKicker({ children, dark, className = "" }: { children: React.ReactNode; dark?: boolean; className?: string }) {
+  return (
+    <div
+      className={`inline-flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.16em] ${
+        dark ? "text-white/70" : "text-hp-clinic-deep"
+      } ${className}`}
+    >
+      <span className={`h-px w-6 ${dark ? "bg-white/70" : "bg-current"}`} />
       {children}
     </div>
   );
@@ -108,9 +153,9 @@ export function Cta({
   className?: string;
 }) {
   const base =
-    "inline-flex items-center justify-center gap-2.5 border px-5 py-3.5 font-display text-sm font-semibold uppercase tracking-wide transition-colors disabled:cursor-not-allowed disabled:opacity-60";
-  const solid = "border-bp-accent bg-bp-accent text-bp-bg hover:bg-bp-accent-700";
-  const outline = "border-bp-divider bg-transparent text-bp-text hover:border-bp-accent hover:text-bp-accent";
+    "inline-flex items-center justify-center gap-2.5 rounded-2xl border px-6 py-4 text-sm font-semibold uppercase tracking-wide transition-all hover:-translate-y-px disabled:pointer-events-none disabled:opacity-60";
+  const solid = "border-hp-clinic bg-hp-clinic text-white shadow-hp-sm hover:border-hp-clinic-deep hover:bg-hp-clinic-deep hover:shadow-hp-md";
+  const outline = "border-hp-hair-strong bg-white text-hp-ink shadow-hp-sm hover:border-hp-clinic hover:bg-hp-clinic-soft hover:text-hp-clinic-deep";
   const cls = `${base} ${ghost ? outline : solid} ${className}`;
   if (href) {
     if (href.startsWith("/")) {
@@ -138,8 +183,9 @@ export default function Welcome() {
   // container -- overflow-x:hidden en un ancestro fuerza overflow-y a "auto" y
   // eso rompe el position:sticky del nav contra el viewport. "clip" evita ese acople.
   return (
-    <div className="min-h-screen overflow-x-clip bg-bp-bg font-sans text-bp-text antialiased">
+    <div className="min-h-screen overflow-x-clip bg-hp-paper font-sans text-hp-ink antialiased">
       <style>{IW_STYLES}</style>
+      <style>{HP_STYLES}</style>
       <WelcomeNavbar />
 
       <WelcomeHero />

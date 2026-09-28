@@ -51,17 +51,17 @@ export function TypingTranscript() {
   }, [visible]);
 
   return (
-    <div ref={ref} className="min-h-[320px] font-sans text-[15px] leading-relaxed">
+    <div ref={ref} className="min-h-[320px] font-sans text-[15px] leading-relaxed text-hp-ink">
       {lines.map((l, i) => (
-        <div key={i} className="mb-4.5">
+        <div key={i} className="mb-4.5 flex items-start gap-3">
           <span
-            className={`mono mr-2 inline-block w-9 font-mono text-[11px] tracking-[0.14em] ${
-              l.speaker === "DR" ? "text-bp-accent" : "text-bp-text/55"
+            className={`inline-flex h-5.5 w-8 shrink-0 items-center justify-center font-mono text-[10px] font-bold tracking-[0.14em] ${
+              l.speaker === "DR" ? "bg-hp-clinic-soft text-hp-clinic-deep" : "bg-hp-paper-2 text-hp-ink-3"
             }`}
           >
             {l.speaker}
           </span>
-          <span className={l.done ? "" : "iw-caret"}>{l.text}</span>
+          <span className={l.done ? "" : "hp-caret"}>{l.text}</span>
         </div>
       ))}
     </div>
