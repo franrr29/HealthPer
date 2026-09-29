@@ -46,7 +46,9 @@ export type ConsultationForEmail = ConsultationWithPatient & {
 
 export interface PendingConsultation {
   consultation_id: number;
+  patient_id: number;
   patient_name: string;
+  created_at: Date;
   status: ConsultationStatus;
   hours_pending: number;
 }

@@ -20,6 +20,10 @@ export type Consultation = {
 
 export type PendingConsultation = {
     consultation_id: number,
+    patient_id: number,
     patient_name: string,
+    status: string,
+    created_at: string,
+    hours_pending: number,
 }
 

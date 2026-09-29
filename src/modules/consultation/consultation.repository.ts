@@ -208,7 +208,7 @@ export async function getPendingByDoctorId(
   doctorId: number
 ): Promise<PendingConsultation[]> {
   const [rows] = await conexionDB.query<PendingConsultationRow[]>(
-    `SELECT c.id AS consultation_id, p.name AS patient_name, c.status,
+    `SELECT c.id AS consultation_id, c.patient_id, p.name AS patient_name, c.status, c.created_at,
             TIMESTAMPDIFF(HOUR, c.created_at, NOW()) AS hours_pending
      FROM consultations c
      JOIN patients p ON c.patient_id = p.id
