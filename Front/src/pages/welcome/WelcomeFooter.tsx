@@ -13,10 +13,10 @@ export function WelcomeFooter() {
             </div>
 
             <p className="mt-4 text-sm leading-relaxed text-white/70">
-              Advanced <strong className="font-semibold text-white">ambient clinical documentation</strong>, real-time patient memory integration, and recruiter-ready engineering architecture built for modern medical workflows.
+              <strong className="font-semibold text-white">Consultation documentation</strong> for doctors: audio transcription, SOAP summaries, incremental patient memory and a chat over the clinical history. Portfolio project with a full-stack, tested architecture.
             </p>
 
-            <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.14em] text-white/45">
+            <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.14em] text-white/65">
               HP-01 &middot; Clinical System Case Study by <strong className="font-bold text-white/70">Francisco Rodriguez</strong>
             </p>
           </div>
@@ -86,13 +86,13 @@ export function WelcomeFooter() {
 
         {/* Bottom Bar */}
         <div className="mt-16 flex flex-col-reverse items-start gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/45">
+          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/65">
             &copy; 2026 Healthper Systems. <strong className="font-bold text-white/70">All clinical rights reserved.</strong>
           </span>
 
           <a
             href="#top"
-            className="group inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-white/45 transition-colors hover:text-hp-clinic-light"
+            className="group inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-white/65 transition-colors hover:text-hp-clinic-light"
           >
             <span>Back to top</span>
             <span className="font-bold transition-transform group-hover:-translate-y-0.5">&uarr;</span>

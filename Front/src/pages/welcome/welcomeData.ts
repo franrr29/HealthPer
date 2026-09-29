@@ -10,11 +10,11 @@ export const STACK_ITEMS = [
 ];
 
 export const STEPS = [
-  { n: "01", title: "Listen", img: "/microfono.jpg", tag: "CAPTURE", desc: "Multi-speaker clinical audio, in the browser." },
-  { n: "02", title: "Ask", img: "/generaPreguntas.jpg", tag: "CONTEXT", desc: "Pause and get follow-ups drawn from the patient’s memory.", accent: true },
-  { n: "03", title: "Transcribe", img: "/transcribe.jpg", tag: "WHISPER-V3", desc: "Speaker turns and clinical terms preserved." },
-  { n: "04", title: "Summarize", img: "/resumen.jpg", tag: "SOAP", desc: "A structured note, review-and-sign." },
-  { n: "05", title: "Follow up", img: "/enviaMail.jpg", tag: "RESEND", desc: "Patient-friendly summary in their inbox." },
+  { n: "01", title: "Listen", img: "/microfono.jpg", tag: "Audio Capture", desc: "The doctor records the consultation directly in the browser. No external devices needed." },
+  { n: "02", title: "Ask", img: "/generaPreguntas.jpg", tag: "Patient Memory + RAG", desc: "Between recording rounds, the system suggests follow-up questions based on the patient’s full clinical history.", accent: true },
+  { n: "03", title: "Transcribe", img: "/transcribe.jpg", tag: "Groq Whisper", desc: "Audio is converted to text preserving medical terminology, drug names, and clinical context." },
+  { n: "04", title: "Summarize", img: "/resumen.jpg", tag: "LLM → SOAP", desc: "An LLM generates a structured SOAP note. The doctor reviews, edits, and signs — nothing is saved without approval." },
+  { n: "05", title: "Follow up", img: "/enviaMail.jpg", tag: "Resend Email", desc: "A plain-language summary is emailed to the patient, explaining what was discussed and next steps." },
 ];
 
 export const RETRIEVED = [
@@ -24,12 +24,12 @@ export const RETRIEVED = [
 ];
 
 export const DECISIONS = [
-  { n: "01", cat: "Retrieval", t: "Hybrid RAG · RRF fusion", b: "Cosine similarity misses exact terms. Keyword misses paraphrase. Reciprocal Rank Fusion combines both without hand-tuning a weight." },
-  { n: "02", cat: "Security", t: "doctor_id in every query", b: "Filtered at the SQL level, not the middleware. Verified by an explicit IDOR test in patients.test.ts." },
-  { n: "03", cat: "Resilience", t: "Non-blocking background jobs", b: "Chunking, embedding, memory-merge and email delivery are fired after signing — the clinical workflow never waits." },
-  { n: "04", cat: "State", t: "Incremental patient memory", b: "Each summary is merged into the previous memory row by the LLM. Prompt cost stays constant no matter how many visits accumulate." },
-  { n: "05", cat: "Storage", t: "No dedicated vector DB", b: "Embeddings live in a MySQL JSON column. Retrieval is always scoped to a single patient — operational simplicity over premature scale." },
-  { n: "06", cat: "Auth", t: "JWT in httpOnly cookies", b: "Token out of reach of XSS. A single interceptor retries once against /auth/refresh on a 401 — one endpoint, one moving part." },
+  { n: "01", cat: "Retrieval", t: "Search that understands context, not just keywords", b: "Combines semantic similarity with keyword matching to find relevant clinical history. Neither method alone catches everything — fusing both does.", tag: "Hybrid RAG · Cosine + FULLTEXT · RRF fusion" },
+  { n: "02", cat: "Security", t: "Each patient is only visible to their doctor", b: "Access control is enforced at the database query level, not just middleware. Every query filters by doctor_id — verified with dedicated tests.", tag: "IDOR protection · SQL-level filtering" },
+  { n: "03", cat: "Resilience", t: "AI processing never blocks the consultation", b: "Chunking, embedding, memory updates and email delivery run in the background after the doctor signs. The clinical workflow never waits on them.", tag: "Non-blocking background jobs" },
+  { n: "04", cat: "State", t: "The patient’s memory grows without slowing down", b: "Each signed summary is merged into a single running memory of the patient, so the cost of every request stays constant however many visits accumulate.", tag: "Incremental LLM memory · Constant prompt size" },
+  { n: "05", cat: "Storage", t: "Simple infrastructure, sized for the real problem", b: "Retrieval is always scoped to one patient, so embeddings live in the existing MySQL database instead of a separate vector service.", tag: "MySQL JSON embeddings · No vector DB" },
+  { n: "06", cat: "Auth", t: "Sessions that scripts in the browser can’t steal", b: "Tokens live in httpOnly cookies, out of reach of XSS. A single interceptor renews an expired session automatically through one refresh endpoint.", tag: "JWT · httpOnly cookies · /auth/refresh" },
 ];
 
 export const TRANSCRIPT_LINES = [

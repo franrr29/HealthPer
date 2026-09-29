@@ -32,7 +32,7 @@ export function WelcomeNavbar() {
             <span className="flex items-center gap-3">
               <span>Healthper</span>
               <span className="hidden h-4 w-px bg-hp-hair-strong md:block" />
-              <span className="hidden font-mono text-[10px] font-medium tracking-[0.18em] text-hp-ink-3 md:block">Clinical AI Portfolio</span>
+              <span className="hidden font-mono text-[10px] font-medium tracking-[0.18em] text-hp-ink-2 md:block">Clinical Documentation Case Study</span>
             </span>
           </a>
 
@@ -94,7 +94,7 @@ export function WelcomeNavbar() {
                 type="button"
                 aria-label="Close menu"
                 onClick={() => setMenuOpen(false)}
-                className="absolute right-5 top-6 z-10 p-1 text-hp-ink-3 transition-colors hover:text-hp-ink"
+                className="absolute right-5 top-6 z-10 p-1 text-hp-ink-2 transition-colors hover:text-hp-ink"
               >
                 <X className="h-4 w-4" aria-hidden="true" />
               </button>

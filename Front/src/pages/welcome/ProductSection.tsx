@@ -13,7 +13,7 @@ export function ProductSection() {
             <span className="font-normal italic text-hp-clinic">not mockups.</span>
           </h2>
           <p className="text-lg leading-relaxed text-hp-ink-2">
-            Every panel below is a live screenshot of the running app — the AI assistant answering a clinical question, and a patient&apos;s consultation memory.
+            Both panels are screenshots of the running app: the chat answering a question from a patientEvery panel below is a live screenshot of the running app — the AI assistant answering a clinical question, and a patient&apos;s consultation memory.apos;s clinical history, and the consultation record with its accumulated memory.
           </p>
         </Reveal>
 
@@ -22,7 +22,7 @@ export function ProductSection() {
             <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-2xl bg-hp-paper-2">
               <img
                 src="/llmchat.png"
-                alt="AI assistant answering a clinical question about a patient's medications"
+                alt="Chat answering a question about a patient's medications from their clinical history" loading="lazy" decoding="async"
                 className="max-h-full max-w-full object-contain"
               />
             </div>
@@ -31,7 +31,7 @@ export function ProductSection() {
             <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-2xl bg-hp-paper-2">
               <img
                 src="/consulta.png"
-                alt="Patient consultation record with clinical intelligence memory"
+                alt="Patient consultation record with incremental patient memory" loading="lazy" decoding="async"
                 className="max-h-full max-w-full object-contain"
               />
             </div>

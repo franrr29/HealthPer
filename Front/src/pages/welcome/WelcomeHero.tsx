@@ -17,7 +17,8 @@ function RotatingHeroWord({ words, interval = 2200 }: { words: string[]; interva
   return (
     // la palabra ocupa su propio renglon (nada mas comparte linea), asi que el
     // ancho puede variar libremente entre palabras sin provocar saltos de renglon.
-    <span className="relative mt-7 inline-flex min-h-[1.08em] items-center overflow-hidden rounded-2xl border border-hp-clinic/18 bg-hp-clinic/[0.06] px-3 py-1 align-baseline text-hp-clinic-deep shadow-[0_10px_30px_rgba(30,90,168,0.14)] sm:px-4 sm:py-1.5">
+    // overflow-hidden solo recorta el deslizamiento horizontal; sin borde, fondo ni sombra
+    <span className="relative mt-7 inline-flex min-h-[1.08em] items-center overflow-hidden pb-1 align-baseline text-hp-clinic-deep">
       <AnimatePresence mode="wait" initial={false}>
         <motion.span
           key={`${words[index]}-${index}`}
@@ -53,11 +54,11 @@ function Wave() {
     []
   );
   return (
-    <div className="flex h-full items-center gap-[4px]">
+    <div className="flex h-full w-full items-center gap-[2px] sm:gap-[4px]">
       {bars.map((b, i) => (
         <span
           key={i}
-          className="hp-wave-bar block w-[4px] origin-center rounded-full bg-current"
+          className="hp-wave-bar block min-w-[2px] max-w-[4px] flex-1 origin-center rounded-full bg-current"
           style={{ height: `${b.height}%`, animationDelay: `${b.delay}s`, animationDuration: `${b.duration}s` }}
         />
       ))}
@@ -69,7 +70,7 @@ export function WelcomeHero() {
   return (
     <section id="top" className="relative overflow-hidden px-6 pb-24 pt-24 sm:px-8 sm:pb-32">
       <div className="absolute inset-0">
-        <img src="/coat.jpg" alt="Healthper clinic" className="h-full w-full -scale-x-100 object-cover" />
+        <img src="/coat.jpg" alt="Doctor in a white coat" width={1920} height={1080} fetchPriority="high" decoding="async" className="h-full w-full -scale-x-100 object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-hp-paper via-hp-paper/85 to-hp-paper/40" />
       </div>
 
@@ -77,9 +78,9 @@ export function WelcomeHero() {
         <div className="max-w-[640px]">
           <Reveal>
             <h1 className="m-0 text-[40px] font-bold leading-[0.96] tracking-[-0.025em] sm:text-[56px] lg:text-[clamp(40px,4.8vw,76px)]">
-              The ambient
+              The consultation
               <br />
-              copilot that
+              assistant that
               <br />
               <RotatingHeroWord words={HERO_WORDS} />
             </h1>
@@ -87,7 +88,7 @@ export function WelcomeHero() {
 
           <Reveal delayMs={90}>
             <p className="mt-12 max-w-[520px] text-lg leading-relaxed text-hp-ink-2 sm:text-[19px]">
-              Record the visit. Get an instant transcript, structured SOAP note, and a running patient memory you can query in plain language.
+              Record the visit and get the transcript, a SOAP note ready to review and sign, and a patient history you can question in plain language. Built for doctors who chart after every consultation.
             </p>
           </Reveal>
 
@@ -104,15 +105,15 @@ export function WelcomeHero() {
           </Reveal>
 
           <Reveal delayMs={230}>
-            <div className="mt-10 flex w-full max-w-[520px] items-center gap-5 rounded-2xl border border-hp-hair bg-white px-5 py-4 shadow-hp-sm">
-              <div className="flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.16em] text-hp-clinic-deep">
+            <div className="mt-10 flex w-full max-w-[520px] items-center gap-3 rounded-2xl border border-hp-hair bg-white px-4 py-4 sm:gap-5 sm:px-5 shadow-hp-sm">
+              <div className="flex shrink-0 items-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-hp-clinic-deep sm:text-xs sm:tracking-[0.16em]">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-hp-clinic opacity-60" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-hp-clinic" />
                 </span>
                 REC · 00:04:12
               </div>
-              <div className="h-14 flex-1 overflow-hidden text-hp-clinic">
+              <div className="h-14 min-w-0 flex-1 overflow-hidden text-hp-clinic">
                 <Wave />
               </div>
             </div>

@@ -16,7 +16,7 @@ export function WorkflowSection() {
             </h2>
           </div>
           <p className="max-w-[480px] text-lg leading-relaxed text-hp-ink-2 lg:justify-self-end">
-            Five stages turn a live consultation into an indexed patient memory and a plain-language email to the patient. No typing, no context loss.
+            Five stages take a consultation from audio to a signed SOAP note, an updated patient memory and a plain-language email to the patient. The doctor reviews and signs; nothing is typed by hand.
           </p>
         </Reveal>
 
@@ -25,24 +25,27 @@ export function WorkflowSection() {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
             {STEPS.map((s, i) => (
               <Reveal key={s.n} delayMs={i * 90}>
-                <div className="hp-card relative overflow-hidden rounded-[20px] border border-hp-hair bg-white shadow-hp-sm">
+                <div className="hp-card group relative overflow-hidden rounded-[20px] border border-hp-hair bg-white shadow-hp-sm">
+                  <div
+                    aria-hidden="true"
+                    className={`absolute inset-x-0 top-0 z-[2] h-0.5 origin-left bg-hp-clinic transition-transform duration-300 ${
+                      s.accent ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                    }`}
+                  />
                   <div className="hp-duo aspect-square">
-                    <img src={s.img} alt={s.title} />
+                    <img src={s.img} alt="" width={600} height={600} loading="lazy" decoding="async" />
                   </div>
-                  <div className="absolute left-3 top-3 z-[2] rounded-full bg-white/92 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-hp-clinic-deep backdrop-blur-sm">
-                    {s.tag}
-                  </div>
-                  <div className="absolute bottom-2.5 right-3.5 z-[2] text-[40px] font-light leading-none text-white [text-shadow:0_2px_12px_rgba(0,0,0,.25)]">
-                    {s.n}
+                  <div className="relative px-5 pb-5 pt-4">
+                    <span aria-hidden="true" className="pointer-events-none absolute right-4 top-2 select-none text-[44px] font-light leading-none text-hp-ink/[0.07]">
+                      {s.n}
+                    </span>
+                    <span className="inline-block rounded-full bg-hp-paper-2 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-hp-ink-2">
+                      {s.tag}
+                    </span>
+                    <h3 className="mt-3 text-[28px] font-bold leading-tight tracking-[-0.01em]">{s.title}</h3>
                   </div>
                 </div>
-                <div className="mt-5 px-1">
-                  <div className={`font-mono text-[11px] uppercase tracking-[0.14em] ${s.accent ? "text-hp-clinic-deep" : "text-hp-ink-3"}`}>
-                    Stage {s.n}
-                  </div>
-                  <h3 className="mb-1.5 mt-1.5 text-[26px] font-bold leading-tight tracking-[-0.01em]">{s.title}</h3>
-                  <p className="m-0 text-sm leading-relaxed text-hp-ink-2">{s.desc}</p>
-                </div>
+                <p className="m-0 mt-4 px-1 text-sm leading-relaxed text-hp-ink-2">{s.desc}</p>
               </Reveal>
             ))}
           </div>

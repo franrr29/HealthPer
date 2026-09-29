@@ -25,16 +25,17 @@ export function DecisionsSection() {
             <Reveal
               key={d.n}
               delayMs={i * 70}
-              className="hp-card rounded-[20px] border border-hp-hair bg-white p-9 shadow-hp-sm sm:p-10"
+              className="hp-card rounded-[20px] border border-l-4 border-hp-hair-strong border-l-hp-clinic bg-hp-paper-2 p-7 shadow-hp-md sm:p-9"
             >
-              <div className="mb-4.5 flex items-baseline gap-4">
-                <span className="text-[52px] font-light leading-[0.8] text-hp-clinic/25 sm:text-[56px]">{d.n}</span>
-                <span className="rounded-full bg-hp-clinic-soft px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-hp-clinic-deep">
+              <div className="mb-4 flex items-center justify-between gap-4">
+                <span className="rounded-full bg-hp-clinic px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-white">
                   {d.cat}
                 </span>
+                <span aria-hidden="true" className="text-[44px] font-light leading-none text-hp-clinic/25">{d.n}</span>
               </div>
-              <h3 className="mb-3 text-2xl font-bold tracking-[-0.01em] sm:text-[28px]">{d.t}</h3>
+              <h3 className="mb-3 text-2xl font-bold leading-tight tracking-[-0.01em] sm:text-[26px]">{d.t}</h3>
               <p className="m-0 max-w-[460px] text-sm leading-relaxed text-hp-ink-2">{d.b}</p>
+              <p className="mb-0 mt-5 font-mono text-[11px] uppercase tracking-[0.08em] text-hp-ink-2">{d.tag}</p>
             </Reveal>
           ))}
         </div>
