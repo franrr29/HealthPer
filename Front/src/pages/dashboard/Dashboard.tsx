@@ -2,15 +2,14 @@ import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getPatients, getPatientsNeedingFollowUp } from "@/services/patients.service";
-import { getDoctorData, getDoctorStats, getTopConditions, getRecentActivities } from "@/services/doctor.service";
+import { getDoctorData, getDoctorStats, getTopConditions } from "@/services/doctor.service";
 import { getPendingConsultations } from "@/services/consultations.service";
 import { DoctorHeader } from "./DoctorHeader";
 import { StatsRow } from "./StatsRow";
 import { PendingSignatures } from "./PendingSignatures";
 import { RecentConsultationsList } from "./RecentConsultationsList";
-import { RecentActivityTimeline } from "./RecentActivityTimeline";
-import { ChronicConditionsPanel } from "./ChronicConditionsPanel";
-import { AllergiesPanel } from "./AllergiesPanel";
+import { PendingBanner } from "./PendingBanner";
+import { PracticeSummary } from "./PracticeSummary";
 
 export default function Dashboard() {
 
@@ -41,11 +40,6 @@ export default function Dashboard() {
   useQuery({
     queryKey: ["patientsNeedingFollowUp"],
     queryFn: getPatientsNeedingFollowUp,
-  });
-
-  const { data: recentActivities, isLoading: isRecentActivitiesLoading } = useQuery({
-    queryKey: ["recentActivities"],
-    queryFn: getRecentActivities,
   });
 
   const { data: pendingConsultations } = useQuery({
@@ -88,7 +82,9 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-5xl mx-auto my-4 mb-8 space-y-8 transition-all duration-300 ease-in-out">
-      <DoctorHeader doctorData={doctorData} pendingCount={pendingConsultations?.length ?? 0} />
+      <DoctorHeader doctorData={doctorData} />
+
+      <PendingBanner count={pendingConsultations?.length ?? 0} />
 
       <StatsRow
         totalPatients={patients?.length ?? 0}
@@ -98,15 +94,9 @@ export default function Dashboard() {
 
       <PendingSignatures consultations={pendingConsultations} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <RecentConsultationsList consultations={doctorStats?.recentConsultations} />
-        <RecentActivityTimeline activities={recentActivities} isLoading={isRecentActivitiesLoading} />
-      </div>
+      <RecentConsultationsList consultations={doctorStats?.recentConsultations} />
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <ChronicConditionsPanel items={topConditions?.topChronicDiseases} />
-        <AllergiesPanel items={topConditions?.topAllergies} />
-      </div>
+      <PracticeSummary topConditions={topConditions} />
     </div>
   );
 }

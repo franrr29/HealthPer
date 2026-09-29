@@ -12,13 +12,6 @@ export interface DoctorStats {
 }
 
 
-export interface RecentActivity {
-  consultation_id: number;
-  patient_name: string;
-  timestamp: string;
-  status: string;
-}
-
 export interface TopConditions {
   topChronicDiseases: { condition: string; patientCount: number }[];
   topAllergies: { allergy: string; patientCount: number }[];
@@ -32,4 +25,14 @@ export interface DoctorHeaderProps {
     facility?: string;
   };
   pendingCount?: number;
+}
+
+export interface DoctorProfile {
+  id: number;
+  name: string;
+  email: string;
+  specialty?: string;
+  license?: string;
+  facility?: string;
+  created_at?: string;
 }

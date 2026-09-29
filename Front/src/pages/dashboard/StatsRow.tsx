@@ -1,4 +1,5 @@
 import { FileText, PenLine, Users } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 interface StatsRowProps {
   totalPatients: number;
@@ -6,38 +7,43 @@ interface StatsRowProps {
   pendingDrafts: number;
 }
 
+interface StatCardProps {
+  icon: LucideIcon;
+  value: number;
+  label: string;
+  hint: string;
+  highlight?: boolean;
+}
+
+function StatCard({ icon: Icon, value, label, hint, highlight }: StatCardProps) {
+  return (
+    <div
+      className={`neu-card rounded-2xl border border-border p-6 ${
+        highlight ? "bg-gradient-to-b from-wc-blue/[0.06] to-card" : "bg-card"
+      }`}
+    >
+      <div
+        className={`mb-4 flex h-9 w-9 items-center justify-center rounded-xl ${
+          highlight ? "bg-wc-blue text-white" : "bg-wc-blue/10 text-wc-blue"
+        }`}
+      >
+        <Icon aria-hidden="true" className="h-4 w-4" />
+      </div>
+      <div className={`text-3xl font-semibold tracking-tight tabular-nums ${highlight ? "text-wc-blue" : "text-foreground"}`}>
+        {value}
+      </div>
+      <div className="mt-1 text-sm font-medium text-foreground">{label}</div>
+      <div className="text-xs text-muted-foreground">{hint}</div>
+    </div>
+  );
+}
+
 export function StatsRow({ totalPatients, totalConsultations, pendingDrafts }: StatsRowProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-      <div className="neu-card rounded-2xl bg-card border border-border p-6">
-        <div className="w-9 h-9 rounded-xl bg-wc-blue/10 flex items-center justify-center text-wc-blue mb-4">
-          <Users className="h-4 w-4" />
-        </div>
-        <div className="text-3xl font-semibold text-foreground tracking-tight">
-          {totalPatients}
-        </div>
-        <div className="text-sm text-muted-foreground mt-1">Patients under care</div>
-      </div>
-
-      <div className="neu-card rounded-2xl bg-card border border-border p-6">
-        <div className="w-9 h-9 rounded-xl bg-wc-blue/10 flex items-center justify-center text-wc-blue mb-4">
-          <FileText className="h-4 w-4" />
-        </div>
-        <div className="text-3xl font-semibold text-foreground tracking-tight">
-          {totalConsultations}
-        </div>
-        <div className="text-sm text-muted-foreground mt-1">Consultations</div>
-      </div>
-
-      <div className="neu-card rounded-2xl bg-gradient-to-b from-wc-blue/[0.06] to-card border border-border p-6">
-        <div className="w-9 h-9 rounded-xl bg-wc-blue flex items-center justify-center text-white mb-4">
-          <PenLine className="h-4 w-4" />
-        </div>
-        <div className="text-3xl font-semibold text-wc-blue tracking-tight">
-          {pendingDrafts}
-        </div>
-        <div className="text-sm text-muted-foreground mt-1">Awaiting signature</div>
-      </div>
+      <StatCard icon={Users} value={totalPatients} label="Patients" hint="Under your care" />
+      <StatCard icon={FileText} value={totalConsultations} label="Consultations" hint="Total, all time" />
+      <StatCard icon={PenLine} value={pendingDrafts} label="Awaiting signature" hint="Not yet signed" highlight />
     </div>
   );
 }
