@@ -2,7 +2,7 @@ import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { useAuth } from "@/context/AuthContext";
-import { LayoutDashboard, Users, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, Users, ClipboardList, Settings, LogOut, Menu, X } from "lucide-react";
 import { BlueprintGrid } from "@/pages/welcome/Welcome";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -13,22 +13,25 @@ const SIDEBAR_PANEL =
 const navItems = [
   { to: "/dashboard", end: true, icon: LayoutDashboard, label: "Dashboard" },
   { to: "/patients", end: false, icon: Users, label: "Patients" },
+  { to: "/consultations", end: false, icon: ClipboardList, label: "Consultations" },
 ];
 
-function NavItem({ item, layoutId, onClick }: { item: (typeof navItems)[number]; layoutId: string; onClick?: () => void }) {
+const settingsItem = { to: "/settings", end: false, icon: Settings, label: "Settings" };
+
+function NavItem({ item, layoutId, onClick }: { item: typeof settingsItem; layoutId: string; onClick?: () => void }) {
   return (
     <NavLink
       to={item.to}
       end={item.end}
       onClick={onClick}
-      className="group relative flex items-center gap-3 px-3.5 py-3 md:py-2.5 font-display text-xs font-bold uppercase tracking-[0.14em] transition-colors duration-150"
+      className="group relative flex items-center gap-3 px-3.5 py-3 max-md:rounded-full max-md:px-4 md:py-2.5 font-display text-xs font-bold uppercase tracking-[0.14em] transition-colors duration-150"
     >
       {({ isActive }) => (
         <>
           {isActive && (
             <motion.span
               layoutId={layoutId}
-              className="absolute inset-0 border border-bp-accent/35 border-l-2 border-l-bp-accent-300 bg-bp-accent/14 shadow-[inset_0_1px_2px_rgba(46,107,235,0.2)]"
+              className="absolute inset-0 border border-bp-accent/35 border-l-2 border-l-bp-accent-300 bg-bp-accent/14 max-md:rounded-full max-md:border-l shadow-[inset_0_1px_2px_rgba(46,107,235,0.2)]"
               transition={{ type: "spring", stiffness: 450, damping: 32 }}
             />
           )}
@@ -67,7 +70,7 @@ function SidebarNav({ layoutId, onNavClick }: { layoutId: string; onNavClick?: (
       <div className="relative mb-3 px-3.5 font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-white/30">
         Navigation
       </div>
-      <nav className="relative flex flex-col gap-1.5">
+      <nav className="relative flex flex-col gap-1.5 max-md:gap-2">
         {navItems.map((item) => (
           <NavItem key={item.to} item={item} layoutId={layoutId} onClick={onNavClick} />
         ))}
@@ -76,12 +79,13 @@ function SidebarNav({ layoutId, onNavClick }: { layoutId: string; onNavClick?: (
   );
 }
 
-function SidebarFooter({ onLogout }: { onLogout: () => void }) {
+function SidebarFooter({ layoutId, onLogout, onNavClick }: { layoutId: string; onLogout: () => void; onNavClick?: () => void }) {
   return (
     <div className="relative mt-auto flex flex-col gap-4 border-t border-white/10 pt-4">
+      <NavItem item={settingsItem} layoutId={layoutId} onClick={onNavClick} />
       <button
         onClick={onLogout}
-        className="flex w-full items-center justify-center gap-2.5 border border-red-500/30 bg-red-500/[0.04] px-3 py-2.5 font-display text-xs font-bold uppercase tracking-[0.14em] text-red-400 transition-all duration-150 hover:border-red-500/60 hover:bg-red-500/10"
+        className="flex w-full items-center justify-center gap-2.5 border border-red-500/30 bg-red-500/[0.04] px-3 py-2.5 max-md:rounded-full max-md:py-3 font-display text-xs font-bold uppercase tracking-[0.14em] text-red-400 transition-all duration-150 hover:border-red-500/60 hover:bg-red-500/10"
       >
         <LogOut className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
         Log out
@@ -108,7 +112,7 @@ export default function AppLayout() {
       >
         <BlueprintGrid dark className="opacity-25" />
         <SidebarNav layoutId="sidebar-active-pill-desktop" />
-        <SidebarFooter onLogout={handleLogout} />
+        <SidebarFooter layoutId="sidebar-active-pill-desktop" onLogout={handleLogout} />
       </aside>
 
       {/* main content area */}
@@ -157,7 +161,7 @@ export default function AppLayout() {
                 animate={{ x: 0 }}
                 exit={{ x: "-100%" }}
                 transition={{ duration: 0.3, ease: EASE }}
-                className={`fixed inset-y-0 left-0 z-50 flex w-[85%] max-w-[360px] flex-col overflow-hidden rounded-r-[28px] border-r border-white/8 px-6 py-8 shadow-[16px_0_50px_rgba(0,0,0,0.4)] md:hidden ${SIDEBAR_PANEL}`}
+                className={`fixed left-0 top-0 z-50 flex h-1/2 min-h-[460px] w-[85%] max-w-[360px] flex-col overflow-y-auto rounded-br-[28px] border-r border-white/8 px-5 py-8 shadow-[16px_0_50px_rgba(0,0,0,0.4)] md:hidden ${SIDEBAR_PANEL}`}
               >
                 <BlueprintGrid dark className="opacity-25" />
 
@@ -178,6 +182,8 @@ export default function AppLayout() {
                 >
                   <SidebarNav layoutId="sidebar-active-pill-mobile" onNavClick={() => setMenuOpen(false)} />
                   <SidebarFooter
+                    layoutId="sidebar-active-pill-mobile"
+                    onNavClick={() => setMenuOpen(false)}
                     onLogout={() => {
                       setMenuOpen(false);
                       handleLogout();

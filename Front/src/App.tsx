@@ -6,6 +6,8 @@ import AuthProvider from "./context/AuthContext"
 import AuthCallback from "@/pages/auth/AuthCallback"
 import AppLayout from "@/layouts/AppLayout"
 import Patients from "@/pages/patients/Patients"
+import Consultations from "@/pages/consultations/Consultations"
+import Settings from "@/pages/settings/Settings"
 import PatientDetails from "@/pages/patients/PatientDetails"
 import { CreatePatient } from "@/pages/patients/CreatePatient"
 import { EditPatient } from "@/pages/patients/EditPatient"
@@ -34,6 +36,8 @@ export default function App() {
             <Route element={<AppLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/patients" element={<Patients />} />
+              <Route path="/consultations" element={<Consultations />} />
+              <Route path="/settings" element={<Settings />} />
               <Route path="/patients/:patientId/consultations/:consultationId" element={<ConsultationFlow />} />
               <Route path="/patients/new" element={<CreatePatient />} />
               <Route path="/patients/:id/edit" element={<EditPatient />} />
